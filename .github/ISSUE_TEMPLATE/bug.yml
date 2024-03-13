@@ -1,0 +1,48 @@
+name: Bug Issue
+description: Bug report
+title: "<title>"
+labels: [bug]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: A short title for the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the observed behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe how the tool should behave when encountering this context
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Describe the step to follow to reproduce the bug
+      value: |
+        - [ ] 1. 
+        - [ ] 2. 
+        - [ ] 3.
+    validations:
+      required: false  
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

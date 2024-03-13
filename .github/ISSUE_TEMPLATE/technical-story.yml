@@ -1,0 +1,36 @@
+name: Technical Story
+description: Describes a technical story.
+title: "<title>"
+labels: [technical story]
+body:
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the technical chore to achieve. / Keep it brief and simple.
+      placeholder: What is the benefits for the developers? Why is this story revelant?
+    validations:
+      required: true
+
+  - type: textarea
+    id: DoD
+    attributes:
+      label: Definition of Done
+      description: Describe step by step what should be done at the end.
+      placeholder: Each checkboxes will later correspond to 'Task Issues'.
+      value: |
+        - [ ] 1. 
+        - [ ] 2. 
+        - [ ] 3.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

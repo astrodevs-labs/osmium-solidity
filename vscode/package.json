@@ -1,0 +1,112 @@
+{
+  "name": "osmium-solidity-extension",
+  "displayName": "Osmium Solidity",
+  "description": "",
+  "version": "0.2.0",
+  "publisher": "OsmiumToolchains",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/astrodevs-labs/osmium"
+  },
+  "icon": "./assets/logo.png",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:solidity"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceLangId == solidity",
+          "command": "osmium.format-sol-file",
+          "group": "7_modification"
+        },
+        {
+          "when": "resourceLangId == solidity",
+          "command": "osmium.gas-estimation",
+          "group": "2_workspace"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "osmium.format-sol-file",
+        "title": "Osmium: Format Solidity File"
+      },
+      {
+        "command": "osmium.format-sol-workspace",
+        "title": "Osmium: Format Solidity Workspace"
+      },
+      {
+        "command": "osmium.gas-estimation",
+        "title": "Osmium: Gas Estimation"
+      }
+    ],
+    "languages": [
+      {
+        "id": "solidity",
+        "aliases": [
+          "Solidity",
+          "solidity"
+        ],
+        "extensions": [
+          ".sol"
+        ],
+        "configuration": "./assets/configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "solidity",
+        "scopeName": "source.solidity",
+        "path": "./assets/syntax.json",
+        "balancedBracketScopes": [
+          "*"
+        ],
+        "unbalancedBracketScopes": [
+          "meta.scope.case-pattern.solidity"
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "build": "webpack",
+    "lint": "eslint src --ext ts --fix",
+    "lint:cehck": "eslint src --ext ts",
+    "format": "prettier --write src/**/*.ts ",
+    "format:check": "prettier src/**/*.ts",
+    "test": "vscode-test",
+    "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.87.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "ts-loader": "^9.5.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.24.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "custom-errors",
+      "severity": "WARNING"
+    }
+  ]
+}

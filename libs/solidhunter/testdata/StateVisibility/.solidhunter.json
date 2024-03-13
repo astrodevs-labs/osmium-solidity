@@ -1,0 +1,10 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "state-visibility",
+      "severity": "WARNING",
+      "data": []
+    }
+  ]
+}

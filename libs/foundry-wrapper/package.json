@@ -1,0 +1,12 @@
+{
+  "name": "osmium-libs-solidity-foundry-wrapper",
+  "license": "GNU-GPL-3.0",
+  "scripts": {
+    "build": "cargo build --release",
+    "format": "cargo fmt --all",
+    "format:check": "cargo fmt --check --all",
+    "test": "cargo test",
+    "lint": "cargo clippy --allow-dirty --allow-staged --all-targets --all-features --fix -- -D warnings",
+    "lint:check": "cargo clippy --all-targets --all-features -- -D warnings"
+  }
+}

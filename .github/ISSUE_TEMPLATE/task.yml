@@ -1,0 +1,48 @@
+name: Task Issue
+description: Describes a small task (MAKE SURE TO LINK to a corresponding 'User story','Technical story' or parent 'task' issue).
+title: "<title>"
+labels: [task]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: A short title for the task.
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the task, what should be done? / Keep it brief and simple.
+    validations:
+      required: true
+
+  - type: textarea
+    id: DoD
+    attributes:
+      label: Definition of done
+      description: Is this task a heavy task with sub tasks? Describe the tasks here.
+      value: |
+        - [ ] 1. 
+        - [ ] 2. 
+        - [ ] 3.
+    validations:
+      required: false
+    
+  - type: textarea
+    id: qa
+    attributes:
+      label: QA
+      description: Describe how this task will be tested.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

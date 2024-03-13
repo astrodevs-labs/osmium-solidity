@@ -1,0 +1,95 @@
+name: Publish targeted extension
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+        description: |
+          The operating system to run the publish on.
+      target:
+        required: true
+        type: string
+        description: |
+          The rust target to build with to publish.
+      code-target:
+        required: true
+        type: string
+        description: |
+          The vscode target to publish to.
+      version:
+        required: true
+        type: string
+        description: |
+          The version to publish.
+      pre-release:
+        required: false
+        type: boolean
+        description: |
+          Whether to publish as a pre-release.
+    secrets:
+      CARGO_REGISTRY_TOKEN:
+        required: true
+      VSCE_PAT:
+        required: true
+  workflow_dispatch:
+    inputs:
+      os:
+        required: true
+        type: string
+        description: |
+          The operating system to run the publish on.
+      target:
+        required: true
+        type: string
+        description: |
+          The rust target to build with to publish.
+      code-target:
+        required: true
+        type: string
+        description: |
+          The vscode target to publish to.
+      version:
+        required: true
+        type: string
+        description: |
+          The version to publish.
+      pre-release:
+        required: false
+        type: boolean
+        description: |
+          Whether to publish as a pre-release.
+
+jobs:
+  publish:
+    runs-on: ${{ inputs.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: oven-sh/setup-bun@v1
+
+      - name: Setup rust
+        if: ${{ inputs.target }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ inputs.target }}
+          override: true
+      
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+      - name: Publish
+        run: bun run publish:extension ${{ inputs.pre-release && '--pre-release' || '' }} ${{ inputs.version }} --target ${{ inputs.code-target }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+            

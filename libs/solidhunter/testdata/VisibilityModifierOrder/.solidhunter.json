@@ -1,0 +1,8 @@
+{
+  "name": "solidhunter",  "rules": [
+    {
+      "id": "visibility-modifier-order",
+      "severity": "WARNING"
+    }
+  ]
+}

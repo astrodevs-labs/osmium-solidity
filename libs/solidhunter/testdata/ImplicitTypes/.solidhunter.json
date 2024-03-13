@@ -1,0 +1,10 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "explicit-types",
+      "severity": "WARNING",
+      "data": "implicit"
+    }
+  ]
+}

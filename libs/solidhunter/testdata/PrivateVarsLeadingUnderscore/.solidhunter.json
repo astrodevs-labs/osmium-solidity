@@ -1,0 +1,12 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "private-vars-leading-underscore",
+      "severity": "WARNING",
+      "data": {
+        "strict": true
+      }
+    }
+  ]
+}

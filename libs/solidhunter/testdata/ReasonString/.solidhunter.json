@@ -1,0 +1,10 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "reason-string",
+      "severity": "WARNING",
+      "data": 20
+    }
+  ]
+}

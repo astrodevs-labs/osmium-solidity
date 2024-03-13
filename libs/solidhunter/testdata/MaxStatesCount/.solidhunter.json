@@ -1,0 +1,12 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "max-states-count",
+      "severity": "WARNING",
+      "data": [
+        15
+      ]
+    }
+  ]
+}

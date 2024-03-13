@@ -1,0 +1,9 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "payable-fallback",
+      "severity": "WARNING"
+    }
+  ]
+}

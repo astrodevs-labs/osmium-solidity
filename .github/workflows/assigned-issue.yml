@@ -1,0 +1,237 @@
+name: Create Branches and PRs on assign
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  repository-projects: write
+  statuses: write
+
+on:
+  issues:
+    types: [assigned]
+
+jobs:
+    generate-branchs-path:
+      outputs:
+        payloads: ${{ steps.generate-branches.outputs.result }}
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/github-script@v7
+          name: Get parent issues
+          id: get-parent-issues
+          with:
+            script: |
+              let _issueTrakedTemplate = `
+                trackedInIssues(first: 1) {
+                  nodes {
+                    title
+                    number
+                    labels(first: 20) {
+                      nodes {
+                        name
+                      }
+                    }
+                    #CHILD
+                  }
+              }`;
+
+              function createTrackedIssuesReq(recurse) {
+                let query = `query Nodes($number: Int!, $repo: String!, $organization: String!) {
+                  organization(login: $organization) {
+                    repository(name: $repo) {
+                      issue(number: $number) {
+                        title
+                        number
+                        labels(first: 20) {
+                          nodes {
+                            name
+                          }
+                        }
+                        #CHILD
+                      }
+                    }
+                  }
+                }`;
+
+                do {
+                  query = query.replace("#CHILD", _issueTrakedTemplate)
+                } while (recurse--);
+
+                return query.replace("#CHILD", "");
+              }
+              
+              let query = createTrackedIssuesReq(6);
+              console.log("query", query)
+
+              const variables = {
+                number: parseInt(${{ github.event.issue.number }}, 10),
+                repo: "${{ github.event.repository.name }}",
+                organization: "${{ github.event.repository.owner.login }}"
+              }
+              const result = await github.graphql(query, variables);
+              console.log(JSON.stringify(result))
+          
+              return result.organization.repository.issue;
+
+
+        - uses: actions/github-script@v7
+          name: Build ancestor array
+          id: build-ancestor-array
+          with:
+            script: |
+              const ancestors = []
+              const node = ${{ steps.get-parent-issues.outputs.result }}
+              let current = node?.trackedInIssues?.nodes[0]
+          
+              for (; current; current = current?.trackedInIssues?.nodes[0]) {
+                ancestors.push(current)
+              }
+              ancestors.reverse()
+              console.log(ancestors)
+              return ancestors
+          
+        - name: get branch prefix
+          id: get-branch-prefix
+          uses: actions/github-script@v7
+          with:
+            script: |
+              const ancestors = JSON.parse(${{ toJson(steps.build-ancestor-array.outputs.result) }});
+              console.error(ancestors)
+              const issueLabels = JSON.parse(`${{ toJson(github.event.issue.labels) }}`);
+              console.error(issueLabels)
+              const labels = ancestors.length > 0 ? ancestors[0].labels.nodes : issueLabels;
+              console.error(labels)
+              const isUserStory =  labels.some((label) => label.name === "user story")
+              console.error(isUserStory)
+              const isBug = labels.some((label) => label.name === "bug")
+              console.error(isBug)
+              const isTask = labels.some((label) => label.name === "task")
+              console.error(isTask)
+              const isTechnicalStory = labels.some((label) => label.name === "technical story")
+              console.error(isTechnicalStory)
+              
+              if (isUserStory && !isTechnicalStory) {
+                console.error('feat/')
+                return 'feat/'
+              } else if (isTechnicalStory) {
+                console.error('chore/')
+                return 'chore/'
+              } else if (isBug) {
+                console.error('bug/')
+                return 'bug/'
+              } else if (isTask) {
+                console.error('task/')
+                return ''
+              } else {
+                console.error('No type found')
+                throw new Error("No type found")
+              }
+
+        - name: generate branches
+          id: generate-branches
+          uses: actions/github-script@v7
+          with:
+            script: |
+              function _sanitizeBranchName(title) {
+                return title.replace(/[^a-zA-Z0-9-]/g, '-').replace(/-{2,}/g, "-").replace(/-+$/, "").toLowerCase()
+              }
+
+              const ancestors = JSON.parse(`${{ steps.build-ancestor-array.outputs.result }}`)
+              const rootBranchPrefix = ${{ steps.get-branch-prefix.outputs.result }}
+              const firstIssueNumber = ancestors.length > 0 ? ancestors[0].number : ${{ github.event.issue.number }}
+              const firstBranchName = rootBranchPrefix
+                + firstIssueNumber.toString()
+                + '-'
+                + _sanitizeBranchName(ancestors.length > 0 ? ancestors[0].title : "${{ github.event.issue.title }}")
+                + '-staging'
+          
+              const payloads = [
+                {
+                  baseBranch: 'dev',
+                  headBranch: firstBranchName,
+                  prTitle: `${firstIssueNumber} - ${ancestors.length > 0 ? ancestors[0].title : "${{ github.event.issue.title }}"}`,
+                  issueNumber: firstIssueNumber
+                }
+              ]
+          
+              ancestors.slice(1).forEach((issue, index) => {
+                payloads.push({
+                  baseBranch: payloads[index].headBranch,
+                  headBranch: payloads[index].headBranch.replace(/-staging$/, '')
+                    + '/'
+                    + issue.number.toString()
+                    + '-'
+                    + _sanitizeBranchName(issue.title)
+                    + '-staging',
+                  prTitle: `${issue.number} - ${issue.title}`,
+                  issueNumber: issue.number
+                })
+              })
+          
+              if (ancestors.length > 0) {
+                payloads.push({
+                  baseBranch: payloads[payloads.length - 1].headBranch,
+                  headBranch: payloads[payloads.length - 1].headBranch.replace(/-staging$/, '')
+                    + '/'
+                    + (${{ github.event.issue.number }}).toString()
+                    + '-'
+                    + _sanitizeBranchName("${{ github.event.issue.title }}")
+                    + '-staging',
+                  prTitle: `${{ github.event.issue.number }} - ${{ github.event.issue.title }}`,
+                  issueNumber: ${{ github.event.issue.number }}
+                })
+              }
+
+              return payloads
+
+
+
+    create-branch-and-draft:
+      runs-on: ubuntu-latest
+      needs: generate-branchs-path
+      strategy:
+        matrix: 
+          payload: ${{ fromJson(needs.generate-branchs-path.outputs.payloads) }}
+        max-parallel: 1
+      steps:
+          
+        - uses: actions/checkout@v3
+  
+        - name: Check if branch exists
+          id: check-branch-exists
+          continue-on-error: true
+          # should check if branch exists and set branchExists=true if it does, otherwise branchExists=false
+          run: |
+            git fetch --all
+            git checkout ${{ matrix.payload.headBranch }}
+            echo "branchExists=true" >> $GITHUB_OUTPUT
+            echo "Branch exists"
+  
+        - name: Generate UUID
+          id: generate-uuid
+          run: |
+            echo "uuid=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20)" >> $GITHUB_OUTPUT
+  
+  
+        - name: Create branch
+          id: create-branch
+          # if branch does not exist, create it
+          if: steps.check-branch-exists.outputs.branchExists != 'true'
+          run: |
+            git checkout ${{ matrix.payload.baseBranch }}
+            git checkout -b ${{ matrix.payload.headBranch }}
+            git config --global user.email "ci@astrodevslabs.io" && git config --global user.name "Astrodevs CI"
+            echo "${{ env.REMOVE_UUID }}" > remove-me-${{ env.REMOVE_UUID }}.txt
+            git add remove-me-${{ env.REMOVE_UUID }}.txt
+            git commit -m "chore: create branch ${{ matrix.payload.headBranch }}"
+            git push origin ${{ matrix.payload.headBranch }}
+          env:
+            REMOVE_UUID: ${{ steps.generate-uuid.outputs.uuid }}
+  
+        - name: Create pull request
+          continue-on-error: true
+          env:
+            GH_TOKEN: ${{ github.token }}
+          run: |
+            gh pr create --title "${{ matrix.payload.prTitle }}" --body "Solves #${{ matrix.payload.issueNumber }}" --base ${{matrix.payload.baseBranch }} --head ${{matrix.payload.headBranch }} --repo ${{ github.event.repository.full_name }} --draft

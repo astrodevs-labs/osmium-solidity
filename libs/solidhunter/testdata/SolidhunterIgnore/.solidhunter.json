@@ -1,0 +1,8 @@
+{
+  "name": "solidhunter",  "rules": [
+  {
+    "id": "const-name-snakecase",
+    "severity": "WARNING"
+  }
+  ]
+}

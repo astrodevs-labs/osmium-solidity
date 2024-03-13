@@ -1,0 +1,9 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "import-on-top",
+      "severity": "WARNING"
+    }
+  ]
+}

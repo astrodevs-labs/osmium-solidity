@@ -1,0 +1,22 @@
+{
+  "name": "osmium-solidity",
+  "workspaces": [
+    "libs/*",
+    "servers/*",
+    "vscode"
+  ],
+  "devDependencies": {
+    "turbo": "^1.12.4"
+  },
+  "scripts": {
+    "build": "turbo build && node ./scripts/copy-servers.js",
+    "publish": "turbo publish",
+    "publish:check": "turbo publish:check",
+    "publish:extension": "turbo publish:extension",
+    "test": "turbo test",
+    "format": "turbo format",
+    "format:check": "turbo format:check",
+    "lint": "turbo lint",
+    "lint:check": "turbo lint:check"
+  }
+}

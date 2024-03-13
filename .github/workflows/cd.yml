@@ -1,0 +1,30 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of the extension'
+        required: true
+        default: 'latest'
+      pre-release:
+        description: 'Publish as a pre-release'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build-and-publish-core:
+    uses: ./.github/workflows/publish-core.yml
+    secrets:
+      CARBON_REGISTRY_TOKEN: ${{ secrets.CARBON_REGISTRY_TOKEN }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+  publish-extension:
+    uses: ./.github/workflows/publish-extension.yml
+    with:
+      version: ${{ github.event.inputs.version }}
+      pre-release: ${{ github.event.inputs.pre-release }}
+    secrets:
+      CARBON_REGISTRY_TOKEN: ${{ secrets.CARBON_REGISTRY_TOKEN }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+

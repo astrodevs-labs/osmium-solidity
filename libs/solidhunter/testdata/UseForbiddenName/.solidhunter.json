@@ -1,0 +1,9 @@
+{
+  "name": "solidhunter",  "rules": [
+    {
+      "id": "use-forbidden-name",
+      "severity": "WARNING",
+      "data": []
+    }
+  ]
+}

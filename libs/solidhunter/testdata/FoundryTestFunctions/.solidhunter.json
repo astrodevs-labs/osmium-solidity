@@ -1,0 +1,10 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "foundry-test-functions",
+      "severity": "WARNING",
+      "data": ["setUp"]
+    }
+  ]
+}

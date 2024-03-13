@@ -1,0 +1,8 @@
+{
+  "name": "solidhunter",  "rules": [
+    {
+      "id": "contract-name-camelcase",
+      "severity": "WARNING"
+    }
+  ]
+}

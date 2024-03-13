@@ -1,0 +1,15 @@
+{
+  "name": "osmium-libs-solidity-ast-extractor",
+  "packageManager": "yarn@3.6.1",
+  "license": "GNU-GPL-3.0",
+  "scripts": {
+    "build": "cargo build --release",
+    "format": "cargo fmt --all",
+    "format:check": "cargo fmt --check --all",
+    "lint": "cargo clippy --allow-dirty --allow-staged --all-targets --all-features --fix -- -D warnings",
+    "lint:check": "cargo clippy --all-targets --all-features -- -D warnings",
+    "test": "cargo test",
+    "publish": "cargo package --allow-dirty && cargo publish --allow-dirty",
+    "publish:check": "cargo package --allow-dirty && cargo publish --allow-dirty --dry-run"
+  }
+}

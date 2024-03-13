@@ -1,0 +1,14 @@
+[workspace.package]
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.75"
+authors = ["Astrodevs-labs"]
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/astrodevs-labs/osmium-solidity"
+
+[workspace]
+members = [
+    "libs/*",
+    "servers/*",
+]
+resolver = "2"

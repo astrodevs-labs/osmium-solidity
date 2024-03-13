@@ -1,0 +1,10 @@
+{
+  "name": "solidhunter",
+  "rules": [
+    {
+      "id": "function-max-lines",
+      "severity": "WARNING",
+      "data": 20
+    }
+  ]
+}

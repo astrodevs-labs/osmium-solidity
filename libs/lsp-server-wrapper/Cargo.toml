@@ -1,0 +1,15 @@
+[package]
+name = "osmium-libs-lsp-server-wrapper"
+description = "A wrapper around the LSP server crate with a tower-lsp like API"
+license = "GPL-3.0-or-later"
+version = "0.2.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lsp-server = "0.7.4"
+lsp-types = "0.94.1"
+serde = "1.0.188"
+serde_json = "1.0.107"
+tracing = "0.1.37"

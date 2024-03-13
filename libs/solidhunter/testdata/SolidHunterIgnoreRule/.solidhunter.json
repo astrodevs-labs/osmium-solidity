@@ -1,0 +1,8 @@
+{
+  "name": "solidhunter",  "rules": [
+    {
+      "id": "avoid-tx-origin",
+      "severity": "WARNING"
+    }
+  ]
+}

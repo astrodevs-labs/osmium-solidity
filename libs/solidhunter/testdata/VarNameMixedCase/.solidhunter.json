@@ -1,0 +1,8 @@
+{
+  "name": "solidhunter",  "rules": [
+    {
+      "id": "var-name-mixedcase",
+      "severity": "WARNING"
+    }
+  ]
+}
