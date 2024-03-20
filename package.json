@@ -1,5 +1,6 @@
 {
   "name": "osmium-solidity",
+  "private": true,
   "workspaces": [
     "libs/*",
     "servers/*",

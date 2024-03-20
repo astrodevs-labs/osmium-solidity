@@ -1,0 +1,11 @@
+[package]
+name = "solc-wrapper"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_json = "1.0.113"
+solc-ast-rs-types = "0.1.6"
+thiserror = "1.0.56"

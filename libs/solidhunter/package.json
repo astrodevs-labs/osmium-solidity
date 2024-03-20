@@ -12,6 +12,6 @@
     "publish:check": "cargo package --allow-dirty && cargo publish --allow-dirty --dry-run"
   },
   "dependencies": {
-    "osmium-libs-solidity-ast-extractor": "*"
+    "osmium-libs-solidity-ast-extractor": "workspace:*"
   }
 }

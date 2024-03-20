@@ -1,0 +1,15 @@
+[package]
+name = "references-server"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+exclude.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.36.0",  features = ["full"] }
+tower-lsp = "0.20.0"
+solc-references = { path = "../../../../../libs/solc-references" }
+glob = "0.3.1"

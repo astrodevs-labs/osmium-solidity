@@ -11,11 +11,13 @@ import { TestManager } from './tests/test-manager';
 import { createFoundryCompilerClient } from './foundry-compiler';
 import { createTestsPositionsClient } from './tests-positions';
 import { registerGasEstimation } from './gas-estimation';
+import { createReferencesClient } from './references';
 
 let linterClient: LanguageClient;
 let slitherClient: LanguageClient;
 let foundryCompilerClient: LanguageClient;
 let testsPositionsClient: LanguageClient;
+let referencesClient: LanguageClient;
 let testManager: TestManager;
 
 // This method is called when your extension is activated
@@ -25,6 +27,7 @@ export async function activate(context: ExtensionContext) {
 	slitherClient = await createSlitherClient(context);
 	foundryCompilerClient = await createFoundryCompilerClient(context);
 	testsPositionsClient = await createTestsPositionsClient(context);
+	referencesClient = await createReferencesClient(context);
 	if (workspace.workspaceFolders?.length) {
 		testManager = new TestManager(testsPositionsClient, workspace.workspaceFolders[0].uri.fsPath);
 	}
