@@ -92,7 +92,8 @@ jobs:
       - uses: oven-sh/setup-bun@v1
 
       - name: Install
-        run: bun install      
+        run: bun install   
+
       - name: test
         run: |
           bun run test
@@ -113,6 +114,11 @@ jobs:
           override: true
 
       - uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: |
+          bun install
+
       - name: lint
         run: |
           bun run lint:check
@@ -133,6 +139,11 @@ jobs:
           override: true
 
       - uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: |
+          bun install
+
       - name: Format
         run: |
           bun run format:check
