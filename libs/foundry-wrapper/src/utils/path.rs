@@ -19,3 +19,9 @@ pub fn normalize_path(path: &str) -> String {
         .replace("//", "/")
         .replace("\\\\", "/")
 }
+
+pub fn join_path(base_path: &str, file: &str) -> String {
+    let mut path = PathBuf::from(base_path);
+    path.push(file);
+    path.to_str().unwrap().to_string().replace('\\', "/")
+}

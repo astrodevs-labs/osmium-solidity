@@ -1,9 +1,8 @@
+use osmium_libs_solidity_ast_extractor::errors::ExtractError;
 use thiserror::Error;
-use solc_wrapper::SolcWrapperError;
 
 #[derive(Error, Debug)]
 pub enum ReferencesError {
-    #[error("Solc error: {0}")]
-    Solc(#[from] SolcWrapperError)
+    #[error("Extract error: {0}")]
+    Solc(#[from] ExtractError),
 }
-

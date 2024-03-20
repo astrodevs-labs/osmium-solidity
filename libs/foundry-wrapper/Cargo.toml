@@ -1,5 +1,5 @@
 [package]
-name = "osmium-libs-foundry-wrapper"
+name = "osmium-libs-solidity-foundry-wrapper"
 version = "0.1.0"
 edition = "2021"
 authors = ["Astrodevs-Labs"]

@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 solc-ast-rs-types = { version = "0.1.6", features = ["visit"]}
-solc-wrapper = { path="../solc-wrapper" }
+osmium-libs-solidity-ast-extractor = { path="../ast-extractor" }
 thiserror = "1.0.56"

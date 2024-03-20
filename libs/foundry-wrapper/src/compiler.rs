@@ -1,9 +1,11 @@
 use crate::{
     error::Error,
+    output::get_files_from_foundry_output,
     types::ProjectCompileOutput,
     utils::{
         check_executable_argument, find_forge_executable, find_projects_paths, normalize_path,
     },
+    FoundryJsonFile,
 };
 use std::process::Command;
 
@@ -70,5 +72,24 @@ impl Compiler {
         let output_str = String::from_utf8_lossy(&json.stdout);
         let compile_output: ProjectCompileOutput = serde_json::from_str(&output_str)?;
         Ok((workspace_path, compile_output))
+    }
+
+    pub fn compile_ast(
+        &mut self,
+        file_path: &str,
+    ) -> Result<(String, Vec<FoundryJsonFile>), Error> {
+        let workspace_path = self
+            .find_closest_workspace(file_path)
+            .ok_or_else(|| Error::InvalidFilePath(file_path.to_string()))?;
+        let _ = Command::new(&self.inner.executable_path)
+            .current_dir(&workspace_path)
+            .arg("compile")
+            .arg("--build-info")
+            .arg("--no-cache")
+            .output()
+            .map_err(Error::ExecutableError)?;
+
+        let out = get_files_from_foundry_output(&workspace_path)?;
+        Ok((workspace_path, out))
     }
 }

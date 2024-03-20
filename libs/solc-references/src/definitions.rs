@@ -1,15 +1,14 @@
-
+use crate::types::InteractableNode;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
-use crate::types::InteractableNode;
 
 pub struct DefinitionFinder {
     id: i64,
     node: Option<InteractableNode>,
 }
 
-impl <'ast> Visit<'ast> for DefinitionFinder {
+impl<'ast> Visit<'ast> for DefinitionFinder {
     fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
         if contract.id == self.id {
             self.node = Some(InteractableNode::ContractDefinition(contract.clone()));
@@ -69,14 +68,10 @@ impl <'ast> Visit<'ast> for DefinitionFinder {
 }
 
 impl DefinitionFinder {
-
     pub fn new(id: i64) -> Self {
-        DefinitionFinder {
-            id,
-            node: None,
-        }
+        DefinitionFinder { id, node: None }
     }
-    
+
     pub fn find(&mut self, src: &SourceUnit) -> Option<InteractableNode> {
         self.visit_source_unit(src);
         self.node.clone()

@@ -1,25 +1,25 @@
+use crate::types::{InteractableNode, Position};
+use crate::utils::*;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
-use crate::types::{InteractableNode, Position};
-use crate::utils::*;
 
 pub struct NodeVisitor {
     position: Position,
     pub node: Option<InteractableNode>,
     above_node: Option<InteractableNode>,
-    source: String
+    source: String,
 }
 
-impl <'ast> Visit<'ast> for NodeVisitor {
-    fn visit_user_defined_type_name(&mut self,_udt: &'ast UserDefinedTypeName) {
+impl<'ast> Visit<'ast> for NodeVisitor {
+    fn visit_user_defined_type_name(&mut self, _udt: &'ast UserDefinedTypeName) {
         if is_node_in_range(&_udt.src, &self.position, &self.source) {
             self.node = Some(InteractableNode::UserDefinedTypeName(_udt.clone()));
         }
         self.above_node = Some(InteractableNode::UserDefinedTypeName(_udt.clone()));
         visit::visit_user_defined_type_name(self, _udt);
     }
-    fn visit_contract_definition(&mut self,contract: &'ast ContractDefinition) {
+    fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
         if is_node_in_range(&contract.src, &self.position, &self.source) {
             self.above_node = self.node.clone();
             self.node = Some(InteractableNode::ContractDefinition(contract.clone()));
@@ -27,7 +27,7 @@ impl <'ast> Visit<'ast> for NodeVisitor {
         visit::visit_contract_definition(self, contract);
     }
 
-    fn visit_elementary_type_name(&mut self,_elementary: &'ast ElementaryTypeName) {
+    fn visit_elementary_type_name(&mut self, _elementary: &'ast ElementaryTypeName) {
         if is_node_in_range(&_elementary.src, &self.position, &self.source) {
             self.node = None;
         }
@@ -124,7 +124,9 @@ impl <'ast> Visit<'ast> for NodeVisitor {
     fn visit_modifier_invocation(&mut self, modifier_invocation: &'ast ModifierInvocation) {
         if is_node_in_range(&modifier_invocation.src, &self.position, &self.source) {
             self.above_node = self.node.clone();
-            self.node = Some(InteractableNode::ModifierInvocation(modifier_invocation.clone()));
+            self.node = Some(InteractableNode::ModifierInvocation(
+                modifier_invocation.clone(),
+            ));
         }
         visit::visit_modifier_invocation(self, modifier_invocation);
     }
@@ -132,7 +134,9 @@ impl <'ast> Visit<'ast> for NodeVisitor {
     fn visit_inheritance_specifier(&mut self, inheritance_specifier: &'ast InheritanceSpecifier) {
         if is_node_in_range(&inheritance_specifier.src, &self.position, &self.source) {
             self.above_node = self.node.clone();
-            self.node = Some(InteractableNode::InheritanceSpecifier(inheritance_specifier.clone()));
+            self.node = Some(InteractableNode::InheritanceSpecifier(
+                inheritance_specifier.clone(),
+            ));
         }
         visit::visit_inheritance_specifier(self, inheritance_specifier);
     }
@@ -157,20 +161,22 @@ impl <'ast> Visit<'ast> for NodeVisitor {
     fn visit_new(&mut self, new_expression: &'ast NewExpression) {
         if is_node_in_range(&new_expression.src, &self.position, &self.source) {
             self.above_node = self.node.clone();
-            self.node = Some(InteractableNode::NewExpression(new_expression.clone(), Box::new(self.above_node.clone().unwrap())));
+            self.node = Some(InteractableNode::NewExpression(
+                new_expression.clone(),
+                Box::new(self.above_node.clone().unwrap()),
+            ));
         }
         visit::visit_new(self, new_expression);
     }
 }
 
-
 impl NodeVisitor {
-    pub fn new(position: Position, source: &String) -> Self {
+    pub fn new(position: Position, source: &str) -> Self {
         NodeVisitor {
             position,
             node: None,
             above_node: None,
-            source: source.clone()
+            source: source.to_owned(),
         }
     }
     pub fn find(&mut self, src: &SourceUnit) -> Option<InteractableNode> {

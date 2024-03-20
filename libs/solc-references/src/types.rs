@@ -1,14 +1,14 @@
-use solc_ast_rs_types::types::*;
 use crate::utils::source_location_to_range;
+use solc_ast_rs_types::types::*;
 
 #[derive(Debug, Clone)]
 pub struct Position {
     pub line: u32,
-    pub column: u32
+    pub column: u32,
 }
 
-impl Position {
-    pub fn default() -> Position {
+impl Default for Position {
+    fn default() -> Position {
         Position { line: 1, column: 1 }
     }
 }
@@ -16,7 +16,7 @@ impl Position {
 #[derive(Debug, Clone)]
 pub struct Range {
     pub index: u32,
-    pub length: u32
+    pub length: u32,
 }
 
 #[derive(Debug, Clone)]
@@ -79,55 +79,53 @@ impl InteractableNode {
                 if let Some(overrides) = &node.overrides {
                     match &overrides.overrides {
                         OverrideSpecifierOverrides::UserDefinedTypeNames(names) => {
-                            if names.len() > 0 {
+                            if !names.is_empty() {
                                 return Some(names[0].referenced_declaration);
                             }
                         }
                         OverrideSpecifierOverrides::IdentifierPaths(paths) => {
-                            if paths.len() > 0 {
+                            if !paths.is_empty() {
                                 return Some(paths[0].referenced_declaration);
                             }
                         }
                     }
                 }
                 None
-            },
+            }
             InteractableNode::ModifierDefinition(node) => {
                 if let Some(overrides) = &node.overrides {
                     match &overrides.overrides {
                         OverrideSpecifierOverrides::UserDefinedTypeNames(names) => {
-                            if names.len() > 0 {
+                            if !names.is_empty() {
                                 return Some(names[0].referenced_declaration);
                             }
                         }
                         OverrideSpecifierOverrides::IdentifierPaths(paths) => {
-                            if paths.len() > 0 {
+                            if !paths.is_empty() {
                                 return Some(paths[0].referenced_declaration);
                             }
                         }
-                    
                     }
                 }
                 None
-            },
+            }
             InteractableNode::VariableDeclaration(node) => {
                 if let Some(overrides) = &node.overrides {
                     match &overrides.overrides {
                         OverrideSpecifierOverrides::UserDefinedTypeNames(names) => {
-                            if names.len() > 0 {
+                            if !names.is_empty() {
                                 return Some(names[0].referenced_declaration);
                             }
                         }
                         OverrideSpecifierOverrides::IdentifierPaths(paths) => {
-                            if paths.len() > 0 {
+                            if !paths.is_empty() {
                                 return Some(paths[0].referenced_declaration);
                             }
                         }
-                    
                     }
                 }
                 None
-            },
+            }
             InteractableNode::UsingForDirective(node) => {
                 if let Some(overrides) = &node.library_name {
                     match overrides {
@@ -137,61 +135,54 @@ impl InteractableNode {
                         UsingForDirectiveLibraryName::IdentifierPath(paths) => {
                             return Some(paths.referenced_declaration);
                         }
-                    
                     }
                 }
                 None
-            },
-            InteractableNode::InheritanceSpecifier(node) => {
-                match &node.base_name {
-                    InheritanceSpecifierBaseName::UserDefinedTypeName(names) => {
-                        return Some(names.referenced_declaration);
-                    }
-                    InheritanceSpecifierBaseName::IdentifierPath(paths) => {
-                        return Some(paths.referenced_declaration);
-                    }
-                
+            }
+            InteractableNode::InheritanceSpecifier(node) => match &node.base_name {
+                InheritanceSpecifierBaseName::UserDefinedTypeName(names) => {
+                    Some(names.referenced_declaration)
+                }
+                InheritanceSpecifierBaseName::IdentifierPath(paths) => {
+                    Some(paths.referenced_declaration)
                 }
             },
-            InteractableNode::UserDefinedTypeName(node) => {
-                return Some(node.referenced_declaration);
-            },
+            InteractableNode::UserDefinedTypeName(node) => Some(node.referenced_declaration),
             InteractableNode::Identifier(node) => node.referenced_declaration,
             InteractableNode::MemberAccess(node) => node.referenced_declaration,
             _ => None,
         }
     }
 
-
     pub fn get_range(&self) -> Range {
         match self {
             InteractableNode::ContractDefinition(node) => source_location_to_range(
-                    node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
             InteractableNode::FunctionDefinition(node) => source_location_to_range(
-                node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
             InteractableNode::ModifierDefinition(node) => source_location_to_range(
-                node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
             InteractableNode::StructDefinition(node) => source_location_to_range(
-                node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
             InteractableNode::EnumDefinition(node) => source_location_to_range(
-                node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
             InteractableNode::VariableDeclaration(node) => source_location_to_range(
-                node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
             InteractableNode::EventDefinition(node) => source_location_to_range(
-                node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
             InteractableNode::EnumValue(node) => source_location_to_range(
-                node.name_location.as_ref().unwrap_or(&node.src.to_owned())
+                node.name_location.as_ref().unwrap_or(&node.src.to_owned()),
             ),
-            InteractableNode::ErrorDefinition(node) => source_location_to_range(
-                &node.name_location
-            ),
+            InteractableNode::ErrorDefinition(node) => {
+                source_location_to_range(&node.name_location)
+            }
             InteractableNode::UsingForDirective(node) => source_location_to_range(&node.src),
             InteractableNode::ImportDirective(node) => source_location_to_range(&node.src),
             InteractableNode::FunctionCall(node) => source_location_to_range(&node.src),

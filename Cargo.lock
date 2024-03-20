@@ -290,7 +290,7 @@ dependencies = [
 name = "foundry-compiler-server"
 version = "0.1.0"
 dependencies = [
- "osmium-libs-foundry-wrapper",
+ "osmium-libs-solidity-foundry-wrapper",
  "tokio",
  "tower-lsp",
 ]
@@ -575,18 +575,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ffda62bb984a82b17675005290ffa19b76fb74c3774cb8bed86bccb628ca911"
 
 [[package]]
-name = "osmium-libs-foundry-wrapper"
-version = "0.1.0"
-dependencies = [
- "clap",
- "glob",
- "serde",
- "serde_json",
- "thiserror",
- "which",
-]
-
-[[package]]
 name = "osmium-libs-lsp-server-wrapper"
 version = "0.2.0"
 dependencies = [
@@ -601,11 +589,26 @@ dependencies = [
 name = "osmium-libs-solidity-ast-extractor"
 version = "0.1.3"
 dependencies = [
+ "osmium-libs-solidity-foundry-wrapper",
  "proc-macro2",
  "quote",
+ "serde_json",
+ "solc-ast-rs-types",
  "syn",
  "syn-solidity",
  "thiserror",
+]
+
+[[package]]
+name = "osmium-libs-solidity-foundry-wrapper"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "glob",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "which",
 ]
 
 [[package]]
@@ -898,16 +901,7 @@ dependencies = [
 name = "solc-references"
 version = "0.1.0"
 dependencies = [
- "solc-ast-rs-types",
- "solc-wrapper",
- "thiserror",
-]
-
-[[package]]
-name = "solc-wrapper"
-version = "0.1.0"
-dependencies = [
- "serde_json",
+ "osmium-libs-solidity-ast-extractor",
  "solc-ast-rs-types",
  "thiserror",
 ]

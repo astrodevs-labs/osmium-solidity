@@ -1,4 +1,4 @@
-use osmium_libs_foundry_wrapper::Severity;
+use osmium_libs_solidity_foundry_wrapper::Severity;
 use tower_lsp::lsp_types::{DiagnosticSeverity, InitializeParams};
 
 /**

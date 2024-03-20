@@ -2,14 +2,13 @@ mod utils;
 
 use crate::utils::*;
 
+use solc_references::*;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::*;
 use tower_lsp::lsp_types::Location as LspLocation;
+use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
-use solc_references::*;
-
 
 struct Backend {
     client: Client,
@@ -18,7 +17,13 @@ struct Backend {
 
 impl Backend {
     pub fn new(client: Client) -> Self {
-        Self { client, references_provider: Arc::new(Mutex::new(ReferencesProvider { files: Vec::new(), base_path: String::new()})) }
+        Self {
+            client,
+            references_provider: Arc::new(Mutex::new(ReferencesProvider {
+                files: Vec::new(),
+                base_path: String::new(),
+            })),
+        }
     }
 }
 
@@ -26,9 +31,15 @@ impl Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         if let Some(workspace) = params.workspace_folders {
-            self.references_provider.lock().await.set_base_path(normalize_path(workspace[0].uri.path()));
+            self.references_provider
+                .lock()
+                .await
+                .set_base_path(normalize_path(workspace[0].uri.path()));
         } else {
-            self.references_provider.lock().await.set_base_path(normalize_path(&params.root_uri.unwrap().path()));
+            self.references_provider
+                .lock()
+                .await
+                .set_base_path(normalize_path(params.root_uri.unwrap().path()));
         }
         Ok(InitializeResult {
             server_info: None,
@@ -57,65 +68,98 @@ impl LanguageServer for Backend {
             .log_message(MessageType::INFO, "osmium-solidity-references initialized!")
             .await;
         if let Err(e) = self.references_provider.lock().await.update_file_content() {
-            self.client.log_message(MessageType::ERROR, format!("Error updating file content: {}", e)).await;
+            self.client
+                .log_message(
+                    MessageType::ERROR,
+                    format!("Error updating file content: {}", e),
+                )
+                .await;
         }
     }
 
     async fn did_save(&self, _: DidSaveTextDocumentParams) {
         if let Err(e) = self.references_provider.lock().await.update_file_content() {
-            self.client.log_message(MessageType::ERROR, format!("Error updating file content: {}", e)).await;
+            self.client
+                .log_message(
+                    MessageType::ERROR,
+                    format!("Error updating file content: {}", e),
+                )
+                .await;
         }
     }
-    
+
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<LspLocation>>> {
-        self.client.log_message(MessageType::INFO, "References requested").await;
+        self.client
+            .log_message(MessageType::INFO, "References requested")
+            .await;
         let uri = params.text_document_position.text_document.uri;
         let mut position = params.text_document_position.position;
         position.line += 1;
         position.character += 1;
 
-        let locations = self.references_provider.lock().await.get_references(&normalize_path(uri.path()), solc_references::Position { line: position.line, column: position.character });
-        let ret: Vec<LspLocation> = locations.iter().map(|location| {
-            let mut new_uri = uri.clone();
-            new_uri.set_path(&escape_path(&location.uri));
-            location_to_lsp_location(&new_uri, &location)
-        }).collect();
+        let locations = self.references_provider.lock().await.get_references(
+            &normalize_path(uri.path()),
+            solc_references::Position {
+                line: position.line,
+                column: position.character,
+            },
+        );
+        let ret: Vec<LspLocation> = locations
+            .iter()
+            .map(|location| {
+                let mut new_uri = uri.clone();
+                new_uri.set_path(&escape_path(&location.uri));
+                location_to_lsp_location(&new_uri, location)
+            })
+            .collect();
         Ok(Some(ret))
     }
 
-    async fn goto_definition(&self, params: GotoDefinitionParams) -> Result<Option<GotoDefinitionResponse>> {
-        self.client.log_message(MessageType::INFO, "Goto definition requested").await;
+    async fn goto_definition(
+        &self,
+        params: GotoDefinitionParams,
+    ) -> Result<Option<GotoDefinitionResponse>> {
+        self.client
+            .log_message(MessageType::INFO, "Goto definition requested")
+            .await;
         let mut uri = params.text_document_position_params.text_document.uri;
         let mut position = params.text_document_position_params.position;
         position.line += 1;
         position.character += 1;
 
-        let location = self.references_provider.lock().await.get_definition(&normalize_path(uri.path()), solc_references::Position { line: position.line, column: position.character });
-        
+        let location = self.references_provider.lock().await.get_definition(
+            &normalize_path(uri.path()),
+            solc_references::Position {
+                line: position.line,
+                column: position.character,
+            },
+        );
+
         if let Some(location) = location {
             uri.set_path(&escape_path(&location.uri));
-            return Ok(Some(GotoDefinitionResponse::Scalar(location_to_lsp_location(&uri, &location))));
+            return Ok(Some(GotoDefinitionResponse::Scalar(
+                location_to_lsp_location(&uri, &location),
+            )));
         }
-        self.client.log_message(MessageType::INFO, "No definition found").await;
+        self.client
+            .log_message(MessageType::INFO, "No definition found")
+            .await;
         Ok(None)
     }
 
     async fn shutdown(&self) -> Result<()> {
         Ok(())
     }
-
 }
 
-impl Backend {
-   
-}
+impl Backend {}
 
 #[tokio::main]
 async fn main() {
-    /* 
-    
+    /*
+
     USE THIS CODE TO DEBUG
-    
+
     let listener = tokio::net::TcpListener::bind("127.0.0.1:9001").await?;
     let (stream, _) = listener.accept().await?;
     let (read, write) = tokio::io::split(stream);

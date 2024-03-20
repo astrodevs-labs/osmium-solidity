@@ -107,6 +107,7 @@
     "@vscode/vsce": "^2.24.0"
   },
   "dependencies": {
+    "prettier": "^3.2.5",
     "vscode-languageclient": "^9.0.1"
   }
 }
