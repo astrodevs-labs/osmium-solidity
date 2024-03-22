@@ -11,6 +11,10 @@
         "outputs": ["target/**", "dist/**"],
         "cache": false
       },
+      "build:extension": {
+        "outputs": ["dist/**", "target/**"],
+        "cache": false
+      },
       "lint": {},
       "lint:check": {},
       "format": {},
