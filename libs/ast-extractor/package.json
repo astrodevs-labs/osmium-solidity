@@ -1,6 +1,5 @@
 {
   "name": "osmium-libs-solidity-ast-extractor",
-  "packageManager": "yarn@3.6.1",
   "license": "GNU-GPL-3.0",
   "scripts": {
     "build": "cargo build --release",

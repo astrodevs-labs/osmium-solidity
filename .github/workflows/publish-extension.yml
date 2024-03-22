@@ -12,6 +12,11 @@ on:
         required: false
         default: false
         type: boolean
+    secrets:
+      CARGO_REGISTRY_TOKEN:
+        required: true
+      VSCE_PAT:
+        required: true
 
   workflow_dispatch:
     inputs:

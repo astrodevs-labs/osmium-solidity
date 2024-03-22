@@ -1,4 +1,6 @@
-use osmium_libs_foundry_wrapper::{CompilationError, Compiler, Error, ProjectCompileOutput};
+use osmium_libs_solidity_foundry_wrapper::{
+    CompilationError, Compiler, Error, ProjectCompileOutput,
+};
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::path::{Path, PathBuf};
@@ -300,7 +302,7 @@ impl Backend {
         &self,
         project_path: &str,
         error: &CompilationError,
-    ) -> Option<(PathBuf, osmium_libs_foundry_wrapper::Range)> {
+    ) -> Option<(PathBuf, osmium_libs_solidity_foundry_wrapper::Range)> {
         let source_content_filepath = match error.get_file_path() {
             Some(source_path) => {
                 let mut complete_path = Path::new(project_path).to_path_buf();

@@ -1,0 +1,11 @@
+[package]
+name = "solc-references"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+solc-ast-rs-types = { version = "0.1.6", features = ["visit"]}
+osmium-libs-solidity-ast-extractor = { path="../ast-extractor" }
+thiserror = "1.0.56"

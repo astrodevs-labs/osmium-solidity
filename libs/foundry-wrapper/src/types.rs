@@ -1,5 +1,11 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone)]
+pub struct FoundryJsonFile {
+    pub json: serde_json::Value,
+    pub file: String,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ProjectCompileOutput {
     errors: Vec<CompilationError>,

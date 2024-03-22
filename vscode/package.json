@@ -88,7 +88,7 @@
     "lint:cehck": "eslint src --ext ts",
     "format": "prettier --write src/**/*.ts ",
     "format:check": "prettier src/**/*.ts",
-    "test": "vscode-test",
+    "test:ui": "vscode-test",
     "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies"
   },
   "devDependencies": {
@@ -104,7 +104,8 @@
     "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
-    "@vscode/vsce": "^2.24.0"
+    "@vscode/vsce": "^2.24.0",
+    "prettier": "^3.2.5"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

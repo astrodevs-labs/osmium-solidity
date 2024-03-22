@@ -108,7 +108,7 @@ fn test_linter(config: &str, source: &str, expected_findings: &[Finding]) {
                 }
                 not_needed_found = true;
             }
-            if !not_found_findings.is_empty(){
+            if !not_found_findings.is_empty() {
                 println!("\nMissing diagnostics:");
                 for finding in not_found_findings.iter() {
                     println!(
