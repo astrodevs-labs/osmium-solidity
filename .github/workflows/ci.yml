@@ -42,13 +42,18 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/setup-node@v4
 
-      - name: Install
-        run: bun install      
+      - uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install   
+
       - name: build
         run: |
-          bun run build
+          pnpm run build
 
   test:
     needs: build
@@ -89,14 +94,18 @@ jobs:
           target: ${{ matrix.target }}
           override: true
 
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/setup-node@v4
 
-      - name: Install
-        run: bun install   
+      - uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: test
         run: |
-          bun run test
+          pnpm run test
 
   lint:
     runs-on: ubuntu-latest
@@ -113,15 +122,17 @@ jobs:
           toolchain: stable
           override: true
 
-      - uses: oven-sh/setup-bun@v1
+      - uses: pnpm/action-setup@v3
+        with:
+          version: latest
 
       - name: Install dependencies
         run: |
-          bun install
+          pnpm install
 
-      - name: lint
+      - name: Format
         run: |
-          bun run lint:check
+          pnpm run lint:check
 
   format:
     runs-on: ubuntu-latest
@@ -138,12 +149,14 @@ jobs:
           toolchain: stable
           override: true
 
-      - uses: oven-sh/setup-bun@v1
+      - uses: pnpm/action-setup@v3
+        with:
+          version: latest
 
       - name: Install dependencies
         run: |
-          bun install
+          pnpm install
 
       - name: Format
         run: |
-          bun run format:check
+          pnpm run format:check
