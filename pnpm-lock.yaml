@@ -38,9 +38,6 @@ importers:
 
   vscode:
     dependencies:
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
       vscode-languageclient:
         specifier: ^9.0.1
         version: 9.0.1
@@ -72,6 +69,9 @@ importers:
       eslint:
         specifier: ^8.56.0
         version: 8.57.0
+      prettier:
+        specifier: ^3.2.5
+        version: 3.2.5
       ts-loader:
         specifier: ^9.5.1
         version: 9.5.1(typescript@5.4.3)(webpack@5.91.0)
@@ -2223,7 +2223,7 @@ packages:
     resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
     engines: {node: '>=14'}
     hasBin: true
-    dev: false
+    dev: true
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
