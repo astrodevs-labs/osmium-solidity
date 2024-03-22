@@ -80,7 +80,7 @@ mod tests {
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().to_string(),
-            "Tokenization error: cannot parse string into token stream"
+            "Alloy extraction error: cannot parse string into token stream"
         );
     }
 
@@ -89,6 +89,6 @@ mod tests {
         let source = String::from("contract test { function test() public { uint a = 1 } }");
         let result = extract_ast_from_content(&source);
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err().to_string(), "Parsing error");
+        assert_eq!(result.unwrap_err().to_string(), "Alloy extraction error: expected `;`");
     }
 }
