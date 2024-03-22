@@ -2,10 +2,6 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ExtractError {
-    //#[error("Tokenization error: {0}")]
-    //Tokenize(#[from] proc_macro2::LexError),
-    //#[error("Parsing error")]
-    //Parse(#[from] syn::Error),
     #[error("Alloy extraction error: {0}")]
     Alloy(String),
     #[error("Compiler error: {0}")]
