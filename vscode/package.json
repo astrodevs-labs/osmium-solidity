@@ -88,7 +88,7 @@
     "lint:cehck": "eslint src --ext ts",
     "format": "prettier --write src/**/*.ts ",
     "format:check": "prettier src/**/*.ts",
-    "test": "vscode-test",
+    "test:ui": "vscode-test",
     "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies"
   },
   "devDependencies": {
