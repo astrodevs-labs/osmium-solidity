@@ -4,7 +4,8 @@
   "workspaces": [
     "libs/*",
     "servers/*",
-    "vscode"
+    "vscode",
+    "sidebar"
   ],
   "devDependencies": {
     "turbo": "^1.12.4"

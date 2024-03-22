@@ -10,6 +10,7 @@ import { createFoundryCompilerClient } from "./foundry-compiler";
 import { createTestsPositionsClient } from "./tests-positions";
 import { registerGasEstimation } from "./gas-estimation";
 import { createCodeActionsClient } from "./code-actions";
+import {SidebarProvider} from "./sidebar-provider";
 
 let linterClient: LanguageClient;
 let slitherClient: LanguageClient;
@@ -45,18 +46,21 @@ export async function activate(context: ExtensionContext) {
     codeActionsClient,
   );
 
-  const folders = workspace.workspaceFolders;
-  if (folders) {
-    const files = await workspace.findFiles(
-      "**/*.sol",
-      `${folders[0].uri.fsPath}/**`,
+	const folders = workspace.workspaceFolders;
+	if (folders) {
+		const files = await workspace.findFiles('**/*.sol', `${folders[0].uri.fsPath}/**`);
+		files.forEach(file => {
+			if (!file.path.includes('forge-std')) {
+				workspace.openTextDocument(file);
+			}
+		});
+	}
+
+    const sidebarProvider = new SidebarProvider(context.extensionUri);
+
+    context.subscriptions.push(
+        window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider),
     );
-    files.forEach((file) => {
-      if (!file.path.includes("forge-std")) {
-        workspace.openTextDocument(file);
-      }
-    });
-  }
 }
 
 // This method is called when your extension is deactivated
