@@ -8,9 +8,6 @@ fs.readdir('target', { withFileTypes: true }, (err, dirs) => {
     console.error(err);
     return;
   }
-
-  console.log('Target entries: ', dirs);
-
   const directories = dirs.filter(file => file.isDirectory()).map(file => file.name);
   const targetDirectories = directories.filter(directory => directory == "release" || directory == "debug");
   const dir = targetDirectories.find(dir => dir == "release") || targetDirectories[0];

@@ -101,9 +101,8 @@
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "build": "pnpm run build-sidebar && webpack",
+    "build": "webpack",
     "build:extension": "webpack",
-    "build-sidebar": "cd ../sidebar && pnpm run build",
     "lint": "eslint src --ext ts --fix",
     "lint:check": "eslint src --ext ts",
     "format": "prettier --write src/**/*.ts ",
@@ -132,6 +131,7 @@
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1",
-    "bufferutil": "^4.0.8"
+    "bufferutil": "^4.0.8",
+    "sidebar": "workspace:*"
   }
 }

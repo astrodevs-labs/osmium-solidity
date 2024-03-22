@@ -311,11 +311,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   private _getHtmlForWebview(webview: vscode.Webview) {
     // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "sidebar", "dist", "index.js"),
+      vscode.Uri.joinPath(this._extensionUri, "dist", "index.js"),
     );
 
     const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "sidebar", "dist", "index.css"),
+      vscode.Uri.joinPath(this._extensionUri, "dist", "index.css"),
     );
 
     // Use a nonce to only allow a specific script to be run.
