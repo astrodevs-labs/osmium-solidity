@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { workspace, ExtensionContext } from 'vscode';
+import {workspace, ExtensionContext, window} from 'vscode';
 import {
 	LanguageClient,
 } from 'vscode-languageclient/node';
@@ -12,6 +12,7 @@ import { createFoundryCompilerClient } from './foundry-compiler';
 import { createTestsPositionsClient } from './tests-positions';
 import { registerGasEstimation } from './gas-estimation';
 import { createReferencesClient } from './references';
+import {SidebarProvider} from "./sidebar-provider";
 
 let linterClient: LanguageClient;
 let slitherClient: LanguageClient;
@@ -46,6 +47,12 @@ export async function activate(context: ExtensionContext) {
 			}
 		});
 	}
+
+    const sidebarProvider = new SidebarProvider(context.extensionUri);
+
+    context.subscriptions.push(
+        window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider),
+    );
 }
 
 // This method is called when your extension is deactivated

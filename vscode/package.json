@@ -20,6 +20,24 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sidebar",
+          "title": "Osmium Sidebar",
+          "icon": "assets/logo.png"
+        }
+      ]
+    },
+    "views": {
+      "sidebar": [
+        {
+          "type": "webview",
+          "id": "osmium.sidebar",
+          "name": "Osmium: Deploy/Interact"
+        }
+      ]
+    },
     "menus": {
       "explorer/context": [
         {
@@ -83,9 +101,10 @@
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "build": "webpack",
+    "build": "pnpm run build-sidebar && webpack",
+    "build-sidebar": "cd ../sidebar && pnpm run build",
     "lint": "eslint src --ext ts --fix",
-    "lint:cehck": "eslint src --ext ts",
+    "lint:check": "eslint src --ext ts",
     "format": "prettier --write src/**/*.ts ",
     "format:check": "prettier src/**/*.ts",
     "test:ui": "vscode-test",
@@ -105,9 +124,13 @@
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
     "@vscode/vsce": "^2.24.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "viem": "^2.8.18",
+    "toml": "^3.0.0",
+    "utf-8-validate": "^6.0.3"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1"
+    "vscode-languageclient": "^9.0.1",
+    "bufferutil": "^4.0.8"
   }
 }
