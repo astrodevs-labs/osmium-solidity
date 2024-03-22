@@ -7,14 +7,11 @@ fs.readdir('servers', { withFileTypes: true }, (err, serversEntries) => {
     console.error(err);
     return;
   }
-
-  console.log('Server directories: ', serversEntries.map(file => file.name));
-
-  const serversDirectories = serversEntries.filter(file => file.isDirectory()).map(file => file.name);
-  serversDirectories.forEach((serverDir) => {
-    // list release and debug targets
-    fs.readdir(`servers/${serverDir}/target`, { withFileTypes: true }, (err, entries) => {
-      if (err) {
+  const directories = dirs.filter(file => file.isDirectory()).map(file => file.name);
+  const targetDirectories = directories.filter(directory => directory == "release" || directory == "debug");
+  const dir = targetDirectories.find(dir => dir == "release") || targetDirectories[0];
+  fs.readdir(`target/${dir}`, { withFileTypes: true }, (err, entries) => {
+    if (err) {
         console.error(err);
         return;
       }

@@ -97,6 +97,9 @@ importers:
       bufferutil:
         specifier: ^4.0.8
         version: 4.0.8
+      sidebar:
+        specifier: workspace:*
+        version: link:../sidebar
       vscode-languageclient:
         specifier: ^9.0.1
         version: 9.0.1
