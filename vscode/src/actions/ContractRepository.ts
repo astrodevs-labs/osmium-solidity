@@ -1,12 +1,12 @@
 import * as path from "path";
 import * as fs from "fs";
-import {Address} from "viem";
-import {InteractContract, InteractContracts} from "./types";
+import { Address } from "viem";
+import { InteractContract, InteractContracts } from "./types";
 
 export class ContractRepository {
   private _contracts: InteractContracts = [];
-  private _contractsPath: string;
-  private _osmiumPath: string
+  private readonly _contractsPath: string;
+  private readonly _osmiumPath: string;
 
   constructor(workspacePath: string) {
     this._osmiumPath = path.join(workspacePath, ".osmium");
@@ -20,8 +20,9 @@ export class ContractRepository {
   }
 
   public load(): void {
-    if (!fs.existsSync(this._osmiumPath))
+    if (!fs.existsSync(this._osmiumPath)) {
       fs.mkdirSync(this._osmiumPath);
+    }
     if (!fs.existsSync(this._contractsPath)) {
       this._contracts = [];
       fs.writeFileSync(
@@ -39,12 +40,24 @@ export class ContractRepository {
     return this._contracts;
   }
 
-  public getContract(name: InteractContract["address"]): InteractContract | undefined {
+  public getContract(
+    name: InteractContract["address"],
+  ): InteractContract | undefined {
     return this._contracts.find((c) => c.address === name);
   }
 
   public createContract(contract: InteractContract): void {
-    this._contracts.push(contract);
+    if (this._contracts.find((c) => c.address === contract.address)) {
+      // replace
+      this._contracts = this._contracts.map((w) => {
+        if (w.address === contract.address) {
+          return contract;
+        }
+        return w;
+      });
+    } else {
+      this._contracts.push(contract);
+    }
     this._save();
   }
 
