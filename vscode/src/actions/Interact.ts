@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  Abi,
   createPublicClient,
-  createWalletClient, defineChain,
+  createWalletClient,
+  defineChain,
   getContract,
   http,
   webSocket,
@@ -10,22 +9,7 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { ContractRepository } from "./ContractRepository";
 import { WalletRepository } from "./WalletRepository";
-
-interface ReadContractOptions {
-  contract: `0x${string}`;
-  method: string;
-  params?: any[];
-}
-
-interface WriteContractOptions {
-  account: `0x${string}`;
-  address: `0x${string}`;
-  abi: Abi;
-  functionName: string;
-  params?: any[];
-  gasLimit?: bigint;
-  value?: bigint;
-}
+import { ReadContractOptions, WriteContractOptions } from "./types";
 
 export class Interact {
   private contractRepository: ContractRepository;
@@ -80,15 +64,17 @@ export class Interact {
       throw new Error(`contract ${address} not found`);
     }
 
-    const rpc = contract.rpc.startsWith("ws") ? {
-      default: {
-        webSocket: [contract.rpc],
-      },
-    } : {
-      default: {
-        http: [contract.rpc],
-      },
-    };
+    const rpc = contract.rpc.startsWith("ws")
+      ? {
+          default: {
+            webSocket: [contract.rpc],
+          },
+        }
+      : {
+          default: {
+            http: [contract.rpc],
+          },
+        };
 
     const walletClient = createWalletClient({
       chain: defineChain({
