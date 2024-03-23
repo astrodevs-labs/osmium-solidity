@@ -12,11 +12,8 @@ use tokio_util::sync::CancellationToken;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
-use utils::find_foundry_toml_config;
-use utils::is_slither_installed;
-use utils::is_solc_installed;
-use utils::normalize_slither_path;
-use utils::parse_foundry_toml;
+use osmium_libs_solidity_path_utils::normalize_path;
+use utils::{find_foundry_toml_config, is_slither_installed, is_solc_installed, parse_foundry_toml};
 
 #[derive(Debug)]
 struct Backend {
@@ -185,7 +182,7 @@ impl Backend {
     }
 
     async fn analyze_file(&self, file: Url) {
-        let normalized_path = normalize_slither_path(file.path());
+        let normalized_path = normalize_path(file.path());
         if !self.is_in_src(&normalized_path).await {
             self.client
                 .log_message(
@@ -232,7 +229,7 @@ impl Backend {
     }
 
     async fn launch_slither(&self, uri: Url) {
-        let filepath = normalize_slither_path(uri.path());
+        let filepath = normalize_path(uri.path());
         let mut state = self.data.lock().await;
         let token = CancellationToken::new();
         let clone = token.clone();
@@ -285,9 +282,9 @@ impl Backend {
     ) -> String {
         let mut workspace = ".".to_string();
         match workspace_folders {
-            Some(workspaces) => workspace = normalize_slither_path(workspaces[0].uri.path()),
+            Some(workspaces) => workspace = normalize_path(workspaces[0].uri.path()),
             None => match root_uri {
-                Some(uri) => workspace = normalize_slither_path(uri.path()),
+                Some(uri) => workspace = normalize_path(uri.path()),
                 None => {
                     self.client
                         .log_message(

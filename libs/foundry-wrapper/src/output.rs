@@ -1,6 +1,6 @@
 use crate::error::Error;
 use crate::types::FoundryJsonFile;
-use crate::utils::join_path;
+use osmium_libs_solidity_path_utils::join_path;
 
 use std::fs::{read_dir, DirEntry};
 use std::io;

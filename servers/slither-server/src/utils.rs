@@ -14,18 +14,6 @@ pub fn is_solc_installed() -> bool {
     output.is_ok()
 }
 
-#[cfg(target_family = "windows")]
-pub fn normalize_slither_path(path: &str) -> String {
-    let mut path = path.replace("%3A/", "://");
-    path.remove(0);
-    path.to_string()
-}
-
-#[cfg(not(target_family = "windows"))]
-pub fn normalize_slither_path(path: &str) -> String {
-    path.to_string()
-}
-
 fn extract_foundry_src(foundry: FoundryToml) -> Option<FoundryArrOrStr> {
     foundry.profiles?.default?.src
 }
@@ -69,3 +57,4 @@ pub fn find_foundry_toml_config(workspace: &str) -> Result<String, Box<dyn Error
     }
     Ok(foundry_toml_path)
 }
+

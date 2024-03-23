@@ -9,7 +9,9 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 mod utils;
-use utils::{convert_severity, get_root_path, normalized_slash_path, slashify_path};
+use utils::convert_severity;
+use osmium_libs_solidity_lsp_utils::get_root_path;
+use osmium_libs_solidity_path_utils::{normalize_path, slashify_path};
 mod affected_files_store;
 use affected_files_store::AffectedFilesStore;
 
@@ -76,7 +78,7 @@ impl LanguageServer for Backend {
             )
             .await;
         let _ = self
-            .compile(normalized_slash_path(params.text_document.uri.path()))
+            .compile(normalize_path(params.text_document.uri.path()))
             .await;
     }
 
@@ -88,7 +90,7 @@ impl LanguageServer for Backend {
             )
             .await;
         let _ = self
-            .compile(normalized_slash_path(params.text_document.uri.path()))
+            .compile(normalize_path(params.text_document.uri.path()))
             .await;
     }
 

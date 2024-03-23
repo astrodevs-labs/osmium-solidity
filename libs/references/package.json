@@ -1,5 +1,5 @@
 {
-  "name": "osmium-libs-solidity-solc-references",
+  "name": "osmium-libs-solidity-references",
   "license": "GNU-GPL-3.0",
   "scripts": {
     "build": "cargo build --release --target-dir ./target",

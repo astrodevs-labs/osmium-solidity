@@ -3,11 +3,12 @@ use crate::{
     output::get_files_from_foundry_output,
     types::ProjectCompileOutput,
     utils::{
-        check_executable_argument, find_forge_executable, find_projects_paths, normalize_path,
+        check_executable_argument, find_forge_executable, find_projects_paths,
     },
     FoundryJsonFile,
 };
 use std::process::Command;
+use osmium_libs_solidity_path_utils::normalize_path;
 
 #[derive(Debug)]
 struct CompilerInner {
