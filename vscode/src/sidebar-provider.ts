@@ -2,22 +2,22 @@ import { Address } from "viem";
 import * as vscode from "vscode";
 import { window } from "vscode";
 import { ContractRepository } from "./actions/ContractRepository";
-import { OldEnvironmentRepository } from "./actions/oldEnvironmentRepository";
 import { Interact } from "./actions/Interact";
 import { WalletRepository } from "./actions/WalletRepository";
 import {
   DeployContracts,
   DeployScriptArgs,
-  DeployEnvironment,
   DeployScript,
+  RpcUrl,
 } from "./actions/types";
 import {
   deployContract,
   deployScript,
   getContracts,
-  getEnvironments,
   getScripts,
 } from "./actions/deploy";
+import { EnvironmentRepository } from "./actions/EnvironmentRepository";
+import { getNonce } from "./utils";
 
 enum MessageType {
   GET_WALLETS = "GET_WALLETS",
@@ -53,16 +53,6 @@ enum InputAction {
   REMOVE = "Remove",
 }
 
-function getNonce(): string {
-  let text: string = "";
-  const possible: string =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
 export class SidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "osmium.sidebar";
 
@@ -70,11 +60,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   private _contractRepository?: ContractRepository;
   private _walletRepository?: WalletRepository;
-  private _environmentRepository?: OldEnvironmentRepository;
+  private _environmentRepository?: EnvironmentRepository;
   private _interact?: Interact;
   private _scripts?: DeployScript[];
   private _contracts?: DeployContracts[];
-  private _environments?: DeployEnvironment[];
 
   private _watcher?: vscode.FileSystemWatcher;
 
@@ -88,15 +77,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     this._view = webviewView;
 
     if (vscode.workspace.workspaceFolders?.length) {
-      this._contractRepository = new ContractRepository(
-        vscode.workspace.workspaceFolders?.[0].uri.fsPath || "",
-      );
-      this._walletRepository = new WalletRepository(
-        vscode.workspace.workspaceFolders?.[0].uri.fsPath || "",
-      );
-      this._environmentRepository = new OldEnvironmentRepository(
-        vscode.workspace.workspaceFolders?.[0].uri.fsPath || "",
-      );
+      const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+      this._contractRepository = new ContractRepository(fsPath);
+      this._walletRepository = new WalletRepository(fsPath);
+      this._environmentRepository = new EnvironmentRepository(fsPath);
 
       this._interact = new Interact(
         this._contractRepository,
@@ -105,28 +89,34 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
       this._scripts = await getScripts();
       this._contracts = await getContracts();
-      this._environments = await getEnvironments();
-      const pattern = new vscode.RelativePattern(
-        vscode.workspace.workspaceFolders?.[0].uri.fsPath,
-        ".osmium/*.json",
-      );
+
+      const pattern = new vscode.RelativePattern(fsPath, ".osmium/*.json");
       this._watcher = vscode.workspace.createFileSystemWatcher(pattern);
 
       this._watcher.onDidChange(async (uri) => {
-        if (this._view) {
-          if (uri.fsPath.endsWith("contracts.json")) {
-            this._contractRepository?.load();
-            await this._view.webview.postMessage({
-              type: MessageType.INTERACT_CONTRACTS,
-              contracts: this._contractRepository?.getContracts(),
-            });
-          } else {
-            this._walletRepository?.load();
-            await this._view.webview.postMessage({
-              type: MessageType.WALLETS,
-              wallets: this._walletRepository?.getWallets(),
-            });
-          }
+        if (!this._view) {
+          return;
+        }
+        if (uri.fsPath.endsWith("contracts.json")) {
+          this._contractRepository?.load();
+          await this._view.webview.postMessage({
+            type: MessageType.INTERACT_CONTRACTS,
+            contracts: this._contractRepository?.getContracts(),
+          });
+        }
+        if (uri.fsPath.endsWith("wallets.json")) {
+          this._walletRepository?.load();
+          await this._view.webview.postMessage({
+            type: MessageType.WALLETS,
+            wallets: this._walletRepository?.getWallets(),
+          });
+        }
+        if (uri.fsPath.endsWith("environments.json")) {
+          this._environmentRepository?.load();
+          await this._view.webview.postMessage({
+            type: MessageType.ENVIRONMENTS,
+            environments: this._environmentRepository?.getEnvironments(),
+          });
         }
       });
     }
@@ -146,8 +136,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         !this._environmentRepository ||
         !this._interact ||
         !this._scripts ||
-        !this._contracts ||
-        !this._environments
+        !this._contracts
       ) {
         return;
       }
@@ -179,7 +168,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case MessageType.GET_ENVIRONMENTS:
           await this._view.webview.postMessage({
             type: MessageType.ENVIRONMENTS,
-            environments: this._environments,
+            environments: this._environmentRepository.getEnvironments(),
           });
           break;
         case MessageType.WRITE:
@@ -252,11 +241,11 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             if (!walletRpc.startsWith("http") && !walletRpc.startsWith("ws"))
               return;
 
-            await this._walletRepository.createWallet({
+            this._walletRepository.createWallet({
               name: walletName,
               address: <Address>walletAddress,
               privateKey: <Address>walletPk,
-              rpc: walletRpc,
+              rpc: <RpcUrl>walletRpc,
             });
           }
 
@@ -266,7 +255,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               ignoreFocusOut: true,
             });
             if (!walletAddress) return;
-            await this._walletRepository.deleteWallet(<Address>walletAddress);
+            this._walletRepository.deleteWallet(<Address>walletAddress);
           }
           break;
         case MessageType.EDIT_CONTRACTS:
@@ -320,7 +309,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               abi: JSON.parse(contractAbi),
               chainId: parseInt(contractChainId),
               name: contractName,
-              rpc: <any>contractRpc,
+              rpc: <RpcUrl>contractRpc,
             });
           }
 
@@ -359,9 +348,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             )
               return;
 
-            await this._environmentRepository.createEnvironment({
+            this._environmentRepository.createEnvironment({
               name: environmentName,
-              rpc: environmentRpc,
+              rpc: <RpcUrl>environmentRpc,
             });
           }
 
@@ -371,9 +360,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               ignoreFocusOut: true,
             });
             if (!environmentName) return;
-            await this._environmentRepository.deleteEnvironment(
-              environmentName,
-            );
+            this._environmentRepository.deleteEnvironment(environmentName);
           }
           break;
 
@@ -408,16 +395,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "dist", "index.js"),
     );
-
     const styleUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "dist", "index.css"),
     );
-
-    // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
 
     return `<!doctype html>

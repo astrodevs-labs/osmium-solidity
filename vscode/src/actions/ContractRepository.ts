@@ -41,9 +41,9 @@ export class ContractRepository {
   }
 
   public getContract(
-    name: InteractContract["address"],
+    address: InteractContract["address"],
   ): InteractContract | undefined {
-    return this._contracts.find((c) => c.address === name);
+    return this._contracts.find((c) => c.address === address);
   }
 
   public createContract(contract: InteractContract): void {
