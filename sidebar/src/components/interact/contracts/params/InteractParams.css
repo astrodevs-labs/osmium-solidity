@@ -1,0 +1,14 @@
+.params-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.2rem;
+    margin-bottom: 1rem;
+}
+
+.text-field {
+    margin-top: 0.5rem;
+}
+
+.text-field:first-child {
+    margin-top: 0;
+}

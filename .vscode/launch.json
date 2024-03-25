@@ -15,6 +15,17 @@
 			"outFiles": [
 				"${workspaceFolder}/vscode/dist/**/*.js"
 			],
+		},
+		{
+			"name": "Run Extension (with build)",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/vscode"
+			],
+			"outFiles": [
+				"${workspaceFolder}/vscode/dist/**/*.js"
+			],
 			"preLaunchTask": "${defaultBuildTask}"
 		}
 	]
