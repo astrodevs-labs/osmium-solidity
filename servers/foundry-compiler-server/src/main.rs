@@ -10,9 +10,9 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 mod utils;
-use utils::convert_severity;
 use osmium_libs_solidity_lsp_utils::get_root_path;
 use osmium_libs_solidity_path_utils::{normalize_path, slashify_path};
+use utils::convert_severity;
 mod affected_files_store;
 use affected_files_store::AffectedFilesStore;
 
@@ -48,7 +48,10 @@ impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         info!("Foundry server initializing!");
         if let Some(root_path) = get_root_path(params.clone()) {
-            info!("Foundry server initializing with workspace path: {:?}", root_path);
+            info!(
+                "Foundry server initializing with workspace path: {:?}",
+                root_path
+            );
             let _ = self.load_workspace(root_path).await;
         } else {
             info!("Foundry server not initialized : no workspace path!");
@@ -277,7 +280,10 @@ impl Backend {
         let source_content = match std::fs::read_to_string(&source_content_filepath) {
             Ok(content) => content,
             Err(err) => {
-                error!("error, cannot read file: {:?}, error: {:?}", &source_content_filepath, err);
+                error!(
+                    "error, cannot read file: {:?}, error: {:?}",
+                    &source_content_filepath, err
+                );
                 return None;
             }
         };

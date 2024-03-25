@@ -2,6 +2,8 @@ mod utils;
 
 use crate::utils::*;
 
+use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging};
+use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
 use osmium_libs_solidity_references::*;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -9,8 +11,6 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::Location as LspLocation;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
-use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
-use osmium_libs_solidity_lsp_utils::log::{init_logging, error, info};
 
 struct Backend {
     references_provider: Arc<Mutex<ReferencesProvider>>,

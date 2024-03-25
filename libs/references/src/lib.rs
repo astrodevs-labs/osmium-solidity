@@ -6,15 +6,15 @@ mod usages;
 mod utils;
 use definitions::DefinitionFinder;
 use error::ReferencesError;
+use log::{info, warn};
 use node_finder::NodeVisitor;
 use osmium_libs_solidity_ast_extractor::extract::extract_ast_from_foundry;
 use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
+use osmium_libs_solidity_path_utils::join_path;
 pub use solc_ast_rs_types::types::*;
 use types::InteractableNode;
 pub use types::{Location, Position};
 use usages::UsagesFinder;
-use osmium_libs_solidity_path_utils::join_path;
-use log::{info, warn};
 
 use crate::utils::get_location;
 

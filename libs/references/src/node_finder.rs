@@ -1,9 +1,9 @@
 use crate::types::{InteractableNode, Position};
 use crate::utils::*;
+use log::trace;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
-use log::trace;
 
 pub struct NodeVisitor {
     position: Position,

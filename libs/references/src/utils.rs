@@ -1,4 +1,3 @@
-
 use crate::{
     types::{InteractableNode, Position, Range},
     Location,

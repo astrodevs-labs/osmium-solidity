@@ -5,16 +5,18 @@ mod utils;
 
 use crate::{error::SlitherError, slither::parse_slither_out, types::*};
 
+use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
+use osmium_libs_solidity_path_utils::normalize_path;
 use std::sync::Arc;
 use std::vec;
-use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
 use tokio::sync::{Mutex, MutexGuard};
 use tokio_util::sync::CancellationToken;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
-use osmium_libs_solidity_path_utils::normalize_path;
-use utils::{find_foundry_toml_config, is_slither_installed, is_solc_installed, parse_foundry_toml};
+use utils::{
+    find_foundry_toml_config, is_slither_installed, is_solc_installed, parse_foundry_toml,
+};
 
 #[derive(Debug)]
 struct Backend {
@@ -123,12 +125,18 @@ impl LanguageServer for Backend {
     }
 
     async fn did_save(&self, file: DidSaveTextDocumentParams) {
-        info!("Saved file '{}' for analyzing.", file.text_document.uri.path());
+        info!(
+            "Saved file '{}' for analyzing.",
+            file.text_document.uri.path()
+        );
         self.analyze_file(file.text_document.uri).await
     }
 
     async fn did_open(&self, file: DidOpenTextDocumentParams) {
-        info!("Opened file '{}' for analyzing.", file.text_document.uri.path());
+        info!(
+            "Opened file '{}' for analyzing.",
+            file.text_document.uri.path()
+        );
         self.analyze_file(file.text_document.uri).await
     }
 }
@@ -176,7 +184,10 @@ impl Backend {
                     parse_foundry_toml(foundry, state);
                 }
                 Err(e) => {
-                    error!("Error while reading foundry.toml file: {:?}, path: {}", e, path);
+                    error!(
+                        "Error while reading foundry.toml file: {:?}, path: {}",
+                        e, path
+                    );
                 }
             }
         }

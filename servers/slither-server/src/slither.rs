@@ -1,6 +1,6 @@
 use crate::{error::SlitherError, types::SlitherResult};
-use std::process::Stdio;
 use osmium_libs_solidity_lsp_utils::log::{error, trace};
+use std::process::Stdio;
 use tokio::{io::AsyncReadExt, process::Command};
 use tower_lsp::lsp_types::Diagnostic;
 

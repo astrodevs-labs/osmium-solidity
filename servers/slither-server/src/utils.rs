@@ -58,4 +58,3 @@ pub fn find_foundry_toml_config(workspace: &str) -> Result<String, Box<dyn Error
     }
     Ok(foundry_toml_path)
 }
-

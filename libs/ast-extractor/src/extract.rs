@@ -5,11 +5,11 @@
  */
 use crate::errors::ExtractError;
 use crate::types::*;
+use log::error;
 use osmium_libs_solidity_foundry_wrapper::{Compiler, FoundryJsonFile};
 use proc_macro2::TokenStream;
 use solc_ast_rs_types::types::SourceUnit;
 use std::str::FromStr;
-use log::error;
 
 pub fn extract_ast_from_content(content: &str) -> Result<syn_solidity::File, ExtractError> {
     let tokens = TokenStream::from_str(content).map_err(|e| ExtractError::Alloy(e.to_string()))?;

@@ -1,6 +1,6 @@
+pub use log::*;
 use tokio::task;
 use tower_lsp::{lsp_types::MessageType, Client};
-pub use log::*;
 
 struct LspLogger {
     client: Client,
