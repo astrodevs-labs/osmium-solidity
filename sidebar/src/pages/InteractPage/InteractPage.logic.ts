@@ -8,11 +8,11 @@ export enum MessageType {
   WALLETS = 'WALLETS',
   GET_INTERACT_CONTRACTS = 'GET_INTERACT_CONTRACTS',
   INTERACT_CONTRACTS = 'INTERACT_CONTRACTS',
-  WRITE = 'WRITE',
+WRITE = 'WRITE',
   WRITE_RESPONSE = 'WRITE_RESPONSE',
-  READ = 'READ',
+READ = 'READ',
   READ_RESPONSE = 'READ_RESPONSE',
-  EDIT_WALLETS = 'EDIT_WALLETS',
+EDIT_WALLETS = 'EDIT_WALLETS',
   EDIT_CONTRACTS = 'EDIT_CONTRACTS',
 }
 
@@ -38,6 +38,7 @@ const getFunctionAction = (func: string, contract: string, contracts: InteractCo
 export const useInteractPage = (vscode: VSCode) => {
   const [wallets, setWallets] = useState<InteractWallet[]>([]);
   const [contracts, setContracts] = useState<InteractContract[]>([]);
+  const [response, setResponse] = useState<{ responseType: ResponseType, data: unknown }>();
   const form = useForm<IFormInput>({
     defaultValues: {
       wallet: '',
@@ -48,7 +49,6 @@ export const useInteractPage = (vscode: VSCode) => {
       gasLimit: 300000,
     },
   });
-  const [response, setResponse] = useState<{ responseType: ResponseType, data: unknown }>();
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     if (isNaN(data.gasLimit)) form.setError('gasLimit', { type: 'manual', message: 'Invalid number' });
