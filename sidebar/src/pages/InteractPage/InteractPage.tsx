@@ -9,6 +9,21 @@ import { ResponseType, useInteractPage } from './InteractPage.logic.ts';
 export const InteractPage = (props: { vscode: VSCode }) => {
   const logic = useInteractPage(props.vscode);
 
+  interface ResultProps {
+    responseType: ResponseType;
+    data: any;
+  }
+
+  const Result = (result: ResultProps) => {
+    return (
+      <div>
+        <VSCodeDivider className="divider" />
+        <p>{result.responseType === ResponseType.READ ? 'Read response:' : 'Transaction hash:'}</p>
+        <p>{result.data + ''}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <FormProvider {...logic.form} >
@@ -17,12 +32,7 @@ export const InteractPage = (props: { vscode: VSCode }) => {
           <VSCodeDivider className="divider" />
           <InteractParams contracts={logic.contracts} />
           <VSCodeButton className="submit-button" type="submit">Send transaction</VSCodeButton>
-          {logic.result &&
-            <div>
-              <VSCodeDivider className="divider" />
-              <p>{logic.result.responseType === ResponseType.READ ? 'Read response:' : 'Transaction hash:'}</p>
-              <p>{logic.result.data + ''}</p>
-            </div>
+          {logic.result && Result({...logic.result})
           }
         </form>
       </FormProvider>
