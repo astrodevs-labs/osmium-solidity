@@ -3,11 +3,13 @@
     "pipeline": {
       "build": {
         "inputs": ["src/**"],
-        "outputs": ["target/**", "dist/**"]
+        "outputs": ["target/**", "dist/**"],
+        "cache": false
       },
       "build:extension": {
         "inputs": ["src/**"],
-        "outputs": ["target/**", "dist/**"]
+        "outputs": ["target/**", "dist/**"],
+        "cache": false
       },
       "lint": {},
       "lint:check": {},
