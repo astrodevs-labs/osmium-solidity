@@ -1,3 +1,4 @@
+use tokio::task;
 use tower_lsp::{lsp_types::MessageType, Client};
 pub use log::*;
 
@@ -29,10 +30,9 @@ impl log::Log for LspLogger {
         };
         let message = record.args().to_string();
         let client = self.client.clone();
-        tokio::spawn(async move {
+        task::spawn(async move {
             client.log_message(typ, message).await;
         });
-        
     }
 
     fn flush(&self) {}
