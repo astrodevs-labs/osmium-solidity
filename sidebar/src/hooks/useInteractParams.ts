@@ -1,7 +1,7 @@
-import { InteractContract } from '../../../../vscode/src/actions/types';
-import { useFormContext } from 'react-hook-form';
-import { IFormInput } from '../../types';
+import { IFormInput } from '@/types';
+import { InteractContract } from '@backend/actions/types';
 import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export const useInteractParams = (contracts: InteractContract[]) => {
   const form = useFormContext<IFormInput>();

@@ -1,7 +1,7 @@
+import { DFormContract, DFormScript, VSCode } from '@/types';
+import { DeployContracts, DeployEnvironment, DeployScript, InteractWallet } from '@backend/actions/types';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { DeployContracts, DeployEnvironment, DeployScript, InteractWallet } from '../../../../vscode/src/actions/types';
-import { DFormContract, DFormScript, VSCode } from '../../types';
 
 export enum MessageTypeScript {
   GET_WALLETS = 'GET_WALLETS',

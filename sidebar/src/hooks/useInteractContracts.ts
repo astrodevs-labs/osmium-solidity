@@ -1,7 +1,7 @@
+import { IFormInput, VSCode } from '@/types';
+import { InteractContract } from '@backend/actions/types';
+import { MessageType } from "@pages/InteractPage/InteractPage.logic.ts";
 import { useFormContext } from 'react-hook-form';
-import { InteractContract } from '../../../../vscode/src/actions/types';
-import {IFormInput, VSCode} from '../../types';
-import {MessageType} from "../../pages/InteractPage/InteractPage.logic.ts";
 
 export const useInteractContracts = (contracts: InteractContract[], vscode: VSCode) => {
   const { register, watch, formState: { errors } } = useFormContext<IFormInput>();

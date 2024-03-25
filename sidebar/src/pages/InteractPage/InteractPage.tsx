@@ -1,10 +1,10 @@
+import { VSCode } from '@/types';
+import { InteractContracts } from '@components/interact/contracts/InteractContracts.tsx';
+import { InteractParams } from '@components/interact/contracts/params/InteractParams.tsx';
+import { VSCodeButton, VSCodeDivider } from '@vscode/webview-ui-toolkit/react';
+import { FormProvider } from 'react-hook-form';
 import './InteractPage.css';
 import { ResponseType, useInteractPage } from './InteractPage.logic.ts';
-import { VSCode } from '../../types';
-import { FormProvider } from 'react-hook-form';
-import { VSCodeButton, VSCodeDivider } from '@vscode/webview-ui-toolkit/react';
-import { InteractContracts } from '../../components/InteractContracts/InteractContracts.tsx';
-import { InteractParams } from '../../components/InteractParams/InteractParams.tsx';
 
 export const InteractPage = (props: { vscode: VSCode }) => {
   const logic = useInteractPage(props.vscode);

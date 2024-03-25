@@ -1,16 +1,21 @@
-import './InteractContracts.css';
-import { InteractContract, InteractWallet } from '../../../../vscode/src/actions/types';
-import { useInteractContracts } from './InteractContracts.logic.ts';
+import { VSCode } from "@/types";
+import { InteractContract, InteractWallet } from '@backend/actions/types';
+import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import { VSCodeButton, VSCodeDropdown, VSCodeOption, VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
-import {VSCode} from "../../types";
+import './InteractContracts.css';
 
-export const InteractContracts = (props: { wallets: InteractWallet[], contracts: InteractContract[], vscode: VSCode }) => {
-  const { wallets, contracts, vscode } = props;
+interface InteractContractsProps {
+  wallets: InteractWallet[];
+  contracts: InteractContract[];
+  vscode: VSCode;
+}
+
+export const InteractContracts = ({ wallets, contracts, vscode }: InteractContractsProps) => {
   const logic = useInteractContracts(contracts, vscode);
 
   return (
     <div>
-      <div className="dropdown-container">
+      <div className="dropdow</div>n-container">
         <label htmlFor="dropdown-wallets" className="label">Select account:</label>
         <div className="wallet-container">
           <VSCodeDropdown id="dropdown-wallets" className="dropdown-wallets" {...logic.register('wallet', {

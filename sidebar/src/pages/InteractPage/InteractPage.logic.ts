@@ -1,7 +1,7 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { IFormInput, VSCode } from '../../types';
+import { IFormInput, VSCode } from '@/types';
+import { InteractContract, InteractWallet } from '@backend/actions/types';
 import { useEffect, useState } from 'react';
-import { InteractWallet, InteractContract } from '../../../../vscode/src/actions/types';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 export enum MessageType {
   GET_WALLETS = 'GET_WALLETS',

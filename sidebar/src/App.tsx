@@ -1,9 +1,9 @@
+import { VSCode } from '@/types';
+import { DeployPage } from '@pages/DeployPage/DeployPage.tsx';
+import { InteractPage } from '@pages/InteractPage/InteractPage.tsx';
 import { VSCodePanels, VSCodePanelTab, VSCodePanelView } from '@vscode/webview-ui-toolkit/react';
-import { DeployPage } from './pages/DeployPage/DeployPage.tsx';
-import { InteractPage } from './pages/InteractPage/InteractPage.tsx';
 import { useEffect, useState } from 'react';
 import './App.css';
-import { VSCode } from './types';
 
 export const App = () => {
   const [vscode, setVscode] = useState<VSCode>();

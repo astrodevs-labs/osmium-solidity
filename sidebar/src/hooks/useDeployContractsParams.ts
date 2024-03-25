@@ -1,7 +1,7 @@
-import { DeployContracts } from '../../../../vscode/src/actions/types';
-import { useFormContext } from 'react-hook-form';
-import { DFormContract } from '../../types';
+import { DFormContract } from '@/types';
+import { DeployContracts } from '@backend/actions/types';
 import { useEffect, useMemo } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export const useDeployContractsParams = (contracts: DeployContracts[]) => {
   const form = useFormContext<DFormContract>();
