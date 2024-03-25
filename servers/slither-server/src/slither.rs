@@ -1,5 +1,6 @@
 use crate::{error::SlitherError, types::SlitherResult};
 use std::process::Stdio;
+use osmium_libs_solidity_lsp_utils::log::{error, trace};
 use tokio::{io::AsyncReadExt, process::Command};
 use tower_lsp::lsp_types::Diagnostic;
 
@@ -33,8 +34,8 @@ pub async fn parse_slither_out(
             }
         }
         Err(e) => {
-            eprintln!("Error parsing slither output: {}", e);
-            eprintln!("Slither stdout: {}", dst);
+            error!("Error parsing slither output: {}", e);
+            trace!("Slither stdout: {}", dst);
             return Err(SlitherError::ParsingFailed(e));
         }
     }

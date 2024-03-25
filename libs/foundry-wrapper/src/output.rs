@@ -6,6 +6,7 @@ use std::fs::{read_dir, DirEntry};
 use std::io;
 use std::path::PathBuf;
 use std::time::SystemTime;
+use log::info;
 
 pub fn get_files_from_foundry_output(base_path: &str) -> Result<Vec<FoundryJsonFile>, Error> {
     let mut files = Vec::new();
@@ -28,7 +29,7 @@ pub fn get_files_from_foundry_output(base_path: &str) -> Result<Vec<FoundryJsonF
     }
 
     let current_time = SystemTime::now().duration_since(init_time).unwrap();
-    eprintln!(
+    info!(
         "Finished retreiving json ast in: {:?} seconds",
         current_time.as_secs()
     );

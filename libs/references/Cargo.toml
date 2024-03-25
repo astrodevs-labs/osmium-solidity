@@ -10,3 +10,4 @@ solc-ast-rs-types = { version = "0.1.6", features = ["visit"]}
 osmium-libs-solidity-ast-extractor = { path="../ast-extractor" }
 osmium-libs-solidity-path-utils = { path = "../../libs/path-utils" }
 thiserror = "1.0.56"
+log = "0.4.21"

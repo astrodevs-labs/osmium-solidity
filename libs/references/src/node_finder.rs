@@ -3,6 +3,7 @@ use crate::utils::*;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
+use log::trace;
 
 pub struct NodeVisitor {
     position: Position,
@@ -143,7 +144,7 @@ impl<'ast> Visit<'ast> for NodeVisitor {
 
     fn visit_identifier(&mut self, identifier: &'ast Identifier) {
         if is_node_in_range(&identifier.src, &self.position, &self.source) {
-            eprintln!("Identifier in range: {:?}", identifier);
+            trace!("Identifier in range: {:?}", identifier);
             self.above_node = self.node.clone();
             self.node = Some(InteractableNode::Identifier(identifier.clone()));
         }

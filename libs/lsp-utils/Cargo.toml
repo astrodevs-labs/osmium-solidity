@@ -8,6 +8,12 @@ license = "GPL-3.0-or-later"
 repository = "https://github.com/astrodevs-labs/osmium-solidity"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = ["log"]
+log = ["dep:log", "dep:tokio"]
+
 [dependencies]
 tower-lsp = "0.20.0"
 osmium-libs-solidity-path-utils = { path = "../path-utils" }
+log = { version = "0.4.21", features = ["std"], optional = true }
+tokio = { version = "1.36.0", features = ["sync"], optional = true}

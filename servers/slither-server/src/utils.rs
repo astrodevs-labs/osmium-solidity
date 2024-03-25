@@ -1,6 +1,7 @@
 use crate::error::SlitherError;
 use crate::{FoundryArrOrStr, FoundryToml, SlitherData};
 use glob::glob;
+use osmium_libs_solidity_lsp_utils::log::error;
 use std::error::Error;
 use std::process::Command as StdCommand;
 
@@ -22,7 +23,7 @@ pub fn parse_foundry_toml(foundry: String, state: &mut SlitherData) {
     let foundry: FoundryToml = match toml::from_str(&foundry) {
         Ok(foundry) => foundry,
         Err(e) => {
-            eprintln!("Error parsing foundry.toml: {}", e);
+            error!("Error parsing foundry.toml: {}", e);
             return;
         }
     };
@@ -49,7 +50,7 @@ pub fn find_foundry_toml_config(workspace: &str) -> Result<String, Box<dyn Error
                 foundry_toml_path = path.display().to_string();
                 break;
             }
-            Err(e) => eprintln!("{:?}", e),
+            Err(e) => error!("{:?}", e),
         }
     }
     if foundry_toml_path.is_empty() {

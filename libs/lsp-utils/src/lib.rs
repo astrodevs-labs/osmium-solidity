@@ -1,6 +1,9 @@
 use osmium_libs_solidity_path_utils::normalize_path;
 use tower_lsp::lsp_types::InitializeParams;
 
+#[cfg(feature = "log")]
+pub mod log;
+
 /**
  * This function returns the first workspace path from the InitializeParams.
  * If there is no workspace path, it returns the root path.
@@ -13,22 +16,4 @@ pub fn get_root_path(params: InitializeParams) -> Option<String> {
         return Some(normalize_path(root_uri.path()));
     }
     None
-}
-
-macro_rules! error {
-    ($x:expr) => {
-        self.client.log_message(MESSAGE_TYPE::ERROR, x).await;
-    };
-}
-
-macro_rules! info {
-    ($x:expr) => {
-        self.client.log_message(MESSAGE_TYPE::INFO, x).await;
-    };
-}
-
-macro_rules! warn {
-    ($x:expr) => {
-        self.client.log_message(MESSAGE_TYPE::WARNING, x).await;
-    };
 }

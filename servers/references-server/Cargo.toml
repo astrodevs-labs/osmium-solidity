@@ -12,3 +12,4 @@ tower-lsp = "0.20.0"
 osmium-libs-solidity-references = { path = "../../libs/references" }
 glob = "0.3.1"
 osmium-libs-solidity-path-utils = { path = "../../libs/path-utils" }
+osmium-libs-solidity-lsp-utils = { path = "../../libs/lsp-utils" }

@@ -18,3 +18,4 @@ which = "5.0"
 serde = { version = "1.0.149", features = ["derive"] }
 serde_json = "1.0.108"
 osmium-libs-solidity-path-utils = { path = "../../libs/path-utils" }
+log = "0.4.21"
