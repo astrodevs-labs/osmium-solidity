@@ -1,7 +1,7 @@
-import './DeployContracts.css';
-import { DeployContracts } from '../../../../vscode/src/actions/types';
-import { useDeployContractsParams } from './DeployContractsParams.logic.ts';
+import { DeployContracts } from '@backend/actions/types';
+import { useDeployContractsParams } from '@hooks/useDeployContractsParams.ts';
 import { VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
+import './DeployContracts.css';
 
 export const DeployContractsParams = (props: { contracts: DeployContracts[] }) => {
   const logic = useDeployContractsParams(props.contracts);

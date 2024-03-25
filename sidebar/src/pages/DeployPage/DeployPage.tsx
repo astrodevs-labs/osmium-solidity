@@ -1,7 +1,7 @@
+import { VSCode } from '@/types';
+import { DeployUsingContract } from '@components/deploy/contract/DeployUsingContract.tsx';
+import { DeployUsingScript } from '@components/deploy/script/DeployUsingScript.tsx';
 import { FormProvider } from "react-hook-form";
-import { DeployUsingContract } from '../../components/DeployUsingContract/DeployUsingContract.tsx';
-import { DeployUsingScript } from '../../components/DeployUsingScript/DeployUsingScript.tsx';
-import { VSCode } from '../../types';
 import { useInteractPage } from '../InteractPage/InteractPage.logic.ts';
 import "./DeployPage.css";
 import { useDeployPageContract, useDeployPageScript } from './DeployPage.logic.ts';

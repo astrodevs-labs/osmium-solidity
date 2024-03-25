@@ -1,14 +1,14 @@
+import { VSCode } from "@/types";
+import { DeployScript, InteractContract, InteractWallet } from "@backend/actions/types";
+import { useDeployScript } from "@hooks/useDeployScript.ts";
+import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import {
   VSCodeButton,
+  VSCodeDivider,
   VSCodeDropdown,
-  VSCodeOption,
-  VSCodeDivider
+  VSCodeOption
 } from "@vscode/webview-ui-toolkit/react";
-import { InteractWallet, DeployScript, InteractContract } from "../../../../vscode/src/actions/types";
 import "./DeployUsingScript.css";
-import { useDeployScript } from "./DeployScript.logic.ts";
-import { useInteractContracts } from '../InteractContracts/InteractContracts.logic.ts';
-import {VSCode} from "../../types";
 
 export const DeployUsingScript = (
   { wallets, scripts, vscode, contracts }: { wallets: InteractWallet[]; scripts: DeployScript[], vscode: VSCode, contracts: InteractContract[]},
