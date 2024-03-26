@@ -10,7 +10,7 @@ use std::path::PathBuf;
 pub fn normalize_path(path: &str) -> String {
     let mut path = path.replace("%3A/", "://");
     path.remove(0);
-    slashify_path(path)
+    slashify_path(&path)
 }
 
 /**
