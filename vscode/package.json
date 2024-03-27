@@ -6,7 +6,7 @@
   "publisher": "OsmiumToolchains",
   "repository": {
     "type": "git",
-    "url": "https://github.com/astrodevs-labs/osmium"
+    "url": "https://github.com/astrodevs-labs/osmium-solidity"
   },
   "icon": "./assets/logo.png",
   "engines": {
@@ -92,14 +92,17 @@
     "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies"
   },
   "devDependencies": {
-    "@types/vscode": "^1.87.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
+    "@types/vscode": "^1.87.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.24.0",
     "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
     "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.4",

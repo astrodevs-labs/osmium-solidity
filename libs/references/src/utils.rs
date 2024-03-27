@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use crate::{
     types::{InteractableNode, Position, Range},
     Location,
@@ -58,12 +56,6 @@ pub fn index_to_position(index: u32, source: &str) -> Position {
         }
     }
     Position { line, column }
-}
-
-pub fn join_path(base_path: &str, file: &str) -> String {
-    let mut path = PathBuf::from(base_path);
-    path.push(file);
-    path.to_str().unwrap().to_string().replace('\\', "/")
 }
 
 pub fn get_location(node: &InteractableNode, file: &SolidityAstFile) -> Location {

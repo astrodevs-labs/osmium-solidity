@@ -2,12 +2,12 @@
     "name": "osmium-solidity-references-server",
     "license": "GNU-GPL-3.0",
     "scripts": {
-      "build": "cargo build --release",
+      "build": "cargo build --release --target-dir ./target ",
+      "build:extension": "cargo build --release --target-dir ./target ",
       "format": "cargo fmt --all",
       "format:check": "cargo fmt --check --all",
       "lint": "cargo clippy --allow-dirty --allow-staged --all-targets --all-features --fix -- -D warnings",
       "lint:check": "cargo clippy --all-targets --all-features -- -D warnings",  
       "test": "cargo test --workspace"
     }
-  }
-  
+}

@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "turbo build && node ./scripts/copy-servers.js",
+    "build:extension": "turbo build:extension && node ./scripts/copy-servers.js",
     "publish": "turbo publish",
     "publish:check": "turbo publish:check",
     "publish:extension": "turbo publish:extension",

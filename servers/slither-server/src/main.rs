@@ -5,6 +5,8 @@ mod utils;
 
 use crate::{error::SlitherError, slither::parse_slither_out, types::*};
 
+use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
+use osmium_libs_solidity_path_utils::normalize_path;
 use std::sync::Arc;
 use std::vec;
 use tokio::sync::{Mutex, MutexGuard};
@@ -12,11 +14,9 @@ use tokio_util::sync::CancellationToken;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
-use utils::find_foundry_toml_config;
-use utils::is_slither_installed;
-use utils::is_solc_installed;
-use utils::normalize_slither_path;
-use utils::parse_foundry_toml;
+use utils::{
+    find_foundry_toml_config, is_slither_installed, is_solc_installed, parse_foundry_toml,
+};
 
 #[derive(Debug)]
 struct Backend {
@@ -29,14 +29,12 @@ struct Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         if !is_slither_installed() {
+            error!("Slither is not installed!");
             self.client
                 .show_message(
                     MessageType::ERROR,
                     "Slither is not installed! Please install it and restart the extension",
                 )
-                .await;
-            self.client
-                .log_message(MessageType::ERROR, "Slither is not installed!")
                 .await;
             return Err(tower_lsp::jsonrpc::Error::internal_error());
         }
@@ -47,15 +45,11 @@ impl LanguageServer for Backend {
                     "Solc is not installed! Please install it and restart the extension",
                 )
                 .await;
-            self.client
-                .log_message(MessageType::ERROR, "Solc is not installed!")
-                .await;
+            error!("Solc is not installed!");
             return Err(tower_lsp::jsonrpc::Error::internal_error());
         }
 
-        self.client
-            .log_message(MessageType::INFO, "Initializing diagnostic receiver ...")
-            .await;
+        info!("Initializing diagnostic receiver ...");
         let mut state = self.data.lock().await;
         let mut receiver = state.receiver.take().unwrap();
         let client = self.client.clone();
@@ -70,28 +64,17 @@ impl LanguageServer for Backend {
                         .await;
                 }
             }));
-        self.client
-            .log_message(
-                MessageType::INFO,
-                "Finished initializing diagnostic receiver!",
-            )
-            .await;
+        info!("Finished initializing diagnostic receiver!");
 
-        self.client
-            .log_message(MessageType::INFO, "Initializing Workspace ...")
-            .await;
+        info!("Initializing workspace ...");
         state.workspace = self
             .fetch_workspace(params.workspace_folders, params.root_uri)
             .await;
 
-        self.client
-            .log_message(MessageType::INFO, "Initializing filters ...")
-            .await;
+        info!("Initializing filters ...");
         self.initialize_filters(&mut state);
 
-        self.client
-            .log_message(MessageType::INFO, "Slither-Server initialized!")
-            .await;
+        info!("Slither-server initialized!");
         Ok(InitializeResult {
             server_info: None,
             capabilities: ServerCapabilities {
@@ -111,9 +94,7 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        self.client
-            .log_message(MessageType::INFO, "osmium-slither initialized!")
-            .await;
+        info!("Osmium-slither initialized!");
     }
 
     async fn did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
@@ -122,12 +103,7 @@ impl LanguageServer for Backend {
             && !params.event.removed.is_empty()
             && state.workspace == "."
         {
-            self.client
-                .log_message(
-                    MessageType::WARNING,
-                    "No workspace folder found, please open a folder!",
-                )
-                .await;
+            warn!("No workspace folder found, please open a folder!");
             return;
         }
         let folders: Vec<WorkspaceFolder> = params
@@ -149,34 +125,25 @@ impl LanguageServer for Backend {
     }
 
     async fn did_save(&self, file: DidSaveTextDocumentParams) {
-        self.client
-            .log_message(
-                MessageType::INFO,
-                format!(
-                    "Saved file '{}' for analyzing.",
-                    file.text_document.uri.path()
-                ),
-            )
-            .await;
+        info!(
+            "Saved file '{}' for analyzing.",
+            file.text_document.uri.path()
+        );
         self.analyze_file(file.text_document.uri).await
     }
 
     async fn did_open(&self, file: DidOpenTextDocumentParams) {
-        self.client
-            .log_message(
-                MessageType::INFO,
-                format!(
-                    "Opened file '{}' for analyzing.",
-                    file.text_document.uri.path()
-                ),
-            )
-            .await;
+        info!(
+            "Opened file '{}' for analyzing.",
+            file.text_document.uri.path()
+        );
         self.analyze_file(file.text_document.uri).await
     }
 }
 
 impl Backend {
     fn new(client: Client) -> Self {
+        init_logging(client.clone());
         Self {
             client,
             data: Mutex::new(SlitherData::new()),
@@ -185,17 +152,12 @@ impl Backend {
     }
 
     async fn analyze_file(&self, file: Url) {
-        let normalized_path = normalize_slither_path(file.path());
+        let normalized_path = normalize_path(file.path());
         if !self.is_in_src(&normalized_path).await {
-            self.client
-                .log_message(
-                    MessageType::INFO,
-                    format!(
-                        "File '{}' is not a source solidity code file, skipping analysis.",
-                        file.path()
-                    ),
-                )
-                .await;
+            info!(
+                "File '{}' is not in the src directory, skipping analysis.",
+                file.path()
+            );
             return;
         }
         self.launch_slither(file).await
@@ -222,7 +184,7 @@ impl Backend {
                     parse_foundry_toml(foundry, state);
                 }
                 Err(e) => {
-                    eprintln!(
+                    error!(
                         "Error while reading foundry.toml file: {:?}, path: {}",
                         e, path
                     );
@@ -232,7 +194,7 @@ impl Backend {
     }
 
     async fn launch_slither(&self, uri: Url) {
-        let filepath = normalize_slither_path(uri.path());
+        let filepath = normalize_path(uri.path());
         let mut state = self.data.lock().await;
         let token = CancellationToken::new();
         let clone = token.clone();
@@ -244,7 +206,7 @@ impl Backend {
         tokio::spawn(async move {
             tokio::select! {
                 _ = clone.cancelled() => {
-                    eprintln!("SLITHER CANCELLED");
+                    info!("SLITHER CANCELLED");
                 }
                 output = parse_slither_out(&filepath, &workspace) => {
                     match output {
@@ -252,25 +214,11 @@ impl Backend {
                             let _ = sender_handle.send(SlitherDiag::new(uri, res)).await;
                         },
                         Err(SlitherError::ParsingFailed(e)) => {
-                            client
-                                .log_message(
-                                    MessageType::ERROR,
-                                    format!(
-                                        "File '{}' did generate an error while parsing the output: {:?}",
-                                        filepath,
-                                        e
-                                    ),
-                                )
-                                .await;
+                            error!("File '{}' did generate an error while parsing the output: {:?}", filepath, e);
                             client.publish_diagnostics(uri, vec![], None).await;
                         }
                         Err(e) => {
-                            client
-                                .log_message(
-                                    MessageType::ERROR,
-                                    format!("File '{}' did generate an error: {:?}", filepath, e),
-                                )
-                                .await;
+                            error!("File '{}' did generate an error: {:?}", filepath, e);
                         }
                     }
                 }
@@ -285,16 +233,11 @@ impl Backend {
     ) -> String {
         let mut workspace = ".".to_string();
         match workspace_folders {
-            Some(workspaces) => workspace = normalize_slither_path(workspaces[0].uri.path()),
+            Some(workspaces) => workspace = normalize_path(workspaces[0].uri.path()),
             None => match root_uri {
-                Some(uri) => workspace = normalize_slither_path(uri.path()),
+                Some(uri) => workspace = normalize_path(uri.path()),
                 None => {
-                    self.client
-                        .log_message(
-                            MessageType::WARNING,
-                            "No workspace folder found, please open a folder!",
-                        )
-                        .await;
+                    warn!("No workspace folder found, please open a folder!");
                 }
             },
         }
