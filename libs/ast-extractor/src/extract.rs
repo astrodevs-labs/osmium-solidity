@@ -5,6 +5,7 @@
  */
 use crate::errors::ExtractError;
 use crate::types::*;
+use log::error;
 use osmium_libs_solidity_foundry_wrapper::{Compiler, FoundryJsonFile};
 use proc_macro2::TokenStream;
 use solc_ast_rs_types::types::SourceUnit;
@@ -34,7 +35,7 @@ fn get_ast_from_foundry_output(
             continue;
         }
         let ast: SourceUnit = serde_json::from_value(file.clone().json).map_err(|e| {
-            eprintln!(
+            error!(
                 "Error while parsing json ast in file '{}': {:?}",
                 file.file, e
             );
@@ -46,7 +47,7 @@ fn get_ast_from_foundry_output(
                 path: out_path.clone(),
                 content: std::fs::read_to_string(std::path::Path::new(&base_path).join(out_path))
                     .map_err(|e| {
-                    eprintln!("Error reading compiled file : {}", e);
+                    error!("Error reading compiled file : {}", e);
                     ExtractError::ReadSourceFile(e)
                 })?,
             },

@@ -2,7 +2,9 @@ mod utils;
 
 use crate::utils::*;
 
-use solc_references::*;
+use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging};
+use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
+use osmium_libs_solidity_references::*;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result;
@@ -11,14 +13,13 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 struct Backend {
-    client: Client,
     references_provider: Arc<Mutex<ReferencesProvider>>,
 }
 
 impl Backend {
     pub fn new(client: Client) -> Self {
+        init_logging(client);
         Self {
-            client,
             references_provider: Arc::new(Mutex::new(ReferencesProvider {
                 files: Vec::new(),
                 base_path: String::new(),
@@ -64,34 +65,16 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        self.client
-            .log_message(MessageType::INFO, "osmium-solidity-references initialized!")
-            .await;
-        if let Err(e) = self.references_provider.lock().await.update_file_content() {
-            self.client
-                .log_message(
-                    MessageType::ERROR,
-                    format!("Error updating file content: {}", e),
-                )
-                .await;
-        }
+        info!("osmium-solidity-references initialized!");
+        self.update().await;
     }
 
     async fn did_save(&self, _: DidSaveTextDocumentParams) {
-        if let Err(e) = self.references_provider.lock().await.update_file_content() {
-            self.client
-                .log_message(
-                    MessageType::ERROR,
-                    format!("Error updating file content: {}", e),
-                )
-                .await;
-        }
+        self.update().await;
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<LspLocation>>> {
-        self.client
-            .log_message(MessageType::INFO, "References requested")
-            .await;
+        info!("References requested");
         let uri = params.text_document_position.text_document.uri;
         let mut position = params.text_document_position.position;
         position.line += 1;
@@ -99,7 +82,7 @@ impl LanguageServer for Backend {
 
         let locations = self.references_provider.lock().await.get_references(
             &normalize_path(uri.path()),
-            solc_references::Position {
+            osmium_libs_solidity_references::Position {
                 line: position.line,
                 column: position.character,
             },
@@ -119,9 +102,7 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
-        self.client
-            .log_message(MessageType::INFO, "Goto definition requested")
-            .await;
+        info!("Goto definition requested");
         let mut uri = params.text_document_position_params.text_document.uri;
         let mut position = params.text_document_position_params.position;
         position.line += 1;
@@ -129,7 +110,7 @@ impl LanguageServer for Backend {
 
         let location = self.references_provider.lock().await.get_definition(
             &normalize_path(uri.path()),
-            solc_references::Position {
+            osmium_libs_solidity_references::Position {
                 line: position.line,
                 column: position.character,
             },
@@ -141,9 +122,7 @@ impl LanguageServer for Backend {
                 location_to_lsp_location(&uri, &location),
             )));
         }
-        self.client
-            .log_message(MessageType::INFO, "No definition found")
-            .await;
+        info!("No definition found");
         Ok(None)
     }
 
@@ -152,7 +131,13 @@ impl LanguageServer for Backend {
     }
 }
 
-impl Backend {}
+impl Backend {
+    async fn update(&self) {
+        if let Err(e) = self.references_provider.lock().await.update_file_content() {
+            error!("Error updating file content: {}", e);
+        }
+    }
+}
 
 #[tokio::main]
 async fn main() {

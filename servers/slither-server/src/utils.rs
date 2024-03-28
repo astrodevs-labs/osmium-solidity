@@ -1,6 +1,7 @@
 use crate::error::SlitherError;
 use crate::{FoundryArrOrStr, FoundryToml, SlitherData};
 use glob::glob;
+use osmium_libs_solidity_lsp_utils::log::error;
 use std::error::Error;
 use std::process::Command as StdCommand;
 
@@ -14,18 +15,6 @@ pub fn is_solc_installed() -> bool {
     output.is_ok()
 }
 
-#[cfg(target_family = "windows")]
-pub fn normalize_slither_path(path: &str) -> String {
-    let mut path = path.replace("%3A/", "://");
-    path.remove(0);
-    path.to_string()
-}
-
-#[cfg(not(target_family = "windows"))]
-pub fn normalize_slither_path(path: &str) -> String {
-    path.to_string()
-}
-
 fn extract_foundry_src(foundry: FoundryToml) -> Option<FoundryArrOrStr> {
     foundry.profiles?.default?.src
 }
@@ -34,7 +23,7 @@ pub fn parse_foundry_toml(foundry: String, state: &mut SlitherData) {
     let foundry: FoundryToml = match toml::from_str(&foundry) {
         Ok(foundry) => foundry,
         Err(e) => {
-            eprintln!("Error parsing foundry.toml: {}", e);
+            error!("Error parsing foundry.toml: {}", e);
             return;
         }
     };
@@ -61,7 +50,7 @@ pub fn find_foundry_toml_config(workspace: &str) -> Result<String, Box<dyn Error
                 foundry_toml_path = path.display().to_string();
                 break;
             }
-            Err(e) => eprintln!("{:?}", e),
+            Err(e) => error!("{:?}", e),
         }
     }
     if foundry_toml_path.is_empty() {

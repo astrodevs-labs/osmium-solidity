@@ -6,14 +6,15 @@ mod usages;
 mod utils;
 use definitions::DefinitionFinder;
 use error::ReferencesError;
+use log::{info, warn};
 use node_finder::NodeVisitor;
 use osmium_libs_solidity_ast_extractor::extract::extract_ast_from_foundry;
 use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
+use osmium_libs_solidity_path_utils::join_path;
 pub use solc_ast_rs_types::types::*;
 use types::InteractableNode;
 pub use types::{Location, Position};
 use usages::UsagesFinder;
-use utils::join_path;
 
 use crate::utils::get_location;
 
@@ -45,11 +46,11 @@ impl ReferencesProvider {
             source_file = file;
             found_node = node_finder.find(&file.ast);
         } else {
-            eprintln!("No file found at uri: {}", uri);
+            warn!("No file found at uri: {}", uri);
             return None;
         }
         if found_node.is_none() {
-            eprintln!("[NODE FINDER] No node found at position: {:?}", &position);
+            info!("[NODE FINDER] No node found at position: {:?}", &position);
             return None;
         }
         Some((source_file.clone(), found_node.unwrap()))
@@ -93,7 +94,7 @@ impl ReferencesProvider {
         };
 
         let id = found_node.get_id();
-        eprintln!("Id: {:?}", id);
+        info!("Id: {:?}", id);
 
         let mut usages_finder = UsagesFinder::new(id);
         for file in &self.files {

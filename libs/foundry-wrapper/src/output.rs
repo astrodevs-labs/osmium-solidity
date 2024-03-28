@@ -1,7 +1,8 @@
 use crate::error::Error;
 use crate::types::FoundryJsonFile;
-use crate::utils::join_path;
+use osmium_libs_solidity_path_utils::join_path;
 
+use log::info;
 use std::fs::{read_dir, DirEntry};
 use std::io;
 use std::path::PathBuf;
@@ -28,7 +29,7 @@ pub fn get_files_from_foundry_output(base_path: &str) -> Result<Vec<FoundryJsonF
     }
 
     let current_time = SystemTime::now().duration_since(init_time).unwrap();
-    eprintln!(
+    info!(
         "Finished retreiving json ast in: {:?} seconds",
         current_time.as_secs()
     );

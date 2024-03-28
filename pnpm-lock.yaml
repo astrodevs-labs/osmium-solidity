@@ -18,7 +18,11 @@ importers:
 
   libs/lsp-server-wrapper: {}
 
-  libs/solc-references: {}
+  libs/lsp-utils: {}
+
+  libs/path-utils: {}
+
+  libs/references: {}
 
   libs/solidhunter:
     dependencies:

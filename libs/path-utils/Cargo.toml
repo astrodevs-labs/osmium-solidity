@@ -1,0 +1,11 @@
+[package]
+name = "osmium-libs-solidity-path-utils"
+version = "0.1.0"
+edition = "2021"
+authors = ["Astrodevs-Labs"]
+description = "Utils for path conversion"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/astrodevs-labs/osmium-solidity"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]

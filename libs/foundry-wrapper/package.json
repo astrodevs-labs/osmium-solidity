@@ -2,7 +2,7 @@
   "name": "osmium-libs-solidity-foundry-wrapper",
   "license": "GNU-GPL-3.0",
   "scripts": {
-    "build": "cargo build --release",
+    "build": "cargo build --release --target-dir ./target",
     "format": "cargo fmt --all",
     "format:check": "cargo fmt --check --all",
     "test": "cargo test",

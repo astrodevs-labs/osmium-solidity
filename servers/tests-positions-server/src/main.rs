@@ -4,6 +4,7 @@ use osmium_libs_solidity_ast_extractor::File;
 use osmium_libs_solidity_ast_extractor::{
     extract::extract_ast_from_content, retriever::retrieve_contract_nodes,
 };
+use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging};
 use tower_lsp::jsonrpc::{self, Result};
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
@@ -13,9 +14,7 @@ mod utils;
 use utils::range_from_spanned;
 
 #[derive(Debug)]
-struct Backend {
-    client: Client,
-}
+struct Backend {}
 
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
@@ -24,9 +23,7 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        self.client
-            .log_message(MessageType::INFO, "server initialized!")
-            .await;
+        info!("Server initialized!");
     }
 
     async fn shutdown(&self) -> Result<()> {
@@ -36,23 +33,22 @@ impl LanguageServer for Backend {
 
 impl Backend {
     fn new(client: Client) -> Self {
-        Self { client }
+        init_logging(client);
+        Self {}
     }
 
     async fn get_tests_positions(
         &self,
         params: GetTestsPositionsParams,
     ) -> Result<GetTestsPositionsResponse> {
-        self.client
-            .log_message(MessageType::INFO, "Getting tests positions for file")
-            .await;
+        info!("Getting tests positions for file");
         let res = extract_ast_from_content(&params.file_content);
 
         if let Ok(ast) = res {
             self.extract_tests_positions(ast)
         } else {
             let err = res.unwrap_err();
-            eprintln!("Error: {:?}", err);
+            error!("Error: {:?}", err);
             Err(jsonrpc::Error::invalid_params(format!("Error: {:?}", err)))
         }
     }
