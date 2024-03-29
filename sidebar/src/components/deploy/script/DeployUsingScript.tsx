@@ -1,49 +1,47 @@
 import { VSCode } from '@/types';
-import { InteractContract, Scripts, Wallets } from '@backend/actions/types';
+import { Environment, Scripts } from '@backend/actions/types';
+import { useDeployContract } from '@hooks/useDeployContract.ts';
 import { useDeployScript } from '@hooks/useDeployScript.ts';
-import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
 import './DeployUsingScript.css';
 
 export const DeployUsingScript = ({
-  wallets,
   scripts,
   vscode,
-  contracts,
+  environments,
 }: {
-  wallets: Wallets;
   scripts: Scripts;
   vscode: VSCode;
-  contracts: InteractContract[];
+  environments: Environment[];
 }) => {
   const logic = useDeployScript();
-  const edit = useInteractContracts(contracts, vscode);
+  const logicContract = useDeployContract(vscode);
 
   return (
     <div>
       <div>
         <div>DEPLOY USING SCRIPT</div>
         <div className="dropdown-container">
-          <label htmlFor="dropdown-wallets" className="label">
-            Select account:
-          </label>
-          <div className="wallet-container">
-            <VSCodeDropdown
-              id="dropdown-wallets"
-              className="dropdown-wallets"
-              {...logic.form?.register('wallet', {
-                required: true,
-              })}
-            >
-              {wallets?.map((wallet) => (
-                <VSCodeOption value={wallet.address}>
-                  {wallet.name} - {wallet.address}
-                </VSCodeOption>
-              ))}
-            </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={edit.editWallet}>
-              Edit
-            </VSCodeButton>
+          <div className="dropdown-container">
+            <label htmlFor="dropdown-environment" className="label">
+              Environment:
+            </label>
+            <div className="environment-container">
+              <VSCodeDropdown
+                id="dropdown-environment"
+                className="dropdown-environment"
+                {...logic.form?.register('environment', { required: true })}
+              >
+                {environments.map((environment) => (
+                  <VSCodeOption>
+                    {environment.name} ({environment.rpc})
+                  </VSCodeOption>
+                ))}
+              </VSCodeDropdown>
+              <VSCodeButton className="add-wallet-button" onClick={logicContract.editEnvironment}>
+                Edit
+              </VSCodeButton>
+            </div>
           </div>
         </div>
         <div className="dropdown-container">
@@ -56,9 +54,9 @@ export const DeployUsingScript = ({
               required: true,
             })}
           >
-            {scripts?.map((script) => (
-              <VSCodeOption value={script.id}>
-                {script.name} ({script.path})
+            {scripts?.map((scripts) => (
+              <VSCodeOption>
+                {scripts.name} ({scripts.path})
               </VSCodeOption>
             ))}
           </VSCodeDropdown>

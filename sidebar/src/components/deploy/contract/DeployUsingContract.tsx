@@ -1,5 +1,5 @@
 import { VSCode } from '@/types';
-import { DeployContracts, Environments, InteractContract, Wallets } from '@backend/actions/types';
+import { DeployContracts, InteractContract, Wallets } from '@backend/actions/types';
 import { useDeployContract } from '@hooks/useDeployContract.ts';
 import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import {
@@ -17,13 +17,11 @@ export const DeployUsingContract = ({
   deployContracts,
   vscode,
   editContracts,
-  environments,
 }: {
   wallets: Wallets;
   deployContracts: DeployContracts[];
   vscode: VSCode;
   editContracts: InteractContract[];
-  environments: Environments;
 }) => {
   const logic = useDeployContract(vscode);
   const edit = useInteractContracts(editContracts, vscode);
@@ -67,27 +65,6 @@ export const DeployUsingContract = ({
               </VSCodeOption>
             ))}
           </VSCodeDropdown>
-        </div>
-        <div className="dropdown-container">
-          <label htmlFor="dropdown-environment" className="label">
-            Environment:
-          </label>
-          <div className="environment-container">
-            <VSCodeDropdown
-              id="dropdown-environment"
-              className="dropdown-environment"
-              {...logic.form?.register('environment', { required: true })}
-            >
-              {environments.map((environment) => (
-                <VSCodeOption>
-                  {environment.name} ({environment.rpc})
-                </VSCodeOption>
-              ))}
-            </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={logic.editEnvironment}>
-              Edit
-            </VSCodeButton>
-          </div>
         </div>
         <div className="gas-limit-container">
           <VSCodeTextField

@@ -16,10 +16,9 @@ export const DeployPage = (props: { vscode: VSCode }) => {
       <FormProvider {...logicScript.formScript}>
         <form onSubmit={logicScript.formScript.handleSubmit(logicScript.onSubmit)}>
           <DeployUsingScript
-            wallets={logicScript.wallets}
             scripts={logicScript.scripts}
             vscode={props.vscode}
-            contracts={edit.contracts}
+            environments={logicContract.environments}
           />
         </form>
       </FormProvider>
@@ -30,7 +29,6 @@ export const DeployPage = (props: { vscode: VSCode }) => {
             deployContracts={logicContract.contracts}
             vscode={props.vscode}
             editContracts={edit.contracts}
-            environments={logicContract.environments}
           />
         </form>
       </FormProvider>
