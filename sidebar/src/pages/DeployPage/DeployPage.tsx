@@ -1,9 +1,9 @@
 import { VSCode } from '@/types';
 import { DeployUsingContract } from '@components/deploy/contract/DeployUsingContract.tsx';
 import { DeployUsingScript } from '@components/deploy/script/DeployUsingScript.tsx';
-import { FormProvider } from "react-hook-form";
+import { FormProvider } from 'react-hook-form';
 import { useInteractPage } from '../InteractPage/InteractPage.logic.ts';
-import "./DeployPage.css";
+import './DeployPage.css';
 import { useDeployPageContract, useDeployPageScript } from './DeployPage.logic.ts';
 
 export const DeployPage = (props: { vscode: VSCode }) => {
@@ -12,16 +12,28 @@ export const DeployPage = (props: { vscode: VSCode }) => {
   const edit = useInteractPage(props.vscode);
 
   return (
-  <div className="page-container">
-    <FormProvider {...logicScript.form}>
-      <form onSubmit={logicScript.form.handleSubmit(logicScript.onSubmit)}>
-        <DeployUsingScript wallets={logicScript.wallets} scripts={logicScript.scripts} vscode={props.vscode} contracts={edit.contracts} />
-      </form>
-    </FormProvider>
-    <FormProvider {...logicContract.form}>
-      <form onSubmit={logicContract.form.handleSubmit(logicContract.onSubmit)}>
-        <DeployUsingContract wallets={logicContract.wallets} deployContracts={logicContract.contracts} vscode={props.vscode} editContracts={edit.contracts} environments={logicContract.environments}/>
-      </form>
-    </FormProvider>
-  </div>);
+    <div className="page-container">
+      <FormProvider {...logicScript.formScript}>
+        <form onSubmit={logicScript.formScript.handleSubmit(logicScript.onSubmit)}>
+          <DeployUsingScript
+            wallets={logicScript.wallets}
+            scripts={logicScript.scripts}
+            vscode={props.vscode}
+            contracts={edit.contracts}
+          />
+        </form>
+      </FormProvider>
+      <FormProvider {...logicContract.formContract}>
+        <form onSubmit={logicContract.formContract.handleSubmit(logicContract.onSubmit)}>
+          <DeployUsingContract
+            wallets={logicContract.wallets}
+            deployContracts={logicContract.contracts}
+            vscode={props.vscode}
+            editContracts={edit.contracts}
+            environments={logicContract.environments}
+          />
+        </form>
+      </FormProvider>
+    </div>
+  );
 };

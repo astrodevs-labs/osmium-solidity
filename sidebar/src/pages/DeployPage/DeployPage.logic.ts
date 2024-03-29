@@ -20,65 +20,20 @@ export enum MessageTypeContract {
   ENVIRONMENTS = 'ENVIRONMENTS',
 }
 
-export const useDeployPageScript = (vscode: VSCode) => {
+export const useResourceManager = () => {
   const [wallets, setWallets] = useState<InteractWallet[]>([]);
   const [scripts, setScripts] = useState<DeployScript[]>([]);
-  const form = useForm<DFormScript>({
+  const [contracts, setContracts] = useState<DeployContracts[]>([]);
+  const [environments, setEnvironments] = useState<DeployEnvironment[]>([]);
+
+  const formScript = useForm<DFormScript>({
     defaultValues: {
       wallet: '',
       script: '',
     },
   });
 
-  const onSubmit: SubmitHandler<DFormScript> = (data) => {
-    console.log(data);
-  };
-
-  useEffect(() => {
-    if (!vscode) {
-      return;
-    }
-    vscode.postMessage({ type: MessageTypeScript.GET_WALLETS });
-    vscode.postMessage({ type: MessageTypeScript.GET_SCRIPTS });
-  }, [vscode]);
-
-  useEffect(() => {
-    const listener = (event: WindowEventMap['message']) => {
-      switch (event.data.type) {
-        case MessageTypeScript.WALLETS: {
-          form.setValue('wallet', event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '');
-          setWallets(event.data.wallets);
-          break;
-        }
-        case MessageTypeScript.SCRIPTS: {
-          form.setValue('script', event.data.scripts && event.data.scripts.length ? event.data.scripts[0].name : '');
-          setScripts(event.data.scripts);
-          break;
-        }
-        default: {
-          throw Error('Unknown command: ' + event.type);
-        }
-      }
-    };
-    window.addEventListener('message', listener);
-    return () => window.removeEventListener('message', listener);
-  }, []);
-
-  return {
-    form,
-    vscode,
-    wallets,
-    scripts,
-    onSubmit,
-  };
-};
-
-export const useDeployPageContract = (vscode: VSCode) => {
-  const [wallets, setWallets] = useState<InteractWallet[]>([]);
-  const [contracts, setContracts] = useState<DeployContracts[]>([]);
-  const [environments, setEnvironments] = useState<DeployEnvironment[]>([]);
-
-  const form = useForm<DFormContract>({
+  const formContract = useForm<DFormContract>({
     defaultValues: {
       wallet: '',
       contract: '',
@@ -89,34 +44,31 @@ export const useDeployPageContract = (vscode: VSCode) => {
     },
   });
 
-  const onSubmit: SubmitHandler<DFormContract> = (data) => {
-    console.log(data);
-  };
-
-  useEffect(() => {
-    if (!vscode) {
-      return;
-    }
-    vscode.postMessage({ type: MessageTypeContract.GET_WALLETS });
-    vscode.postMessage({ type: MessageTypeContract.GET_DEPLOY_CONTRACTS });
-    vscode.postMessage({ type: MessageTypeContract.GET_ENVIRONMENTS });
-  }, [vscode]);
-
   useEffect(() => {
     const listener = (event: WindowEventMap['message']) => {
       switch (event.data.type) {
+        case MessageTypeScript.WALLETS: {
+          formScript.setValue('wallet', event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '');
+          setWallets(event.data.wallets);
+          break;
+        }
+        case MessageTypeScript.SCRIPTS: {
+          formScript.setValue('script', event.data.scripts && event.data.scripts.length ? event.data.scripts[0].name : '');
+          setScripts(event.data.scripts);
+          break;
+        }
         case MessageTypeContract.WALLETS: {
-          form.setValue('wallet', event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '');
+          formScript.setValue('wallet', event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '');
           setWallets(event.data.wallets);
           break;
         }
         case MessageTypeContract.DEPLOY_CONTRACTS: {
-          form.setValue('contract', event.data.contracts && event.data.contracts.length ? event.data.contracts[0].path : '');
+          formContract.setValue('contract', event.data.contracts && event.data.contracts.length ? event.data.contracts[0].path : '');
           setContracts(event.data.contracts);
           break;
         }
         case MessageTypeContract.ENVIRONMENTS: {
-          form.setValue('environment', event.data.environments && event.data.environments.length ? event.data.environments[0].name : '');
+          formContract.setValue('environment', event.data.environments && event.data.environments.length ? event.data.environments[0].name : '');
           setEnvironments(event.data.environments);
           break;
         }
@@ -130,7 +82,61 @@ export const useDeployPageContract = (vscode: VSCode) => {
   }, []);
 
   return {
-    form,
+    formScript,
+    formContract,
+    wallets,
+    scripts,
+    contracts,
+    environments,
+  };
+}
+
+// -----------------------------------------------------------------------
+
+export const useDeployPageScript = (vscode: VSCode) => {
+  const {formScript,wallets,scripts} = useResourceManager();
+  
+  const onSubmit: SubmitHandler<DFormScript> = (data) => {
+    console.log(data);
+  };
+  
+  useEffect(() => {
+    if (!vscode) {
+      return;
+    }
+    vscode.postMessage({ type: MessageTypeScript.GET_WALLETS });
+    vscode.postMessage({ type: MessageTypeScript.GET_SCRIPTS });
+  }, [vscode]);
+  
+  return {
+    formScript,
+    vscode,
+    wallets,
+    scripts,
+    onSubmit,
+  };
+};
+
+// -----------------------------------------------------------------------
+
+export const useDeployPageContract = (vscode: VSCode) => {
+  const onSubmit: SubmitHandler<DFormContract> = (data) => {
+    console.log(data);
+  };
+
+  useEffect(() => {
+    if (!vscode) {
+      return;
+    }
+    vscode.postMessage({ type: MessageTypeContract.GET_WALLETS });
+    vscode.postMessage({ type: MessageTypeContract.GET_DEPLOY_CONTRACTS });
+    vscode.postMessage({ type: MessageTypeContract.GET_ENVIRONMENTS });
+  }, [vscode]);
+
+  const {formContract, wallets, contracts, environments} = useResourceManager();
+
+  return {
+    formContract,
     vscode,
     wallets,
     contracts,
