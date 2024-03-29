@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Scripts } from './types';
+import { Script, Scripts } from './types';
 import { getTomlValue } from '../utils';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -60,5 +60,9 @@ export class ScriptRepository {
 
   public getScripts(): Scripts {
     return this._scripts;
+  }
+
+  public getScript(id: Script['id']): Script | undefined {
+    return this._scripts.find((s) => s.id === id);
   }
 }
