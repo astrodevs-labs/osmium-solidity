@@ -1,11 +1,11 @@
 import { VSCode } from '@/types';
-import { InteractContract, Wallet } from '@backend/actions/types';
+import { InteractContract, Wallets } from '@backend/actions/types';
 import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import { VSCodeButton, VSCodeDropdown, VSCodeOption, VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
 import './InteractContracts.css';
 
 interface InteractContractsProps {
-  wallets: Wallet[];
+  wallets: Wallets;
   contracts: InteractContract[];
   vscode: VSCode;
 }
@@ -28,7 +28,7 @@ export const InteractContracts = ({ wallets, contracts, vscode }: InteractContra
             })}
           >
             {wallets?.map((wallet) => (
-              <VSCodeOption value={wallet.address}>
+              <VSCodeOption value={wallet.id}>
                 {wallet.name} - {wallet.address}
               </VSCodeOption>
             ))}

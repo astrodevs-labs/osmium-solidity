@@ -1,7 +1,8 @@
-import * as path from "path";
-import * as fs from "fs";
-import { Address } from "viem";
-import { InteractContract, InteractContracts } from "./types";
+import * as path from 'path';
+import * as fs from 'fs';
+import { Abi, Address } from 'viem';
+import { InteractContract, InteractContracts, RpcUrl } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ContractRepository {
   private _contracts: InteractContracts = [];
@@ -9,14 +10,14 @@ export class ContractRepository {
   private readonly _osmiumPath: string;
 
   constructor(workspacePath: string) {
-    this._osmiumPath = path.join(workspacePath, ".osmium");
-    this._contractsPath = path.join(this._osmiumPath, "contracts.json");
+    this._osmiumPath = path.join(workspacePath, '.osmium');
+    this._contractsPath = path.join(this._osmiumPath, 'contracts.json');
     this.load();
   }
 
   private _save(): void {
     const json = JSON.stringify({ contracts: this._contracts });
-    fs.writeFileSync(this._contractsPath, json, { encoding: "utf-8" });
+    fs.writeFileSync(this._contractsPath, json, { encoding: 'utf-8' });
   }
 
   public load(): void {
@@ -25,10 +26,7 @@ export class ContractRepository {
     }
     if (!fs.existsSync(this._contractsPath)) {
       this._contracts = [];
-      fs.writeFileSync(
-        this._contractsPath,
-        JSON.stringify({ contracts: this._contracts }),
-      );
+      fs.writeFileSync(this._contractsPath, JSON.stringify({ contracts: this._contracts }));
     } else {
       const raw = fs.readFileSync(this._contractsPath);
       const json = JSON.parse(raw.toString());
@@ -40,17 +38,16 @@ export class ContractRepository {
     return this._contracts;
   }
 
-  public getContract(
-    address: InteractContract["address"],
-  ): InteractContract | undefined {
-    return this._contracts.find((c) => c.address === address);
+  public getContract(id: InteractContract['id']): InteractContract | undefined {
+    return this._contracts.find((c) => c.id === id);
   }
 
-  public createContract(contract: InteractContract): void {
-    if (this._contracts.find((c) => c.address === contract.address)) {
+  public createContract(address: Address, abi: Abi, chainId: number, name: string, rpc: RpcUrl): void {
+    const contract: InteractContract = { address, abi, chainId, name, rpc, id: uuidv4() };
+    if (this._contracts.find((c) => c.address === address)) {
       // replace
       this._contracts = this._contracts.map((w) => {
-        if (w.address === contract.address) {
+        if (w.address === address) {
           return contract;
         }
         return w;
@@ -61,8 +58,8 @@ export class ContractRepository {
     this._save();
   }
 
-  public deleteContract(address: Address): void {
-    this._contracts = this._contracts.filter((c) => c.address !== address);
+  public deleteContract(id: string): void {
+    this._contracts = this._contracts.filter((c) => c.id !== id);
     this._save();
   }
 }

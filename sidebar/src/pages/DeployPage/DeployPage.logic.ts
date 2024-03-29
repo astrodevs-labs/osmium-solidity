@@ -1,5 +1,5 @@
 import { DFormContract, DFormScript, VSCode } from '@/types';
-import { DeployContracts, DeployEnvironment, DeployScript, Wallet } from '@backend/actions/types';
+import { DeployContracts, Environments, Scripts, Wallets } from '@backend/actions/types';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -21,10 +21,10 @@ export enum MessageTypeContract {
 }
 
 export const useResourceManager = () => {
-  const [wallets, setWallets] = useState<Wallet[]>([]);
-  const [scripts, setScripts] = useState<DeployScript[]>([]);
+  const [wallets, setWallets] = useState<Wallets>([]);
+  const [scripts, setScripts] = useState<Scripts>([]);
   const [contracts, setContracts] = useState<DeployContracts[]>([]);
-  const [environments, setEnvironments] = useState<DeployEnvironment[]>([]);
+  const [environments, setEnvironments] = useState<Environments>([]);
 
   const formScript = useForm<DFormScript>({
     defaultValues: {

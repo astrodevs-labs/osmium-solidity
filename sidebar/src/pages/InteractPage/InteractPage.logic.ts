@@ -1,5 +1,5 @@
 import { IFormInput, VSCode } from '@/types';
-import { InteractContract, Wallet } from '@backend/actions/types';
+import { InteractContract, Wallets } from '@backend/actions/types';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -37,7 +37,7 @@ const getFunctionAction = (func: string, contract: string, contracts: InteractCo
 };
 
 export const useInteractPage = (vscode: VSCode) => {
-  const [wallets, setWallets] = useState<Wallet[]>([]);
+  const [wallets, setWallets] = useState<Wallets>([]);
   const [contracts, setContracts] = useState<InteractContract[]>([]);
   const form = useForm<IFormInput>({
     defaultValues: {

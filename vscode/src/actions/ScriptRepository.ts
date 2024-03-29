@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Environment, Environments, Script, Scripts } from './types';
+import { Scripts } from './types';
 import { getTomlValue } from '../utils';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ScriptRepository {
   private _scripts: Scripts = [];
@@ -39,21 +40,22 @@ export class ScriptRepository {
       let matches;
 
       while ((matches = regex.exec(content)) !== null) {
-        this._addScript({
-          name: matches[1],
-          path: file,
-        });
+        this._addScript(matches[1], file);
       }
     });
   }
 
-  _addScript(script: Script): void {
-    if (this._scripts.find((s) => s.name === script.name)) {
-      if (this._scripts.find((s) => s.path === script.path)) {
+  _addScript(name: string, path: string): void {
+    if (this._scripts.find((s) => s.name === name)) {
+      if (this._scripts.find((s) => s.path === path)) {
         return;
       }
     }
-    this._scripts.push(script);
+    this._scripts.push({
+      name,
+      path,
+      id: uuidv4(),
+    });
   }
 
   public getScripts(): Scripts {

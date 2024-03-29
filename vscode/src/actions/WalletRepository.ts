@@ -1,10 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { Address } from 'viem';
-import { Wallet, Wallets } from './types';
+import { RpcUrl, Wallet, Wallets } from './types';
+import { v4 as uuidv4 } from 'uuid';
 
 export class WalletRepository {
-  private _wallets: Wallet[] = [];
+  private _wallets: Wallets = [];
   private readonly _walletsPath: string;
   private readonly _osmiumPath: string;
 
@@ -37,15 +38,16 @@ export class WalletRepository {
     return this._wallets;
   }
 
-  public getWallet(address: Wallet['address']): Wallet | undefined {
-    return this._wallets.find((w) => w.address === address);
+  public getWallet(id: Wallet['id']): Wallet | undefined {
+    return this._wallets.find((w) => w.id === id);
   }
 
-  public createWallet(wallet: Wallet): void {
-    if (this._wallets.find((w) => w.address === wallet.address)) {
+  public createWallet(name: string, address: Address, privateKey: Address, rpc: RpcUrl): void {
+    const wallet: Wallet = { name, address, privateKey, rpc, id: uuidv4() };
+    if (this._wallets.find((w) => w.address === address)) {
       // replace
       this._wallets = this._wallets.map((w) => {
-        if (w.address === wallet.address) {
+        if (w.address === address) {
           return wallet;
         }
         return w;
@@ -56,8 +58,8 @@ export class WalletRepository {
     this._save();
   }
 
-  public deleteWallet(address: Address): void {
-    this._wallets = this._wallets.filter((w) => w.address !== address);
+  public deleteWallet(id: string): void {
+    this._wallets = this._wallets.filter((w) => w.id !== id);
     this._save();
   }
 }

@@ -1,5 +1,5 @@
 import { VSCode } from '@/types';
-import { DeployContracts, DeployEnvironment, InteractContract, Wallet } from '@backend/actions/types';
+import { DeployContracts, Environments, InteractContract, Wallets } from '@backend/actions/types';
 import { useDeployContract } from '@hooks/useDeployContract.ts';
 import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import {
@@ -19,11 +19,11 @@ export const DeployUsingContract = ({
   editContracts,
   environments,
 }: {
-  wallets: Wallet[];
+  wallets: Wallets;
   deployContracts: DeployContracts[];
   vscode: VSCode;
   editContracts: InteractContract[];
-  environments: DeployEnvironment[];
+  environments: Environments;
 }) => {
   const logic = useDeployContract(vscode);
   const edit = useInteractContracts(editContracts, vscode);

@@ -4,7 +4,7 @@ import { window } from 'vscode';
 import { ContractRepository } from './actions/ContractRepository';
 import { Interact } from './actions/Interact';
 import { WalletRepository } from './actions/WalletRepository';
-import { DeployContracts, DeployScriptArgs, DeployScript, RpcUrl } from './actions/types';
+import { DeployContracts, DeployScriptArgs, RpcUrl } from './actions/types';
 import { deployContract, deployScript, getContracts } from './actions/deployold';
 import { EnvironmentRepository } from './actions/EnvironmentRepository';
 import { getNonce } from './utils';
@@ -221,12 +221,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             if (!walletAddress.startsWith('0x') || !walletPk.startsWith('0x')) return;
             if (!walletRpc.startsWith('http') && !walletRpc.startsWith('ws')) return;
 
-            this._walletRepository.createWallet({
-              name: walletName,
-              address: <Address>walletAddress,
-              privateKey: <Address>walletPk,
-              rpc: <RpcUrl>walletRpc,
-            });
+            this._walletRepository.createWallet(
+              walletName,
+              <Address>walletAddress,
+              <Address>walletPk,
+              <RpcUrl>walletRpc,
+            );
           }
 
           if (walletAction === InputAction.REMOVE) {
@@ -270,13 +270,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             if (!contractAddress.startsWith('0x')) return;
             if (!contractRpc.startsWith('http') && !contractRpc.startsWith('ws')) return;
 
-            this._contractRepository.createContract({
-              address: <Address>contractAddress,
-              abi: JSON.parse(contractAbi),
-              chainId: parseInt(contractChainId),
-              name: contractName,
-              rpc: <RpcUrl>contractRpc,
-            });
+            this._contractRepository.createContract(
+              <Address>contractAddress,
+              JSON.parse(contractAbi),
+              parseInt(contractChainId),
+              contractName,
+              <RpcUrl>contractRpc,
+            );
           }
 
           if (contractAction === InputAction.REMOVE) {
@@ -307,10 +307,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             if (!environmentName || !environmentRpc) return;
             if (!environmentRpc.startsWith('http') && !environmentRpc.startsWith('ws')) return;
 
-            this._environmentRepository.createEnvironment({
-              name: environmentName,
-              rpc: <RpcUrl>environmentRpc,
-            });
+            this._environmentRepository.createEnvironment(environmentName, <RpcUrl>environmentRpc);
           }
 
           if (environmentAction === InputAction.REMOVE) {

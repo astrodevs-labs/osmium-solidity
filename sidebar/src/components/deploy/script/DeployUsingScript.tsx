@@ -1,5 +1,5 @@
 import { VSCode } from '@/types';
-import { DeployScript, InteractContract, Wallet } from '@backend/actions/types';
+import { InteractContract, Scripts, Wallets } from '@backend/actions/types';
 import { useDeployScript } from '@hooks/useDeployScript.ts';
 import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
@@ -11,8 +11,8 @@ export const DeployUsingScript = ({
   vscode,
   contracts,
 }: {
-  wallets: Wallet[];
-  scripts: DeployScript[];
+  wallets: Wallets;
+  scripts: Scripts;
   vscode: VSCode;
   contracts: InteractContract[];
 }) => {
@@ -56,9 +56,9 @@ export const DeployUsingScript = ({
               required: true,
             })}
           >
-            {scripts?.map((scripts) => (
-              <VSCodeOption>
-                {scripts.name} ({scripts.path})
+            {scripts?.map((script) => (
+              <VSCodeOption value={script.id}>
+                {script.name} ({script.path})
               </VSCodeOption>
             ))}
           </VSCodeDropdown>

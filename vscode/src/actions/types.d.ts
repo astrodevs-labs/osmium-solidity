@@ -9,19 +9,9 @@ export type DeployContracts = {
   address?: string;
 };
 
-export type DeployScript = {
-  path: string;
-  name: string;
-};
-
-export type DeployEnvironment = {
-  name: string;
-  rpc: string;
-};
-
 export type DeployScriptArgs = {
   rpcUrl: string;
-  script: DeployScript;
+  script: Script;
   verify: boolean;
 };
 
@@ -38,6 +28,7 @@ export interface InteractContract {
   abi: Abi;
   chainId: number;
   rpc: RpcUrl;
+  id: string;
 }
 
 export type InteractContracts = InteractContract[];
@@ -47,6 +38,7 @@ export interface Wallet {
   address: Address;
   privateKey: Address;
   rpc: RpcUrl;
+  id: string;
 }
 
 export type Wallets = Wallet[];
@@ -54,6 +46,7 @@ export type Wallets = Wallet[];
 export interface Environment {
   name: string;
   rpc: RpcUrl;
+  id: string;
 }
 
 export type Environments = Environment[];
@@ -61,6 +54,7 @@ export type Environments = Environment[];
 export interface Script {
   name: string;
   path: string;
+  id: string;
 }
 
 export type Scripts = Script[];

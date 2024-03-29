@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import * as path from 'path';
 import * as toml from 'toml';
 import { workspace } from 'vscode';
-import { DeployContracts, DeployScript } from './types';
+import { DeployContracts, Script } from './types';
 
 async function getContractFolder(): Promise<string> {
   try {
@@ -103,7 +103,7 @@ export async function deployContract(
   );
 }
 
-export async function deployScript(rpcUrl: string, script: DeployScript, verify: boolean): Promise<void> {
+export async function deployScript(rpcUrl: string, script: Script, verify: boolean): Promise<void> {
   const verifyStr = verify ? '--verify' : '';
   exec(
     `forge script ${script.path}:${script.name} --rpc-url ${rpcUrl} --broadcast ${verifyStr}`,
