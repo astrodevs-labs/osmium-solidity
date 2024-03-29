@@ -49,7 +49,7 @@ export const InteractContracts = ({ wallets, contracts, vscode }: InteractContra
             {...logic.register('contract', { required: true })}
           >
             {contracts?.map((contract) => (
-              <VSCodeOption value={contract.address}>
+              <VSCodeOption value={contract.id}>
                 {contract.name} - {contract.address}
               </VSCodeOption>
             ))}

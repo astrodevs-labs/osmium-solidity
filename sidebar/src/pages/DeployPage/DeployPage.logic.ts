@@ -23,7 +23,7 @@ export enum MessageTypeContract {
 export const useResourceManager = () => {
   const [wallets, setWallets] = useState<Wallets>([]);
   const [scripts, setScripts] = useState<Scripts>([]);
-  const [contracts, setContracts] = useState<DeployContracts[]>([]);
+  const [contracts, setContracts] = useState<DeployContracts>([]);
   const [environments, setEnvironments] = useState<Environments>([]);
 
   const formScript = useForm<DFormScript>({

@@ -1,14 +1,14 @@
 import { Address } from 'viem';
 import * as vscode from 'vscode';
 import { window } from 'vscode';
-import { ContractRepository } from './actions/ContractRepository';
+import { InteractContractRepository } from './actions/InteractContractRepository';
 import { Interact } from './actions/Interact';
 import { WalletRepository } from './actions/WalletRepository';
-import { DeployContracts, DeployScriptArgs, RpcUrl } from './actions/types';
-import { deployContract, deployScript, getContracts } from './actions/deployold';
+import { DeployContracts, RpcUrl } from './actions/types';
 import { EnvironmentRepository } from './actions/EnvironmentRepository';
 import { getNonce } from './utils';
 import { ScriptRepository } from './actions/ScriptRepository';
+import { DeployContractRepository } from './actions/DeployContractRepository';
 
 enum MessageType {
   GET_WALLETS = 'GET_WALLETS',
@@ -49,12 +49,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   private _view?: vscode.WebviewView;
 
-  private _contractRepository?: ContractRepository;
+  private _interactContractRepository?: InteractContractRepository;
+  private _deployContractRepository?: DeployContractRepository;
   private _walletRepository?: WalletRepository;
   private _environmentRepository?: EnvironmentRepository;
   private _scriptRepository?: ScriptRepository;
   private _interact?: Interact;
-  private _contracts?: DeployContracts[];
 
   private _watcher?: vscode.FileSystemWatcher;
 
@@ -69,14 +69,13 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     if (vscode.workspace.workspaceFolders?.length) {
       const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-      this._contractRepository = new ContractRepository(fsPath);
+      this._interactContractRepository = new InteractContractRepository(fsPath);
+      this._deployContractRepository = new DeployContractRepository(fsPath);
       this._walletRepository = new WalletRepository(fsPath);
       this._environmentRepository = new EnvironmentRepository(fsPath);
       this._scriptRepository = new ScriptRepository(fsPath);
 
-      this._interact = new Interact(this._contractRepository, this._walletRepository);
-
-      this._contracts = await getContracts();
+      this._interact = new Interact(this._interactContractRepository, this._walletRepository);
 
       const pattern = new vscode.RelativePattern(fsPath, '.osmium/*.json');
       this._watcher = vscode.workspace.createFileSystemWatcher(pattern);
@@ -86,10 +85,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           return;
         }
         if (uri.fsPath.endsWith('contracts.json')) {
-          this._contractRepository?.load();
+          this._interactContractRepository?.load();
           await this._view.webview.postMessage({
             type: MessageType.INTERACT_CONTRACTS,
-            contracts: this._contractRepository?.getContracts(),
+            contracts: this._interactContractRepository?.getContracts(),
           });
         }
         if (uri.fsPath.endsWith('wallets.json')) {
@@ -119,17 +118,18 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (message: Message) => {
       if (
         !this._view ||
-        !this._contractRepository ||
+        !this._interactContractRepository ||
+        !this._deployContractRepository ||
         !this._walletRepository ||
         !this._environmentRepository ||
         !this._scriptRepository ||
-        !this._interact ||
-        !this._contracts
+        !this._interact
       ) {
         return;
       }
       switch (message.type) {
         case MessageType.GET_WALLETS:
+          console.log(this._walletRepository.getWallets());
           await this._view.webview.postMessage({
             type: MessageType.WALLETS,
             wallets: this._walletRepository.getWallets(),
@@ -138,7 +138,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case MessageType.GET_INTERACT_CONTRACTS:
           await this._view.webview.postMessage({
             type: MessageType.INTERACT_CONTRACTS,
-            contracts: this._contractRepository.getContracts(),
+            contracts: this._interactContractRepository.getContracts(),
           });
           break;
         case MessageType.GET_SCRIPTS:
@@ -150,7 +150,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         case MessageType.GET_DEPLOY_CONTRACTS:
           await this._view.webview.postMessage({
             type: MessageType.DEPLOY_CONTRACTS,
-            contracts: this._contracts,
+            contracts: this._deployContractRepository.getContracts(),
           });
           break;
         case MessageType.GET_ENVIRONMENTS:
@@ -169,9 +169,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           }
 
           const writeResponse = await this._interact.writeContract({
-            account: message.data.wallet,
-            address: message.data.contract,
-            abi: this._contractRepository.getContract(message.data.contract)!.abi,
+            walletId: message.data.wallet,
+            contractId: message.data.contract,
             functionName: message.data.function,
             params: message.data.inputs,
             gasLimit: message.data.gasLimit > 0 ? message.data.gasLimit : undefined,
@@ -184,7 +183,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
         case MessageType.READ:
           const readResponse = await this._interact.readContract({
-            contract: message.data.contract,
+            contractId: message.data.contract,
             method: message.data.function,
             params: message.data.inputs,
           });
@@ -270,7 +269,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             if (!contractAddress.startsWith('0x')) return;
             if (!contractRpc.startsWith('http') && !contractRpc.startsWith('ws')) return;
 
-            this._contractRepository.createContract(
+            this._interactContractRepository.createContract(
               <Address>contractAddress,
               JSON.parse(contractAbi),
               parseInt(contractChainId),
@@ -284,7 +283,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               prompt: 'Enter address',
             });
             if (!contractAddress) return;
-            this._contractRepository.deleteContract(<Address>contractAddress);
+            this._interactContractRepository.deleteContract(<Address>contractAddress);
           }
           break;
         // start
@@ -321,30 +320,30 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           break;
 
         case MessageType.DEPLOY_SCRIPT:
-          const deployScriptArgs: DeployScriptArgs = message.data;
-          const deployScriptResponse = await deployScript(
-            deployScriptArgs.rpcUrl,
-            deployScriptArgs.script,
-            deployScriptArgs.verify,
-          );
-          await this._view.webview.postMessage({
-            type: MessageType.DEPLOY_SCRIPT_RESPONSE,
-            response: deployScriptResponse,
-          });
+          //const deployScriptArgs: DeployScriptArgs = message.data;
+          //const deployScriptResponse = await deployScript(
+          //  deployScriptArgs.rpcUrl,
+          //  deployScriptArgs.script,
+          //  deployScriptArgs.verify,
+          //);
+          //await this._view.webview.postMessage({
+          //  type: MessageType.DEPLOY_SCRIPT_RESPONSE,
+          //  response: deployScriptResponse,
+          //});
           break;
 
         case MessageType.DEPLOY_CONTRACT:
-          const deployContractArgs = message.data;
-          const deployContractResponse = deployContract(
-            deployContractArgs.rpcUrl,
-            deployContractArgs.contract,
-            deployContractArgs.verify,
-            deployContractArgs.cstrArgs,
-          );
-          await this._view.webview.postMessage({
-            type: MessageType.DEPLOY_CONTRACT_RESPONSE,
-            response: deployContractResponse,
-          });
+          //const deployContractArgs = message.data;
+          //const deployContractResponse = deployContract(
+          //  deployContractArgs.rpcUrl,
+          //  deployContractArgs.contract,
+          //  deployContractArgs.verify,
+          //  deployContractArgs.cstrArgs,
+          //);
+          //await this._view.webview.postMessage({
+          //  type: MessageType.DEPLOY_CONTRACT_RESPONSE,
+          //  response: deployContractResponse,
+          //});
           break;
       }
     });

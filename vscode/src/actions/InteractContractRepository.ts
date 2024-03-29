@@ -4,7 +4,7 @@ import { Abi, Address } from 'viem';
 import { InteractContract, InteractContracts, RpcUrl } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
-export class ContractRepository {
+export class InteractContractRepository {
   private _contracts: InteractContracts = [];
   private readonly _contractsPath: string;
   private readonly _osmiumPath: string;

@@ -2,25 +2,14 @@ import { Abi, Address } from 'viem';
 
 export type RpcUrl = `ws://${string}` | `wss://${string}` | `http://${string}` | `https://${string}`;
 
-export type DeployContracts = {
+export interface DeployContract {
   name: string;
   path: string;
   abi: Abi;
-  address?: string;
-};
+  id: string;
+}
 
-export type DeployScriptArgs = {
-  rpcUrl: string;
-  script: Script;
-  verify: boolean;
-};
-
-export type DeployContractArgs = {
-  rpcUrl: string;
-  contract: DeployContracts;
-  verify: boolean;
-  cstrArgs: string[];
-};
+export type DeployContracts = DeployContract[];
 
 export interface InteractContract {
   name: string;

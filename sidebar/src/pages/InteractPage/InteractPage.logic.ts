@@ -14,6 +14,7 @@ export enum MessageType {
   READ_RESPONSE = 'READ_RESPONSE',
   EDIT_WALLETS = 'EDIT_WALLETS',
   EDIT_CONTRACTS = 'EDIT_CONTRACTS',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum ResponseType {
@@ -21,8 +22,8 @@ export enum ResponseType {
   WRITE,
 }
 
-const getFunctionAction = (func: string, contract: string, contracts: InteractContract[]): '' | 'WRITE' | 'READ' => {
-  const selectedContract = contracts?.find((c) => c.address === contract);
+const getFunctionAction = (func: string, contract: string, contracts: InteractContract[]): MessageType => {
+  const selectedContract = contracts?.find((c) => c.id === contract);
   const functions =
     selectedContract?.abi?.map((abi) => {
       if (abi.type === 'function') {
@@ -31,9 +32,9 @@ const getFunctionAction = (func: string, contract: string, contracts: InteractCo
     }) || [];
   const selectedFunction = functions?.find((f) => f?.name === func) || null;
 
-  if (!selectedFunction) return '';
-  if (selectedFunction.stateMutability === 'view') return 'READ';
-  return 'WRITE';
+  if (!selectedFunction) return MessageType.UNKNOWN;
+  if (selectedFunction.stateMutability === 'view') return MessageType.READ;
+  return MessageType.WRITE;
 };
 
 export const useInteractPage = (vscode: VSCode) => {
