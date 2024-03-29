@@ -1,5 +1,5 @@
 import { DFormContract, DFormScript, VSCode } from '@/types';
-import { DeployContracts, DeployEnvironment, DeployScript, InteractWallet } from '@backend/actions/types';
+import { DeployContracts, DeployEnvironment, DeployScript, Wallet } from '@backend/actions/types';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -21,7 +21,7 @@ export enum MessageTypeContract {
 }
 
 export const useResourceManager = () => {
-  const [wallets, setWallets] = useState<InteractWallet[]>([]);
+  const [wallets, setWallets] = useState<Wallet[]>([]);
   const [scripts, setScripts] = useState<DeployScript[]>([]);
   const [contracts, setContracts] = useState<DeployContracts[]>([]);
   const [environments, setEnvironments] = useState<DeployEnvironment[]>([]);
@@ -48,27 +48,42 @@ export const useResourceManager = () => {
     const listener = (event: WindowEventMap['message']) => {
       switch (event.data.type) {
         case MessageTypeScript.WALLETS: {
-          formScript.setValue('wallet', event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '');
+          formScript.setValue(
+            'wallet',
+            event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '',
+          );
           setWallets(event.data.wallets);
           break;
         }
         case MessageTypeScript.SCRIPTS: {
-          formScript.setValue('script', event.data.scripts && event.data.scripts.length ? event.data.scripts[0].name : '');
+          formScript.setValue(
+            'script',
+            event.data.scripts && event.data.scripts.length ? event.data.scripts[0].name : '',
+          );
           setScripts(event.data.scripts);
           break;
         }
         case MessageTypeContract.WALLETS: {
-          formScript.setValue('wallet', event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '');
+          formScript.setValue(
+            'wallet',
+            event.data.wallets && event.data.wallets.length ? event.data.wallets[0].address : '',
+          );
           setWallets(event.data.wallets);
           break;
         }
         case MessageTypeContract.DEPLOY_CONTRACTS: {
-          formContract.setValue('contract', event.data.contracts && event.data.contracts.length ? event.data.contracts[0].path : '');
+          formContract.setValue(
+            'contract',
+            event.data.contracts && event.data.contracts.length ? event.data.contracts[0].path : '',
+          );
           setContracts(event.data.contracts);
           break;
         }
         case MessageTypeContract.ENVIRONMENTS: {
-          formContract.setValue('environment', event.data.environments && event.data.environments.length ? event.data.environments[0].name : '');
+          formContract.setValue(
+            'environment',
+            event.data.environments && event.data.environments.length ? event.data.environments[0].name : '',
+          );
           setEnvironments(event.data.environments);
           break;
         }
@@ -89,17 +104,17 @@ export const useResourceManager = () => {
     contracts,
     environments,
   };
-}
+};
 
 // -----------------------------------------------------------------------
 
 export const useDeployPageScript = (vscode: VSCode) => {
-  const {formScript,wallets,scripts} = useResourceManager();
-  
+  const { formScript, wallets, scripts } = useResourceManager();
+
   const onSubmit: SubmitHandler<DFormScript> = (data) => {
     console.log(data);
   };
-  
+
   useEffect(() => {
     if (!vscode) {
       return;
@@ -107,7 +122,7 @@ export const useDeployPageScript = (vscode: VSCode) => {
     vscode.postMessage({ type: MessageTypeScript.GET_WALLETS });
     vscode.postMessage({ type: MessageTypeScript.GET_SCRIPTS });
   }, [vscode]);
-  
+
   return {
     formScript,
     vscode,
@@ -133,7 +148,7 @@ export const useDeployPageContract = (vscode: VSCode) => {
     vscode.postMessage({ type: MessageTypeContract.GET_ENVIRONMENTS });
   }, [vscode]);
 
-  const {formContract, wallets, contracts, environments} = useResourceManager();
+  const { formContract, wallets, contracts, environments } = useResourceManager();
 
   return {
     formContract,
@@ -141,6 +156,6 @@ export const useDeployPageContract = (vscode: VSCode) => {
     wallets,
     contracts,
     onSubmit,
-    environments
+    environments,
   };
 };

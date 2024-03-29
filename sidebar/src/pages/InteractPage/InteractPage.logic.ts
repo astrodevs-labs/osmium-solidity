@@ -1,5 +1,5 @@
 import { IFormInput, VSCode } from '@/types';
-import { InteractContract, InteractWallet } from '@backend/actions/types';
+import { InteractContract, Wallet } from '@backend/actions/types';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -23,11 +23,12 @@ export enum ResponseType {
 
 const getFunctionAction = (func: string, contract: string, contracts: InteractContract[]): '' | 'WRITE' | 'READ' => {
   const selectedContract = contracts?.find((c) => c.address === contract);
-  const functions = selectedContract?.abi?.map((abi) => {
-    if (abi.type === 'function') {
-      return abi;
-    }
-  }) || [];
+  const functions =
+    selectedContract?.abi?.map((abi) => {
+      if (abi.type === 'function') {
+        return abi;
+      }
+    }) || [];
   const selectedFunction = functions?.find((f) => f?.name === func) || null;
 
   if (!selectedFunction) return '';
@@ -36,7 +37,7 @@ const getFunctionAction = (func: string, contract: string, contracts: InteractCo
 };
 
 export const useInteractPage = (vscode: VSCode) => {
-  const [wallets, setWallets] = useState<InteractWallet[]>([]);
+  const [wallets, setWallets] = useState<Wallet[]>([]);
   const [contracts, setContracts] = useState<InteractContract[]>([]);
   const form = useForm<IFormInput>({
     defaultValues: {
@@ -48,7 +49,7 @@ export const useInteractPage = (vscode: VSCode) => {
       gasLimit: 300000,
     },
   });
-  const [response, setResponse] = useState<{ responseType: ResponseType, data: unknown }>();
+  const [response, setResponse] = useState<{ responseType: ResponseType; data: unknown }>();
 
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     if (isNaN(data.gasLimit)) form.setError('gasLimit', { type: 'manual', message: 'Invalid number' });
@@ -74,7 +75,10 @@ export const useInteractPage = (vscode: VSCode) => {
           break;
         }
         case MessageType.INTERACT_CONTRACTS: {
-          form.setValue('contract', event.data.contracts && event.data.contracts.length ? event.data.contracts[0].address : '');
+          form.setValue(
+            'contract',
+            event.data.contracts && event.data.contracts.length ? event.data.contracts[0].address : '',
+          );
           setContracts(event.data.contracts);
           break;
         }

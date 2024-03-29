@@ -1,18 +1,21 @@
-import { VSCode } from "@/types";
-import { DeployScript, InteractContract, InteractWallet } from "@backend/actions/types";
-import { useDeployScript } from "@hooks/useDeployScript.ts";
+import { VSCode } from '@/types';
+import { DeployScript, InteractContract, Wallet } from '@backend/actions/types';
+import { useDeployScript } from '@hooks/useDeployScript.ts';
 import { useInteractContracts } from '@hooks/useInteractContracts.ts';
-import {
-  VSCodeButton,
-  VSCodeDivider,
-  VSCodeDropdown,
-  VSCodeOption
-} from "@vscode/webview-ui-toolkit/react";
-import "./DeployUsingScript.css";
+import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
+import './DeployUsingScript.css';
 
-export const DeployUsingScript = (
-  { wallets, scripts, vscode, contracts }: { wallets: InteractWallet[]; scripts: DeployScript[], vscode: VSCode, contracts: InteractContract[]},
-) => {
+export const DeployUsingScript = ({
+  wallets,
+  scripts,
+  vscode,
+  contracts,
+}: {
+  wallets: Wallet[];
+  scripts: DeployScript[];
+  vscode: VSCode;
+  contracts: InteractContract[];
+}) => {
   const logic = useDeployScript();
   const edit = useInteractContracts(contracts, vscode);
 
@@ -26,8 +29,9 @@ export const DeployUsingScript = (
           </label>
           <div className="wallet-container">
             <VSCodeDropdown
-              id="dropdown-wallets" className='dropdown-wallets'
-              {...logic.form?.register("wallet", {
+              id="dropdown-wallets"
+              className="dropdown-wallets"
+              {...logic.form?.register('wallet', {
                 required: true,
               })}
             >
@@ -37,28 +41,34 @@ export const DeployUsingScript = (
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={edit.editWallet}>Edit</VSCodeButton>
+            <VSCodeButton className="add-wallet-button" onClick={edit.editWallet}>
+              Edit
+            </VSCodeButton>
           </div>
         </div>
         <div className="dropdown-container">
-          <label htmlFor="dropdown" className="label">Select script:</label>
-          <VSCodeDropdown 
+          <label htmlFor="dropdown" className="label">
+            Select script:
+          </label>
+          <VSCodeDropdown
             id="dropdown"
-            {...logic.form?.register("script", {
+            {...logic.form?.register('script', {
               required: true,
             })}
           >
             {scripts?.map((scripts) => (
-              <VSCodeOption>{scripts.name} ({scripts.path})</VSCodeOption>
+              <VSCodeOption>
+                {scripts.name} ({scripts.path})
+              </VSCodeOption>
             ))}
           </VSCodeDropdown>
         </div>
       </div>
-      <VSCodeDivider className='divider'/>
-      <VSCodeButton className="submit-button" type="submit" >
+      <VSCodeDivider className="divider" />
+      <VSCodeButton className="submit-button" type="submit">
         Deploy with script
       </VSCodeButton>
-      <VSCodeDivider className='divider'/>
+      <VSCodeDivider className="divider" />
     </div>
   );
 };

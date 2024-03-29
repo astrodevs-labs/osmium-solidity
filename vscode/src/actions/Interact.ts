@@ -1,34 +1,36 @@
-import {
-  createPublicClient,
-  createWalletClient,
-  defineChain,
-  getContract,
-  http,
-  webSocket,
-} from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { ContractRepository } from "./ContractRepository";
-import { WalletRepository } from "./WalletRepository";
-import { ReadContractOptions, WriteContractOptions } from "./types";
+import { Abi, Address, createPublicClient, createWalletClient, defineChain, getContract, http, webSocket } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { ContractRepository } from './ContractRepository';
+import { WalletRepository } from './WalletRepository';
+import { ContractParams } from './types';
+
+export interface ReadContractOptions {
+  contract: Address;
+  method: string;
+  params?: ContractParams;
+}
+
+export interface WriteContractOptions {
+  account: Address;
+  address: Address;
+  abi: Abi;
+  functionName: string;
+  params?: ContractParams;
+  gasLimit?: bigint;
+  value?: bigint;
+}
 
 export class Interact {
-  private contractRepository: ContractRepository;
-  private walletRepository: WalletRepository;
+  private _contractRepository: ContractRepository;
+  private _walletRepository: WalletRepository;
 
-  constructor(
-    contractRepository: ContractRepository,
-    walletRepository: WalletRepository,
-  ) {
-    this.contractRepository = contractRepository;
-    this.walletRepository = walletRepository;
+  constructor(contractRepository: ContractRepository, walletRepository: WalletRepository) {
+    this._contractRepository = contractRepository;
+    this._walletRepository = walletRepository;
   }
 
-  public async readContract({
-    contract,
-    method,
-    params,
-  }: ReadContractOptions): Promise<any> {
-    const contractInfos = this.contractRepository.getContract(contract);
+  public async readContract({ contract, method, params }: ReadContractOptions): Promise<any> {
+    const contractInfos = this._contractRepository.getContract(contract);
     if (!contractInfos) {
       throw new Error(`contract ${contract} not found`);
     }
@@ -37,9 +39,7 @@ export class Interact {
       address: contractInfos.address,
       abi: contractInfos.abi,
       client: createPublicClient({
-        transport: contractInfos.rpc.startsWith("ws")
-          ? webSocket(contractInfos.rpc)
-          : http(contractInfos.rpc),
+        transport: contractInfos.rpc.startsWith('ws') ? webSocket(contractInfos.rpc) : http(contractInfos.rpc),
       }),
     });
 
@@ -55,16 +55,16 @@ export class Interact {
     gasLimit,
     value,
   }: WriteContractOptions): Promise<any> {
-    const walletInfos = this.walletRepository.getWallet(account);
+    const walletInfos = this._walletRepository.getWallet(account);
     if (!walletInfos) {
       throw new Error(`wallet ${account} not found`);
     }
-    const contract = this.contractRepository.getContract(address);
+    const contract = this._contractRepository.getContract(address);
     if (!contract) {
       throw new Error(`contract ${address} not found`);
     }
 
-    const rpc = contract.rpc.startsWith("ws")
+    const rpc = contract.rpc.startsWith('ws')
       ? {
           default: {
             webSocket: [contract.rpc],
@@ -78,18 +78,16 @@ export class Interact {
 
     const walletClient = createWalletClient({
       chain: defineChain({
-        name: "custom",
+        name: 'custom',
         id: contract.chainId,
         nativeCurrency: {
-          name: "Ethereum",
-          symbol: "ETH",
+          name: 'Ethereum',
+          symbol: 'ETH',
           decimals: 18,
         },
         rpcUrls: <any>rpc,
       }),
-      transport: contract.rpc.startsWith("ws")
-        ? webSocket(contract.rpc)
-        : http(contract.rpc),
+      transport: contract.rpc.startsWith('ws') ? webSocket(contract.rpc) : http(contract.rpc),
       account: privateKeyToAccount(walletInfos.privateKey),
     });
 

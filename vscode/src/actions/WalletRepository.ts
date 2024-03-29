@@ -1,22 +1,22 @@
-import * as path from "path";
-import * as fs from "fs";
-import { Address } from "viem";
-import { InteractWallet, InteractWallets } from "./types";
+import * as path from 'path';
+import * as fs from 'fs';
+import { Address } from 'viem';
+import { Wallet, Wallets } from './types';
 
 export class WalletRepository {
-  private _wallets: InteractWallet[] = [];
+  private _wallets: Wallet[] = [];
   private readonly _walletsPath: string;
   private readonly _osmiumPath: string;
 
   constructor(workspacePath: string) {
-    this._osmiumPath = path.join(workspacePath, ".osmium");
-    this._walletsPath = path.join(this._osmiumPath, "wallets.json");
+    this._osmiumPath = path.join(workspacePath, '.osmium');
+    this._walletsPath = path.join(this._osmiumPath, 'wallets.json');
     this.load();
   }
 
   private _save(): void {
     const json = JSON.stringify({ wallets: this._wallets });
-    fs.writeFileSync(this._walletsPath, json, { encoding: "utf-8" });
+    fs.writeFileSync(this._walletsPath, json, { encoding: 'utf-8' });
   }
 
   public load(): void {
@@ -25,10 +25,7 @@ export class WalletRepository {
     }
     if (!fs.existsSync(this._walletsPath)) {
       this._wallets = [];
-      fs.writeFileSync(
-        this._walletsPath,
-        JSON.stringify({ wallets: this._wallets }),
-      );
+      fs.writeFileSync(this._walletsPath, JSON.stringify({ wallets: this._wallets }));
     } else {
       const raw = fs.readFileSync(this._walletsPath);
       const json = JSON.parse(raw.toString());
@@ -36,17 +33,15 @@ export class WalletRepository {
     }
   }
 
-  public getWallets(): InteractWallets {
+  public getWallets(): Wallets {
     return this._wallets;
   }
 
-  public getWallet(
-    address: InteractWallet["address"],
-  ): InteractWallet | undefined {
+  public getWallet(address: Wallet['address']): Wallet | undefined {
     return this._wallets.find((w) => w.address === address);
   }
 
-  public createWallet(wallet: InteractWallet): void {
+  public createWallet(wallet: Wallet): void {
     if (this._wallets.find((w) => w.address === wallet.address)) {
       // replace
       this._wallets = this._wallets.map((w) => {

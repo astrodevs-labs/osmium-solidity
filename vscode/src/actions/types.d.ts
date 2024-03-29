@@ -1,10 +1,6 @@
-import { Abi, Address } from "viem";
+import { Abi, Address } from 'viem';
 
-export type RpcUrl =
-  | `ws://${string}`
-  | `wss://${string}`
-  | `http://${string}`
-  | `https://${string}`;
+export type RpcUrl = `ws://${string}` | `wss://${string}` | `http://${string}` | `https://${string}`;
 
 export type DeployContracts = {
   name: string;
@@ -46,14 +42,14 @@ export interface InteractContract {
 
 export type InteractContracts = InteractContract[];
 
-export interface InteractWallet {
+export interface Wallet {
   name: string;
   address: Address;
   privateKey: Address;
   rpc: RpcUrl;
 }
 
-export type InteractWallets = InteractWallet[];
+export type Wallets = Wallet[];
 
 export interface Environment {
   name: string;
@@ -62,22 +58,13 @@ export interface Environment {
 
 export type Environments = Environment[];
 
+export interface Script {
+  name: string;
+  path: string;
+}
+
+export type Scripts = Script[];
+
 export type ContractParam = any;
 
 export type ContractParams = ContractParam[];
-
-export interface ReadContractOptions {
-  contract: Address;
-  method: string;
-  params?: ContractParams;
-}
-
-export interface WriteContractOptions {
-  account: Address;
-  address: Address;
-  abi: Abi;
-  functionName: string;
-  params?: ContractParams;
-  gasLimit?: bigint;
-  value?: bigint;
-}
