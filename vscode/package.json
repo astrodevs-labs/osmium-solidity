@@ -34,6 +34,51 @@
         }
       ]
     },
+    "configuration": {
+      "title": "Osmium",
+      "properties": {
+        "Osmium.linter": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable LINTER feature"
+        },
+        "Osmium.gas estimation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable GAS ESTIMATION feature"
+        },
+        "Osmium.interact": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable INTERACT feature"
+        },
+        "Osmium.deploy": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable DEPLOY feature"
+        },
+        "Osmium.debugger": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable DEBUGGER feature"
+        },
+        "Osmium.tests": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable TESTS VIA FOUNDRY feature"
+        },
+        "Osmium.compilator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable COMPILATOR feature"
+        },
+        "Osmium.references": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable REFERENCES feature"
+        }
+      }
+    },
     "commands": [
       {
         "command": "osmium.format-sol-file",
