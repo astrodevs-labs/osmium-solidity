@@ -1,10 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { Abi, Address } from 'viem';
-import { DeployContract, DeployContracts, InteractContract, InteractContracts, RpcUrl, Script, Scripts } from './types';
-import { v4 as uuidv4 } from 'uuid';
+import { DeployContract, DeployContracts } from './types';
 import { getTomlValue } from '../utils';
-import { workspace } from 'vscode';
+import { v4 as uuidv4 } from 'uuid';
 
 export class DeployContractRepository {
   private _contracts: DeployContracts = [];
@@ -33,41 +31,32 @@ export class DeployContractRepository {
       return;
     }
 
-    const jsonFiles = await workspace.findFiles(`${this._outFolderPath}/**/*.json`);
+    const outFiles = fs
+      .readdirSync(this._outFolderPath, { recursive: true })
+      .filter((f) => f.toString().endsWith('.json'));
 
-    for (const jsonFile of jsonFiles) {
-      const json = JSON.parse(fs.readFileSync(jsonFile.fsPath).toString());
+    const outFilesContent = outFiles.map((f) =>
+      JSON.parse(fs.readFileSync(path.join(this._outFolderPath, f.toString())).toString()),
+    );
 
-      console.log(json);
+    for (const outFile of outFiles) {
+      const outFileContent = JSON.parse(fs.readFileSync(path.join(this._outFolderPath, outFile.toString())).toString());
+      const target = Object.keys(outFileContent.metadata.settings.compilationTarget)[0];
+
+      if (path.parse(target).dir !== path.basename(this._srcFolderPath)) {
+        continue;
+      }
+
+      console.log(outFile.toString());
+
+      this._contracts.push({
+        name: path.basename(outFile.toString(), '.json'),
+        path: target,
+        abi: outFileContent.abi,
+        id: uuidv4(),
+      });
     }
-
-    // const regex = new RegExp(/contract\s+(\w+)\s+is\s+Script/g);
-    //
-    // fs.readdirSync(this._scriptFolderPath).forEach((file) => {
-    //   if (!file.endsWith('.s.sol')) {
-    //     return;
-    //   }
-    //   const content = fs.readFileSync(path.join(this._scriptFolderPath, file), 'utf-8');
-    //   let matches;
-    //
-    //   while ((matches = regex.exec(content)) !== null) {
-    //     this._addScript(matches[1], file);
-    //   }
-    // });
   }
-
-  // _addScript(name: string, path: string): void {
-  //     if (this._scripts.find((s) => s.name === name)) {
-  //         if (this._scripts.find((s) => s.path === path)) {
-  //             return;
-  //         }
-  //     }
-  //     this._scripts.push({
-  //         name,
-  //         path,
-  //         id: uuidv4(),
-  //     });
-  // }
 
   public getContracts(): DeployContracts {
     return this._contracts;

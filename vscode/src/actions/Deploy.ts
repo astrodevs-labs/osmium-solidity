@@ -18,6 +18,8 @@ export interface DeployContractOptions {
   contractId: string;
   walletId: string;
   verify: boolean;
+  gasLimit: number;
+  value: number;
   params: ContractParams[];
 }
 
@@ -39,7 +41,7 @@ export class Deploy {
     this._environmentRepository = environmentRepository;
   }
 
-  public deployScript({ environmentId, scriptId, verify }: DeployScriptOptions): void {
+  public async deployScript({ environmentId, scriptId, verify }: DeployScriptOptions): Promise<any> {
     const environmentInfos = this._environmentRepository.getEnvironment(environmentId);
     const scriptInfos = this._scriptRepository.getScript(scriptId);
 
@@ -53,14 +55,29 @@ export class Deploy {
 
     const command = `forge script ${scriptInfos.path}:${scriptInfos.name} --rpc-url ${environmentInfos.rpc} ${verify ?? '--verify'}`;
 
-    exec(command, (error, _stdout, _stderr) => {
-      if (error) {
-        throw error;
-      }
+    return new Promise((resolve, reject) => {
+      exec(command, (error, stdout, _stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({
+            exitCode: 0,
+            output: stdout,
+          });
+        }
+      });
     });
   }
 
-  public deployContract({ contractId, environmentId, walletId, params, verify }: DeployContractOptions): void {
+  public async deployContract({
+    contractId,
+    environmentId,
+    walletId,
+    gasLimit,
+    value,
+    params,
+    verify,
+  }: DeployContractOptions): Promise<any> {
     const environmentInfos = this._environmentRepository.getEnvironment(environmentId);
     const contractInfos = this._contractRepository.getContract(contractId);
     const walletInfos = this._walletRepository.getWallet(walletId);
@@ -75,12 +92,39 @@ export class Deploy {
       throw new Error(`wallet id ${walletId} not found`);
     }
 
-    const command = `forge create ${contractInfos.path}:${contractInfos.name} --private-key ${walletInfos.privateKey} --rpc-url ${environmentInfos.rpc} ${verify ?? '--verify'} --contructor-args ${params.join(' ')}`;
+    const command = [
+      'forge',
+      'create',
+      `${contractInfos.path}:${contractInfos.name}`,
+      '--private-key',
+      walletInfos.privateKey,
+      '--rpc-url',
+      environmentInfos.rpc,
+      '--value',
+      value.toString(),
+      '--contructor-args',
+      ...params,
+    ];
 
-    exec(command, (error, _stdout, _stderr) => {
-      if (error) {
-        throw error;
-      }
+    if (gasLimit) {
+      command.push('--gas-limit', gasLimit.toString());
+    }
+
+    if (verify) {
+      command.push('--verify');
+    }
+
+    return new Promise((resolve, reject) => {
+      exec(command.join(' '), (error, stdout, _stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({
+            exitCode: 0,
+            output: stdout,
+          });
+        }
+      });
     });
   }
 }
