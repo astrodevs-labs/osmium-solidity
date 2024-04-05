@@ -57,8 +57,8 @@ export class EnvironmentRepository {
     this._save();
   }
 
-  public deleteEnvironment(id: string): void {
-    this._environments = this._environments.filter((e) => e.id !== id);
+  public deleteEnvironment(name: string): void {
+    this._environments = this._environments.filter((e) => e.name !== name);
     this._save();
   }
 }

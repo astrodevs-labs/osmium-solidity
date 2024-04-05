@@ -58,8 +58,8 @@ export class InteractContractRepository {
     this._save();
   }
 
-  public deleteContract(id: string): void {
-    this._contracts = this._contracts.filter((c) => c.id !== id);
+  public deleteContract(name: string): void {
+    this._contracts = this._contracts.filter((c) => c.name !== name);
     this._save();
   }
 }

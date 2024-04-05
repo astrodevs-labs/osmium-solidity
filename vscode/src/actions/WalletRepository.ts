@@ -58,8 +58,8 @@ export class WalletRepository {
     this._save();
   }
 
-  public deleteWallet(id: string): void {
-    this._wallets = this._wallets.filter((w) => w.id !== id);
+  public deleteWallet(name: string): void {
+    this._wallets = this._wallets.filter((w) => w.name !== name);
     this._save();
   }
 }

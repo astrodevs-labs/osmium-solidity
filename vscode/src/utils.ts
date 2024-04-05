@@ -11,6 +11,9 @@ function getNonce(): string {
 }
 
 function getTomlValue(path: string, key: string): string {
+  if (!fs.existsSync(path)) {
+    return key;
+  }
   const tomlContent = fs.readFileSync(path, 'utf8');
   const parsedToml = toml.parse(tomlContent);
 

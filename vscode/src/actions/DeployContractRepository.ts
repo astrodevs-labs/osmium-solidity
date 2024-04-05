@@ -47,8 +47,6 @@ export class DeployContractRepository {
         continue;
       }
 
-      console.log(outFile.toString());
-
       this._contracts.push({
         name: path.basename(outFile.toString(), '.json'),
         path: target,

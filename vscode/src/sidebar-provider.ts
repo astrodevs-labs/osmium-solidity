@@ -6,48 +6,18 @@ import { Interact } from './actions/Interact';
 import { WalletRepository } from './actions/WalletRepository';
 import { RpcUrl } from './actions/types';
 import { EnvironmentRepository } from './actions/EnvironmentRepository';
-import { getNonce } from './utils';
+import { getNonce, getTomlValue } from './utils';
 import { ScriptRepository } from './actions/ScriptRepository';
 import { DeployContractRepository } from './actions/DeployContractRepository';
 import { Deploy } from './actions/Deploy';
-
-enum MessageType {
-  GET_WALLETS = 'GET_WALLETS',
-  WALLETS = 'WALLETS',
-  GET_INTERACT_CONTRACTS = 'GET_INTERACT_CONTRACTS',
-  INTERACT_CONTRACTS = 'INTERACT_CONTRACTS',
-  GET_DEPLOY_CONTRACTS = 'GET_DEPLOY_CONTRACTS',
-  DEPLOY_CONTRACTS = 'DEPLOY_CONTRACTS',
-  WRITE = 'WRITE',
-  WRITE_RESPONSE = 'WRITE_RESPONSE',
-  READ = 'READ',
-  GET_SCRIPTS = 'GET_SCRIPTS',
-  SCRIPTS = 'SCRIPTS',
-  GET_ENVIRONMENTS = 'GET_ENVIRONMENTS',
-  ENVIRONMENTS = 'ENVIRONMENTS',
-  READ_RESPONSE = 'READ_RESPONSE',
-  EDIT_WALLETS = 'EDIT_WALLETS',
-  EDIT_CONTRACTS = 'EDIT_CONTRACTS',
-  EDIT_ENVIRONMENT = 'EDIT_ENVIRONMENT',
-  DEPLOY_SCRIPT = 'DEPLOY_SCRIPT',
-  DEPLOY_SCRIPT_RESPONSE = 'DEPLOY_SCRIPT_RESPONSE',
-  DEPLOY_CONTRACT = 'DEPLOY_CONTRACT',
-  DEPLOY_CONTRACT_RESPONSE = 'DEPLOY_CONTRACT_RESPONSE',
-}
-
-type Message = {
-  type: MessageType;
-  data: any;
-};
-
-enum InputAction {
-  ADD = 'Add',
-  REMOVE = 'Remove',
-}
+import { InputAction, MessageType } from './enums';
+import { Message } from './types';
+import * as path from 'path';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'osmium.sidebar';
-  private _watcher?: vscode.FileSystemWatcher;
+  private _osmiumWatcher?: vscode.FileSystemWatcher;
+  private _outWatcher?: vscode.FileSystemWatcher;
   private _view?: vscode.WebviewView;
 
   private _interactContractRepository?: InteractContractRepository;
@@ -60,13 +30,61 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
-  public async resolveWebviewView(
-    webviewView: vscode.WebviewView,
-    _context: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken,
-  ) {
-    this._view = webviewView;
+  async _osmiumWatcherCallback(uri: vscode.Uri) {
+    if (!this._view) return;
+    const basename = path.basename(uri.fsPath, '.json');
+    if (basename === 'contracts') {
+      this._interactContractRepository?.load();
+      await this._view.webview.postMessage({
+        type: MessageType.INTERACT_CONTRACTS,
+        contracts: this._interactContractRepository?.getContracts(),
+      });
+    }
+    if (basename === 'wallets') {
+      this._walletRepository?.load();
+      await this._view.webview.postMessage({
+        type: MessageType.WALLETS,
+        wallets: this._walletRepository?.getWallets(),
+      });
+    }
+    if (basename === 'environments') {
+      this._environmentRepository?.load();
+      await this._view.webview.postMessage({
+        type: MessageType.ENVIRONMENTS,
+        environments: this._environmentRepository?.getEnvironments(),
+      });
+    }
+  }
 
+  async _outWatcherCallback() {
+    if (!this._view) {
+      return;
+    }
+    this._deployContractRepository?.load();
+    await this._view.webview.postMessage({
+      type: MessageType.DEPLOY_CONTRACTS,
+      contracts: this._deployContractRepository?.getContracts(),
+    });
+  }
+
+  async _showInputsBox(inputsBox: any) {
+    const tmp = inputsBox;
+
+    for (const input of Object.keys(inputsBox)) {
+      const value = await window.showInputBox({
+        prompt: inputsBox[input],
+        ignoreFocusOut: true,
+      });
+      if (!value) {
+        return undefined;
+      }
+      tmp[input] = value;
+    }
+
+    return tmp;
+  }
+
+  _init() {
     if (vscode.workspace.workspaceFolders?.length) {
       const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
       this._interactContractRepository = new InteractContractRepository(fsPath);
@@ -82,277 +100,236 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         this._scriptRepository,
         this._environmentRepository,
       );
-
-      const pattern = new vscode.RelativePattern(fsPath, '.osmium/*.json');
-      this._watcher = vscode.workspace.createFileSystemWatcher(pattern);
-
-      this._watcher.onDidChange(async (uri) => {
-        if (!this._view) {
-          return;
-        }
-        if (uri.fsPath.endsWith('contracts.json')) {
-          this._interactContractRepository?.load();
-          await this._view.webview.postMessage({
-            type: MessageType.INTERACT_CONTRACTS,
-            contracts: this._interactContractRepository?.getContracts(),
-          });
-        }
-        if (uri.fsPath.endsWith('wallets.json')) {
-          this._walletRepository?.load();
-          await this._view.webview.postMessage({
-            type: MessageType.WALLETS,
-            wallets: this._walletRepository?.getWallets(),
-          });
-        }
-        if (uri.fsPath.endsWith('environments.json')) {
-          this._environmentRepository?.load();
-          await this._view.webview.postMessage({
-            type: MessageType.ENVIRONMENTS,
-            environments: this._environmentRepository?.getEnvironments(),
-          });
-        }
-      });
+      this._osmiumWatcher = vscode.workspace.createFileSystemWatcher('**/.osmium/*.json');
+      this._osmiumWatcher.onDidChange((uri) => this._osmiumWatcherCallback(uri));
+      this._outWatcher = vscode.workspace.createFileSystemWatcher(
+        `**/${getTomlValue('foundry.toml', 'out') ?? 'out'}/*.json`,
+      );
+      this._outWatcher.onDidChange(() => this._outWatcherCallback());
     }
+  }
+
+  async _onMessageCallback(message: Message) {
+    if (
+      !this._view ||
+      !this._interactContractRepository ||
+      !this._deployContractRepository ||
+      !this._walletRepository ||
+      !this._environmentRepository ||
+      !this._scriptRepository ||
+      !this._interact ||
+      !this._deploy
+    ) {
+      return;
+    }
+    switch (message.type) {
+      case MessageType.GET_WALLETS:
+        await this._view.webview.postMessage({
+          type: MessageType.WALLETS,
+          wallets: this._walletRepository.getWallets(),
+        });
+        break;
+      case MessageType.GET_INTERACT_CONTRACTS:
+        await this._view.webview.postMessage({
+          type: MessageType.INTERACT_CONTRACTS,
+          contracts: this._interactContractRepository.getContracts(),
+        });
+        break;
+      case MessageType.GET_SCRIPTS:
+        await this._view.webview.postMessage({
+          type: MessageType.SCRIPTS,
+          scripts: this._scriptRepository.getScripts(),
+        });
+        break;
+      case MessageType.GET_DEPLOY_CONTRACTS:
+        await this._view.webview.postMessage({
+          type: MessageType.DEPLOY_CONTRACTS,
+          contracts: this._deployContractRepository.getContracts(),
+        });
+        break;
+      case MessageType.GET_ENVIRONMENTS:
+        await this._view.webview.postMessage({
+          type: MessageType.ENVIRONMENTS,
+          environments: this._environmentRepository.getEnvironments(),
+        });
+        break;
+      case MessageType.WRITE:
+        let value = BigInt(message.data.value);
+
+        if (message.data.valueUnit === 'ether') {
+          value = value * BigInt(10) ** BigInt(18);
+        } else if (message.data.valueUnit === 'gwei') {
+          value = value * BigInt(10) ** BigInt(9);
+        }
+
+        const writeResponse = await this._interact.writeContract({
+          walletId: message.data.wallet,
+          contractId: message.data.contract,
+          functionName: message.data.function,
+          params: message.data.inputs,
+          gasLimit: message.data.gasLimit > 0 ? message.data.gasLimit : undefined,
+          value: value > 0 ? value : undefined,
+        });
+        await this._view.webview.postMessage({
+          type: MessageType.WRITE_RESPONSE,
+          response: writeResponse,
+        });
+        break;
+      case MessageType.READ:
+        const readResponse = await this._interact.readContract({
+          contractId: message.data.contract,
+          method: message.data.function,
+          params: message.data.inputs,
+        });
+        await this._view.webview.postMessage({
+          type: MessageType.READ_RESPONSE,
+          response: readResponse,
+        });
+        break;
+      case MessageType.EDIT_WALLETS:
+        const walletAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
+          title: 'Edit Wallets',
+          ignoreFocusOut: true,
+        });
+
+        if (walletAction === InputAction.ADD) {
+          const inputs = await this._showInputsBox({
+            walletName: 'Enter name',
+            walletAddress: 'Enter address',
+            walletPk: 'Enter private key',
+            walletRpc: 'Enter rpc',
+          });
+          if (!inputs) return;
+          if (!inputs.walletAddress.startsWith('0x') || !inputs.walletPk.startsWith('0x')) return;
+          if (!inputs.walletRpc.startsWith('http') && !inputs.walletRpc.startsWith('ws')) return;
+
+          this._walletRepository.createWallet(
+            inputs.walletName,
+            <Address>inputs.walletAddress,
+            <Address>inputs.walletPk,
+            <RpcUrl>inputs.walletRpc,
+          );
+        }
+
+        if (walletAction === InputAction.REMOVE) {
+          const walletName = await window.showQuickPick(
+            this._walletRepository.getWallets().map((w) => w.name),
+            {
+              title: 'Remove wallet',
+              ignoreFocusOut: true,
+            },
+          );
+          if (!walletName) return;
+          this._walletRepository.deleteWallet(walletName);
+        }
+        break;
+      case MessageType.EDIT_CONTRACTS:
+        const contractAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
+          title: 'Edit Wallets',
+          ignoreFocusOut: true,
+        });
+
+        if (contractAction === InputAction.ADD) {
+          const inputs = await this._showInputsBox({
+            contractName: 'Enter name',
+            contractAddress: 'Enter address',
+            contractAbi: 'Enter abi',
+            contractRpc: 'Enter rpc',
+            contractChainId: 'Enter chain id',
+          });
+          if (!inputs || !inputs.contractAddress.startsWith('0x')) return;
+          if (!inputs.contractRpc.startsWith('http') && !inputs.contractRpc.startsWith('ws')) return;
+          this._interactContractRepository.createContract(
+            <Address>inputs['contractAddress'],
+            JSON.parse(inputs['contractAbi']),
+            parseInt(inputs['contractChainId']),
+            inputs['contractName'],
+            <RpcUrl>inputs['contractRpc'],
+          );
+        }
+        if (contractAction === InputAction.REMOVE) {
+          const contractName = await window.showQuickPick(
+            this._interactContractRepository.getContracts().map((c) => c.name),
+            {
+              title: 'Remove contract',
+              ignoreFocusOut: true,
+            },
+          );
+          if (!contractName) return;
+          this._interactContractRepository.deleteContract(contractName);
+        }
+        break;
+      case MessageType.EDIT_ENVIRONMENT:
+        const environmentAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
+          title: 'Edit environment',
+          ignoreFocusOut: true,
+        });
+        if (environmentAction === InputAction.ADD) {
+          const inputs = await this._showInputsBox({
+            environmentName: 'Enter name',
+            environmentRpc: 'Enter rpc',
+          });
+          if (!inputs) return;
+          if (!inputs.environmentRpc.startsWith('http') && !inputs.environmentRpc.startsWith('ws')) return;
+
+          this._environmentRepository.createEnvironment(inputs.environmentName, <RpcUrl>inputs.environmentRpc);
+        }
+        if (environmentAction === InputAction.REMOVE) {
+          const environmentName = await window.showQuickPick(
+            this._environmentRepository.getEnvironments().map((e) => e.name),
+            {
+              title: 'Remove environment',
+              ignoreFocusOut: true,
+            },
+          );
+          if (!environmentName) return;
+          this._environmentRepository.deleteEnvironment(environmentName);
+        }
+        break;
+      case MessageType.DEPLOY_SCRIPT:
+        const deployScriptResponse = this._deploy.deployScript({
+          environmentId: message.data.environment,
+          scriptId: message.data.script,
+          verify: message.data.verify,
+        });
+        await this._view.webview.postMessage({
+          type: MessageType.DEPLOY_SCRIPT_RESPONSE,
+          response: deployScriptResponse,
+        });
+        break;
+      case MessageType.DEPLOY_CONTRACT:
+        const deployContractResponse = this._deploy.deployContract({
+          contractId: message.data.contract,
+          environmentId: message.data.environment,
+          walletId: message.data.wallet,
+          value: message.data.value,
+          gasLimit: message.data.gasLimit,
+          params: message.data.inputs,
+          verify: message.data.verify,
+        });
+        await this._view.webview.postMessage({
+          type: MessageType.DEPLOY_CONTRACT_RESPONSE,
+          response: deployContractResponse,
+        });
+        break;
+    }
+  }
+
+  public async resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    _context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken,
+  ) {
+    this._view = webviewView;
+    this._init();
 
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [this._extensionUri],
     };
-
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
-    webviewView.webview.onDidReceiveMessage(async (message: Message) => {
-      if (
-        !this._view ||
-        !this._interactContractRepository ||
-        !this._deployContractRepository ||
-        !this._walletRepository ||
-        !this._environmentRepository ||
-        !this._scriptRepository ||
-        !this._interact ||
-        !this._deploy
-      ) {
-        return;
-      }
-      switch (message.type) {
-        case MessageType.GET_WALLETS:
-          await this._view.webview.postMessage({
-            type: MessageType.WALLETS,
-            wallets: this._walletRepository.getWallets(),
-          });
-          break;
-        case MessageType.GET_INTERACT_CONTRACTS:
-          await this._view.webview.postMessage({
-            type: MessageType.INTERACT_CONTRACTS,
-            contracts: this._interactContractRepository.getContracts(),
-          });
-          break;
-        case MessageType.GET_SCRIPTS:
-          await this._view.webview.postMessage({
-            type: MessageType.SCRIPTS,
-            scripts: this._scriptRepository.getScripts(),
-          });
-          break;
-        case MessageType.GET_DEPLOY_CONTRACTS:
-          await this._view.webview.postMessage({
-            type: MessageType.DEPLOY_CONTRACTS,
-            contracts: this._deployContractRepository.getContracts(),
-          });
-          break;
-        case MessageType.GET_ENVIRONMENTS:
-          await this._view.webview.postMessage({
-            type: MessageType.ENVIRONMENTS,
-            environments: this._environmentRepository.getEnvironments(),
-          });
-          break;
-        case MessageType.WRITE:
-          let value = BigInt(message.data.value);
-
-          if (message.data.valueUnit === 'ether') {
-            value = value * BigInt(10) ** BigInt(18);
-          } else if (message.data.valueUnit === 'gwei') {
-            value = value * BigInt(10) ** BigInt(9);
-          }
-
-          const writeResponse = await this._interact.writeContract({
-            walletId: message.data.wallet,
-            contractId: message.data.contract,
-            functionName: message.data.function,
-            params: message.data.inputs,
-            gasLimit: message.data.gasLimit > 0 ? message.data.gasLimit : undefined,
-            value: value > 0 ? value : undefined,
-          });
-          await this._view.webview.postMessage({
-            type: MessageType.WRITE_RESPONSE,
-            response: writeResponse,
-          });
-          break;
-        case MessageType.READ:
-          const readResponse = await this._interact.readContract({
-            contractId: message.data.contract,
-            method: message.data.function,
-            params: message.data.inputs,
-          });
-          await this._view.webview.postMessage({
-            type: MessageType.READ_RESPONSE,
-            response: readResponse,
-          });
-          break;
-        case MessageType.EDIT_WALLETS:
-          const walletAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-            title: 'Edit Wallets',
-            ignoreFocusOut: true,
-          });
-
-          if (walletAction === InputAction.ADD) {
-            const walletName = await window.showInputBox({
-              prompt: 'Enter name',
-              ignoreFocusOut: true,
-            });
-            const walletAddress = await window.showInputBox({
-              prompt: 'Enter address',
-              ignoreFocusOut: true,
-            });
-            const walletPk = await window.showInputBox({
-              prompt: 'Enter private key',
-              ignoreFocusOut: true,
-            });
-            const walletRpc = await window.showInputBox({
-              prompt: 'Enter rpc',
-              ignoreFocusOut: true,
-            });
-
-            if (!walletName || !walletAddress || !walletPk || !walletRpc) return;
-            if (!walletAddress.startsWith('0x') || !walletPk.startsWith('0x')) return;
-            if (!walletRpc.startsWith('http') && !walletRpc.startsWith('ws')) return;
-
-            this._walletRepository.createWallet(
-              walletName,
-              <Address>walletAddress,
-              <Address>walletPk,
-              <RpcUrl>walletRpc,
-            );
-          }
-
-          if (walletAction === InputAction.REMOVE) {
-            const walletAddress = await window.showInputBox({
-              prompt: 'Enter address',
-              ignoreFocusOut: true,
-            });
-            if (!walletAddress) return;
-            this._walletRepository.deleteWallet(<Address>walletAddress);
-          }
-          break;
-        case MessageType.EDIT_CONTRACTS:
-          const contractAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-            title: 'Edit Wallets',
-            ignoreFocusOut: true,
-          });
-
-          if (contractAction === InputAction.ADD) {
-            const contractName = await window.showInputBox({
-              prompt: 'Enter name',
-              ignoreFocusOut: true,
-            });
-            const contractAddress = await window.showInputBox({
-              prompt: 'Enter address',
-              ignoreFocusOut: true,
-            });
-            const contractAbi = await window.showInputBox({
-              prompt: 'Enter abi',
-              ignoreFocusOut: true,
-            });
-            const contractRpc = await window.showInputBox({
-              prompt: 'Enter rpc',
-              ignoreFocusOut: true,
-            });
-            const contractChainId = await window.showInputBox({
-              prompt: 'Enter chain id',
-              ignoreFocusOut: true,
-            });
-
-            if (!contractName || !contractAddress || !contractAbi || !contractRpc || !contractChainId) return;
-            if (!contractAddress.startsWith('0x')) return;
-            if (!contractRpc.startsWith('http') && !contractRpc.startsWith('ws')) return;
-
-            this._interactContractRepository.createContract(
-              <Address>contractAddress,
-              JSON.parse(contractAbi),
-              parseInt(contractChainId),
-              contractName,
-              <RpcUrl>contractRpc,
-            );
-          }
-
-          if (contractAction === InputAction.REMOVE) {
-            const contractAddress = await window.showInputBox({
-              prompt: 'Enter address',
-            });
-            if (!contractAddress) return;
-            this._interactContractRepository.deleteContract(<Address>contractAddress);
-          }
-          break;
-        // start
-        case MessageType.EDIT_ENVIRONMENT:
-          const environmentAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-            title: 'Edit environment',
-            ignoreFocusOut: true,
-          });
-
-          if (environmentAction === InputAction.ADD) {
-            const environmentName = await window.showInputBox({
-              prompt: 'Enter name',
-              ignoreFocusOut: true,
-            });
-            const environmentRpc = await window.showInputBox({
-              prompt: 'Enter rpc',
-              ignoreFocusOut: true,
-            });
-
-            if (!environmentName || !environmentRpc) return;
-            if (!environmentRpc.startsWith('http') && !environmentRpc.startsWith('ws')) return;
-
-            this._environmentRepository.createEnvironment(environmentName, <RpcUrl>environmentRpc);
-          }
-
-          if (environmentAction === InputAction.REMOVE) {
-            const environmentName = await window.showInputBox({
-              prompt: 'Enter name',
-              ignoreFocusOut: true,
-            });
-            if (!environmentName) return;
-            this._environmentRepository.deleteEnvironment(environmentName);
-          }
-          break;
-
-        case MessageType.DEPLOY_SCRIPT:
-          const deployScriptResponse = this._deploy.deployScript({
-            environmentId: message.data.environment,
-            scriptId: message.data.script,
-            verify: message.data.verify,
-          });
-          await this._view.webview.postMessage({
-            type: MessageType.DEPLOY_SCRIPT_RESPONSE,
-            response: deployScriptResponse,
-          });
-          break;
-
-        case MessageType.DEPLOY_CONTRACT:
-          const deployContractResponse = this._deploy.deployContract({
-            contractId: message.data.contract,
-            environmentId: message.data.environment,
-            walletId: message.data.wallet,
-            value: message.data.value,
-            gasLimit: message.data.gasLimit,
-            params: message.data.inputs,
-            verify: message.data.verify,
-          });
-          await this._view.webview.postMessage({
-            type: MessageType.DEPLOY_CONTRACT_RESPONSE,
-            response: deployContractResponse,
-          });
-          break;
-      }
+    webviewView.webview.onDidReceiveMessage((e) => {
+      this._onMessageCallback(e);
     });
   }
 
