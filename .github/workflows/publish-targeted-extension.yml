@@ -89,7 +89,7 @@ jobs:
         run: pnpm install
 
       - name: Publish
-        run: pnpm run publish:extension ${{ inputs.pre-release && '--pre-release' || '' }} ${{ inputs.version }} --target ${{ inputs.code-target }}
+        run: pnpm run publish:extension -- --no-update-package-json ${{ inputs.pre-release && '--pre-release' || '' }} ${{ inputs.version }} --target ${{ inputs.code-target }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
