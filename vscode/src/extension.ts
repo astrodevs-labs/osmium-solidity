@@ -5,7 +5,7 @@ import {
 	LanguageClient,
 } from 'vscode-languageclient/node';
 import { createLinterClient } from './linter';
-import { createSlitherClient } from './slither';
+// import { createSlitherClient } from './slither';
 import registerForgeFmtLinter from './fmt-wrapper';
 import { TestManager } from './tests/test-manager';
 import { createFoundryCompilerClient } from './foundry-compiler';
@@ -18,21 +18,51 @@ let foundryCompilerClient: LanguageClient;
 let testsPositionsClient: LanguageClient;
 let testManager: TestManager;
 
+const configuration = workspace.getConfiguration('Osmium');
+console.log('Osmium configuration:', configuration);
+
+const isLinterEnable = configuration.get('linter');
+const isSlitherEnable = configuration.get('slither');
+const isGasEstimationEnable = configuration.get('gas estimation');
+const isInteractEnable = configuration.get('interact');
+const isDeployEnable = configuration.get('deploy');
+const isDebuggerEnable = configuration.get('debugger');
+const isTestsEnable = configuration.get('tests');
+const isCompilatorEnable = configuration.get('compilator');
+const isreferencesEnable = configuration.get('references');
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: ExtensionContext) {
-	linterClient = await createLinterClient(context);
-	slitherClient = await createSlitherClient(context);
-	foundryCompilerClient = await createFoundryCompilerClient(context);
-	testsPositionsClient = await createTestsPositionsClient(context);
-	if (workspace.workspaceFolders?.length) {
-		testManager = new TestManager(testsPositionsClient, workspace.workspaceFolders[0].uri.fsPath);
+	if (isLinterEnable) {
+		linterClient = await createLinterClient(context);
+		registerForgeFmtLinter(context);
+		context.subscriptions.push(linterClient);
 	}
-
-	registerForgeFmtLinter(context);
-	registerGasEstimation();
-	
-	context.subscriptions.push(linterClient, slitherClient, foundryCompilerClient, testsPositionsClient, testManager.testController);
+	if (isSlitherEnable) {
+		// slitherClient = await createSlitherClient(context);
+		// context.subscriptions.push(slitherClient);
+	}
+	if (isGasEstimationEnable) {
+		registerGasEstimation();
+	}
+	if (isInteractEnable) {
+	}
+	if (isDeployEnable) {
+	}
+	if (isDebuggerEnable) {
+	}
+	if (workspace.workspaceFolders?.length && isTestsEnable) {
+		testsPositionsClient = await createTestsPositionsClient(context);
+		testManager = new TestManager(testsPositionsClient, workspace.workspaceFolders[0].uri.fsPath);
+		context.subscriptions.push(testManager.testController, testsPositionsClient);
+	}
+	if (isCompilatorEnable) {
+		foundryCompilerClient = await createFoundryCompilerClient(context);
+		context.subscriptions.push(foundryCompilerClient);
+	}
+	if (isreferencesEnable) {
+	}
 
 	const folders = workspace.workspaceFolders;
 	if (folders) {

@@ -42,6 +42,11 @@
           "default": true,
           "description": "Enable LINTER feature"
         },
+        "Osmium.slither": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable SLITHER feature"
+        },
         "Osmium.gas estimation": {
           "type": "boolean",
           "default": true,
@@ -128,6 +133,7 @@
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "build:extension": "webpack",
     "build": "webpack",
     "lint": "eslint src --ext ts --fix",
     "lint:cehck": "eslint src --ext ts",

@@ -1,0 +1,78 @@
+// // The module 'vscode' contains the VS Code extensibility API
+// // Import the module and reference it with the alias vscode in your code below
+// import { workspace, ExtensionContext } from 'vscode';
+// import {
+// 	LanguageClient,
+// } from 'vscode-languageclient/node';
+// import { createLinterClient } from './linter';
+// // import { createSlitherClient } from './slither';
+// import registerForgeFmtLinter from './fmt-wrapper';
+// import { TestManager } from './tests/test-manager';
+// import { createFoundryCompilerClient } from './foundry-compiler';
+// import { createTestsPositionsClient } from './tests-positions';
+// import { registerGasEstimation } from './gas-estimation';
+
+// let linterClient: LanguageClient;
+// // let slitherClient: LanguageClient;
+// let foundryCompilerClient: LanguageClient;
+// let testsPositionsClient: LanguageClient;
+// let testManager: TestManager;
+
+// const configuration = workspace.getConfiguration('Osmium');
+// console.log('Osmium configuration:', configuration);
+// const isCompilatorEnable = configuration.get('compilator');
+// console.log('isCompilatorEnable', isCompilatorEnable);
+
+// const isDebuggerEnable = configuration.get('debugger');
+// console.log('isDebuggerEnable', isDebuggerEnable);
+
+// const isDeployerEnable = configuration.get('deploy');
+// console.log('isDeployerEnable', isDeployerEnable);
+
+// const isGasEstimationEnable = configuration.get('gas estimation');
+// console.log('isGasEstimationEnable', isGasEstimationEnable);
+
+// const isInteractorEnable = configuration.get('interact');
+// console.log('isInteractorEnable', isInteractorEnable);
+
+// const isLinterEnable = configuration.get('linter');
+// console.log('isLinterEnable', isLinterEnable);
+
+// const isreferencesEnable = configuration.get('references');
+// console.log('isreferencesEnable', isreferencesEnable);
+
+// const isTestsEnable = configuration.get('tests');
+// console.log('isTestsEnable', isTestsEnable);
+
+
+
+
+// // This method is called when your extension is activated
+// // Your extension is activated the very first time the command is executed
+// export async function activate(context: ExtensionContext) {
+// 	linterClient = await createLinterClient(context);
+// 	// slitherClient = await createSlitherClient(context);
+// 	foundryCompilerClient = await createFoundryCompilerClient(context);
+// 	testsPositionsClient = await createTestsPositionsClient(context);
+// 	if (workspace.workspaceFolders?.length) {
+// 		testManager = new TestManager(testsPositionsClient, workspace.workspaceFolders[0].uri.fsPath);
+// 	}
+	
+// 	registerForgeFmtLinter(context);
+// 	registerGasEstimation();
+	
+// 	context.subscriptions.push(linterClient, foundryCompilerClient, testsPositionsClient, testManager.testController);
+
+// 	const folders = workspace.workspaceFolders;
+// 	if (folders) {
+// 		const files = await workspace.findFiles('**/*.sol', `${folders[0].uri.fsPath}/**`);
+// 		files.forEach(file => {
+// 			if (!file.path.includes('forge-std')) {
+// 				workspace.openTextDocument(file);
+// 			}
+// 		});
+// 	}
+// }
+
+// // This method is called when your extension is deactivated
+// export function deactivate() { }
