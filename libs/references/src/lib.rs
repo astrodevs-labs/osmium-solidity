@@ -4,6 +4,8 @@ mod node_finder;
 mod types;
 mod usages;
 mod utils;
+mod complete_finder;
+mod scope_finder;
 use definitions::DefinitionFinder;
 use error::ReferencesError;
 use log::{info, warn};
@@ -16,7 +18,7 @@ use types::InteractableNode;
 pub use types::{Location, Position};
 use usages::UsagesFinder;
 
-use crate::utils::get_location;
+use crate::{scope_finder::ScopeFinder, utils::get_location};
 
 #[derive(Debug)]
 pub struct ReferencesProvider {
@@ -32,6 +34,30 @@ impl ReferencesProvider {
     pub fn update_file_content(&mut self) -> Result<(), ReferencesError> {
         self.files = extract_ast_from_foundry(&self.base_path)?; // will always find the root foundry project
         Ok(())
+    }
+
+    pub fn get_scoped_completes(&self, uri: &str, position: Position) -> Vec<String> {
+        if let Some(file) = self.files.iter().find(|file| file.file.path == uri) {
+            let scope_finder = ScopeFinder::new(file.file.content, position);
+            let mut complete_finder = complete_finder::CompleteFinder::new(
+                scope_finder.scope,
+                scope_finder.root_scope,
+                scope_finder.parent_scopes,
+            );
+            let completes: Vec<InteractableNode> = vec![];
+            for file in &self.files {
+                let src = &file.ast;
+                let is_self = uri.contains(&file.file.path);
+                completes.append(complete_finder.find(src, is_self));
+            }
+            return completes
+                .iter()
+                .map(|node| node.get_name())
+                .filter(|name| name.is_some())
+                .map(|name| name.unwrap())
+                .collect();
+        }
+        vec![]
     }
 
     fn get_node(

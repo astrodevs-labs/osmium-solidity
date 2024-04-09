@@ -49,6 +49,17 @@ pub enum InteractableNode {
     IdentifierPath(IdentifierPath),
 }
 impl InteractableNode {
+    pub fn get_scope(&self) -> i64 {
+        match self {
+            InteractableNode::ContractDefinition(node) => node.scope,
+            InteractableNode::FunctionDefinition(node) => node.scope,
+            InteractableNode::StructDefinition(node) => node.scope,
+            InteractableNode::VariableDeclaration(node) => node.scope,
+            InteractableNode::ImportDirective(node) => node.scope,
+            _ => -1,
+        }
+    }
+    
     pub fn get_id(&self) -> i64 {
         match self {
             InteractableNode::ContractDefinition(node) => node.id,

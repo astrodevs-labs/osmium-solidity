@@ -59,6 +59,11 @@ impl LanguageServer for Backend {
                 references_provider: Some(OneOf::Left(true)),
                 implementation_provider: Some(ImplementationProviderCapability::Simple(true)),
                 type_definition_provider: Some(TypeDefinitionProviderCapability::Simple(true)),
+                completion_provider: Some(CompletionOptions {
+                    resolve_provider: Some(false),
+                    trigger_characters: Some(vec![".".to_string()]),
+                    ..Default::default()
+                }),
                 ..ServerCapabilities::default()
             },
         })
@@ -123,6 +128,21 @@ impl LanguageServer for Backend {
             )));
         }
         info!("No definition found");
+        Ok(None)
+    }
+
+    async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
+        info!("Completion requested");
+        let mut position = params.text_document_position.position;
+        position.line += 1;
+        position.character += 1;
+        self.references_provider.lock().await.get_scoped_completes(
+            &normalize_path(&params.text_document_position.text_document.uri.path()),
+            osmium_libs_solidity_references::Position {
+                line: position.line,
+                column: position.character,
+            }
+        );
         Ok(None)
     }
 

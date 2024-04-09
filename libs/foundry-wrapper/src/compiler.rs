@@ -5,7 +5,8 @@ use crate::{
     utils::{check_executable_argument, find_forge_executable, find_projects_paths},
     FoundryJsonFile,
 };
-use osmium_libs_solidity_path_utils::normalize_path;
+use log::info;
+use osmium_libs_solidity_path_utils::{normalize_path, slashify_path};
 use std::process::Command;
 
 #[derive(Debug)]
@@ -34,11 +35,10 @@ impl Compiler {
     }
 
     fn find_closest_workspace(&self, file_path: &str) -> Option<String> {
-        let filepath = normalize_path(file_path);
         self.inner
             .workspaces
             .iter()
-            .filter(|path| filepath.starts_with(path.as_str()))
+            .filter(|path| file_path.starts_with(path.as_str()))
             .max_by_key(|path| path.len())
             .map(|path| path.to_string())
     }
@@ -47,7 +47,7 @@ impl Compiler {
         let paths = find_projects_paths(&root_folder)?;
         for path in paths {
             if let Some(path) = path.to_str() {
-                self.inner.workspaces.push(normalize_path(path));
+                self.inner.workspaces.push(slashify_path(path));
             }
         }
         self.inner.root_path = root_folder;
@@ -80,6 +80,7 @@ impl Compiler {
         let workspace_path = self
             .find_closest_workspace(file_path)
             .ok_or_else(|| Error::InvalidFilePath(file_path.to_string()))?;
+        info!("Workspace to compile: {}", workspace_path);
         let _ = Command::new(&self.inner.executable_path)
             .current_dir(&workspace_path)
             .arg("compile")
