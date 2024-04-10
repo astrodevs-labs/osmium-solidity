@@ -49,6 +49,32 @@ pub enum InteractableNode {
     IdentifierPath(IdentifierPath),
 }
 impl InteractableNode {
+
+    pub fn get_name(&self) -> String
+    {
+        match self {
+            InteractableNode::ContractDefinition(node) => node.name.clone(),
+            InteractableNode::FunctionDefinition(node) => node.name.clone(),
+            InteractableNode::ModifierDefinition(node) => node.name.clone(),
+            InteractableNode::StructDefinition(node) => node.name.clone(),
+            InteractableNode::EnumDefinition(node) => node.name.clone(),
+            InteractableNode::VariableDeclaration(node) => node.name.clone(),
+            InteractableNode::EventDefinition(node) => node.name.clone(),
+            InteractableNode::EnumValue(node) => node.name.clone(),
+            InteractableNode::UsingForDirective(node) => "".to_string(),
+            InteractableNode::ImportDirective(node) => "".to_string(),
+            InteractableNode::ErrorDefinition(node) => node.name.clone(),
+            InteractableNode::FunctionCall(node) => "".to_string(),
+            InteractableNode::ModifierInvocation(node) => "".to_string(),
+            InteractableNode::InheritanceSpecifier(node) => "".to_string(),
+            InteractableNode::Identifier(node) => node.name.clone(),
+            InteractableNode::MemberAccess(node) => node.member_name.clone(),
+            InteractableNode::NewExpression(node, _) => "".to_string(),
+            InteractableNode::UserDefinedTypeName(node) => node.name.clone().unwrap(),
+            InteractableNode::IdentifierPath(node) => "".to_string(),
+        }
+    }
+
     pub fn get_scope(&self) -> i64 {
         match self {
             InteractableNode::ContractDefinition(node) => node.scope,

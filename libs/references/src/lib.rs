@@ -38,23 +38,21 @@ impl ReferencesProvider {
 
     pub fn get_scoped_completes(&self, uri: &str, position: Position) -> Vec<String> {
         if let Some(file) = self.files.iter().find(|file| file.file.path == uri) {
-            let scope_finder = ScopeFinder::new(file.file.content, position);
+            let scope_finder = ScopeFinder::new(file.file.content.clone(), position);
             let mut complete_finder = complete_finder::CompleteFinder::new(
                 scope_finder.scope,
                 scope_finder.root_scope,
                 scope_finder.parent_scopes,
             );
-            let completes: Vec<InteractableNode> = vec![];
+            let mut completes: Vec<InteractableNode> = vec![];
             for file in &self.files {
                 let src = &file.ast;
                 let is_self = uri.contains(&file.file.path);
-                completes.append(complete_finder.find(src, is_self));
+                completes.append(&mut complete_finder.find(src, is_self));
             }
             return completes
                 .iter()
                 .map(|node| node.get_name())
-                .filter(|name| name.is_some())
-                .map(|name| name.unwrap())
                 .collect();
         }
         vec![]

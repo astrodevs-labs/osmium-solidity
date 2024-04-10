@@ -136,14 +136,30 @@ impl LanguageServer for Backend {
         let mut position = params.text_document_position.position;
         position.line += 1;
         position.character += 1;
-        self.references_provider.lock().await.get_scoped_completes(
+        let completes = self.references_provider.lock().await.get_scoped_completes(
             &normalize_path(&params.text_document_position.text_document.uri.path()),
             osmium_libs_solidity_references::Position {
                 line: position.line,
                 column: position.character,
             }
         );
-        Ok(None)
+        for complete in &completes {
+            info!("Complete: {}", complete);
+        }
+        let completes = completes.iter().map(|item| {
+            CompletionItem {
+                label: item.clone(),
+                ..Default::default()
+            }
+        
+        }).collect::<Vec<CompletionItem>>();
+        let completes = completes.into_iter().fold(Vec::new(), |mut acc, x| {
+            if !acc.contains(&x) {
+                acc.push(x);
+            }
+            acc
+        });
+        Ok(Some(CompletionResponse::Array(completes)))
     }
 
     async fn shutdown(&self) -> Result<()> {
