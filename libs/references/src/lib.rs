@@ -4,7 +4,7 @@ mod node_finder;
 mod types;
 mod usages;
 mod utils;
-mod complete_finder;
+mod inheritence_finder;
 mod scope_finder;
 use definitions::DefinitionFinder;
 use error::ReferencesError;
@@ -14,7 +14,7 @@ use osmium_libs_solidity_ast_extractor::extract::extract_ast_from_foundry;
 use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
 use osmium_libs_solidity_path_utils::join_path;
 pub use solc_ast_rs_types::types::*;
-use types::InteractableNode;
+use types::{CompletionItem, InteractableNode};
 pub use types::{Location, Position};
 use usages::UsagesFinder;
 
@@ -36,10 +36,10 @@ impl ReferencesProvider {
         Ok(())
     }
 
-    pub fn get_scoped_completes(&self, uri: &str, position: Position) -> Vec<String> {
+    pub fn get_scoped_completes(&self, uri: &str, position: Position) -> Vec<CompletionItem> {
         if let Some(file) = self.files.iter().find(|file| file.file.path == uri) {
             let scope_finder = ScopeFinder::new(file.file.content.clone(), position);
-            let mut complete_finder = complete_finder::CompleteFinder::new(
+            /*let mut complete_finder = inheritence_finder::InheritenceFinder::new(
                 scope_finder.scope,
                 scope_finder.root_scope,
                 scope_finder.parent_scopes,
@@ -52,8 +52,12 @@ impl ReferencesProvider {
             }
             return completes
                 .iter()
-                .map(|node| node.get_name())
+                .map(|node| CompletionItem {
+                    label: node.get_name(),
+                    kind: node.get_kind(),
+                } )
                 .collect();
+        */
         }
         vec![]
     }
