@@ -4,6 +4,7 @@ mod node_finder;
 mod types;
 mod usages;
 mod utils;
+mod scoped_completion_finder;
 mod imports_completion_finder;
 mod inheritence_finder;
 mod scope_finder;
@@ -19,7 +20,7 @@ use types::{CompletionItem, InteractableNode};
 pub use types::{Location, Position};
 use usages::UsagesFinder;
 
-use crate::{scope_finder::ScopeFinder, utils::get_location};
+use crate::{scope_finder::ScopeFinder, scoped_completion_finder::ScopedCompletionFinder, utils::get_location};
 
 #[derive(Debug)]
 pub struct ReferencesProvider {
@@ -91,6 +92,9 @@ impl ReferencesProvider {
             if let Some(contract) = contract {
                 completes.append(&mut self.while_inherits(&contract, &file.file.path));
             }
+
+            let spi_finder = ScopedCompletionFinder::new(spi);
+            completes.append(&mut spi_finder.inspect());
 
             completes.append(&mut self.get_import_completes(imports));
 
