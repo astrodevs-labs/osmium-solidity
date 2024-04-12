@@ -83,6 +83,6 @@ impl ScopeFinder {
 
     pub fn find(&mut self, src: &SourceUnit) -> (Option<ContractDefinition>, Vec<InteractableNode>, Vec<ImportDirective>){
         self.visit_source_unit(src);
-        (self.contract, self.spi.clone(), self.imports.clone())
+        (self.contract.clone(), self.spi.clone(), self.imports.clone())
     }
 }

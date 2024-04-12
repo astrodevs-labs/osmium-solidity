@@ -4,6 +4,7 @@ mod node_finder;
 mod types;
 mod usages;
 mod utils;
+mod imports_completion_finder;
 mod inheritence_finder;
 mod scope_finder;
 use definitions::DefinitionFinder;
@@ -36,7 +37,7 @@ impl ReferencesProvider {
         Ok(())
     }
 
-    pub fn while_inherits(&self, contract: &ContractDefinition, self_path: &str) -> Vec<CompletionItem> {
+    fn while_inherits(&self, contract: &ContractDefinition, self_path: &str) -> Vec<CompletionItem> {
         let mut complete_finder = inheritence_finder::InheritenceFinder::new(contract.clone());
         let mut completes: Vec<CompletionItem> = vec![];
         let mut inheritences = vec![contract.clone()];
@@ -47,6 +48,34 @@ impl ReferencesProvider {
                 inheritences.pop();
                 inheritences.append(&mut inheritences_res.clone());
             }
+        }
+        completes
+    }
+
+    fn get_import_completes(&self, imports: Vec<ImportDirective>) -> Vec<CompletionItem> {
+        let mut completes: Vec<CompletionItem> = vec![];
+        let mut imports_to_check: Vec<ImportDirective> = vec![];
+        for import in imports {
+            if import.unit_alias.is_empty() && import.symbol_aliases.is_empty() {
+                imports_to_check.push(import);
+            } else if import.unit_alias.is_empty() {
+                for symbol in import.symbol_aliases {
+                    completes.push(CompletionItem {
+                        label: symbol.foreign.name.clone(),
+                        kind: types::CompletionItemKind::MODULE,
+                    });
+                }
+            } else {
+                completes.push(CompletionItem {
+                    label: import.unit_alias.clone(),
+                    kind: types::CompletionItemKind::MODULE,
+                });
+            }
+        }
+        let mut import_finder = imports_completion_finder::ImportCompletionFinder::new(imports_to_check.clone());
+        let mut files = import_finder.get_files_from_imports(&self.files);
+        for file in files {
+            completes.append(&mut import_finder.find(&file.ast));
         }
         completes
     }
@@ -63,7 +92,9 @@ impl ReferencesProvider {
                 completes.append(&mut self.while_inherits(&contract, &file.file.path));
             }
 
-            completes
+            completes.append(&mut self.get_import_completes(imports));
+
+            return completes;
         }
         vec![]
     }

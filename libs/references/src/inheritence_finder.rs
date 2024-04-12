@@ -1,6 +1,5 @@
 use crate::types::CompletionItem;
 use crate::types::CompletionItemKind;
-use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;

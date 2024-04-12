@@ -143,12 +143,10 @@ impl LanguageServer for Backend {
                 column: position.character,
             }
         );
-        for complete in &completes {
-            info!("Complete: {}", complete);
-        }
         let completes = completes.iter().map(|item| {
             CompletionItem {
-                label: item.clone(),
+                label: item.label.clone(),
+                // kind: Some(item.kind as i64), //TODO: transform to lsp kind
                 ..Default::default()
             }
         
@@ -159,6 +157,9 @@ impl LanguageServer for Backend {
             }
             acc
         });
+        for complete in &completes {
+            info!("Complete: {:?}", complete);
+        }
         Ok(Some(CompletionResponse::Array(completes)))
     }
 
