@@ -95,6 +95,13 @@ pub enum InteractableNode {
     UserDefinedTypeName(UserDefinedTypeName),
     IdentifierPath(IdentifierPath),
     Block(Block),
+    IfStatement(IfStatement),
+    WhileStatement(WhileStatement),
+    ForStatement(ForStatement),
+    DoWhileStatement(DoWhileStatement),
+    UncheckedBlock(UncheckedBlock),
+    TryCatchClause(TryCatchClause),
+    TryStatement(TryStatement),
 }
 impl InteractableNode {
 
@@ -310,6 +317,7 @@ impl InteractableNode {
             InteractableNode::UserDefinedTypeName(_) => CompletionItemKind::TYPE_PARAMETER,
             InteractableNode::IdentifierPath(_) => CompletionItemKind::VARIABLE,
             InteractableNode::Block(_) => CompletionItemKind::UNIT,
+            _ => CompletionItemKind::TEXT,
         }
     }
 }
