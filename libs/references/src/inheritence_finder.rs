@@ -1,6 +1,6 @@
 use crate::types::CompletionItem;
 use crate::types::CompletionItemKind;
-use crate::types::InteractableNode;
+use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
@@ -32,42 +32,31 @@ impl<'ast> Visit<'ast> for InheritenceFinder {
                 kind: CompletionItemKind::FUNCTION
             });
         }
-        visit::visit_function_definition(self, function);
-    }
-
-    fn visit_struct_definition(&mut self, struct_def: &'ast StructDefinition) {
-        if struct_def.visibility != Visibility::Private || self.is_self {
-        }
-        visit::visit_struct_definition(self, struct_def);
-    }
-
-    fn visit_enum_definition(&mut self, enum_def: &'ast EnumDefinition) {
-        visit::visit_enum_definition(self, enum_def);
     }
 
     fn visit_variable_declaration(&mut self, variable: &'ast VariableDeclaration) {
-        if variable.visibility != Visibility::Private {
+        if variable.visibility != Visibility::Private || self.is_self {
+            self.items.push(CompletionItem{
+                label: variable.name.clone(),
+                kind: CompletionItemKind::VARIABLE
+            });
         }
-        visit::visit_variable_declaration(self, variable);
     }
-    fn visit_event_definition(&mut self, event: &'ast EventDefinition) {
-        visit::visit_event_definition(self, event);
-    }
-    fn visit_enum_value(&mut self, enum_value: &'ast EnumValue) {
-        visit::visit_enum_value(self, enum_value);
-    }
+
 }
 
 impl InheritenceFinder {
 
 
-    pub fn new(contract: ContractDefinition, is_self: bool) -> Self {
+    pub fn new(contract: ContractDefinition) -> Self {
         InheritenceFinder {contract, is_self: false, items: vec![], inheritences: vec![]}
     }
 
-    pub fn find(&mut self, src: &SourceUnit, is_self: bool) -> (Vec<CompletionItem>, Vec<ContractDefinition>) {
+    pub fn find(&mut self, src: &SourceUnit, is_self: bool, current_contract: ContractDefinition) -> (Vec<CompletionItem>, Vec<ContractDefinition>) {
+        self.contract = current_contract;
         self.is_self = is_self;
         self.visit_source_unit(src);
         (self.items.clone(), self.inheritences.clone())
     }
+
 }

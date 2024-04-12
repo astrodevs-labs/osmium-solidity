@@ -36,28 +36,34 @@ impl ReferencesProvider {
         Ok(())
     }
 
+    pub fn while_inherits(&self, contract: &ContractDefinition, self_path: &str) -> Vec<CompletionItem> {
+        let mut complete_finder = inheritence_finder::InheritenceFinder::new(contract.clone());
+        let mut completes: Vec<CompletionItem> = vec![];
+        let mut inheritences = vec![contract.clone()];
+        while inheritences.len() > 0 {
+            for file in &self.files {
+                let (items, inheritences_res) = complete_finder.find(&file.ast, file.file.path == self_path, inheritences.last().unwrap().clone());
+                completes.append(&mut items.clone());
+                inheritences.pop();
+                inheritences.append(&mut inheritences_res.clone());
+            }
+        }
+        completes
+    }
+
     pub fn get_scoped_completes(&self, uri: &str, position: Position) -> Vec<CompletionItem> {
         if let Some(file) = self.files.iter().find(|file| file.file.path == uri) {
-            let scope_finder = ScopeFinder::new(file.file.content.clone(), position);
-            /*let mut complete_finder = inheritence_finder::InheritenceFinder::new(
-                scope_finder.scope,
-                scope_finder.root_scope,
-                scope_finder.parent_scopes,
-            );
-            let mut completes: Vec<InteractableNode> = vec![];
-            for file in &self.files {
-                let src = &file.ast;
-                let is_self = uri.contains(&file.file.path);
-                completes.append(&mut complete_finder.find(src, is_self));
+
+            let mut scope_finder = ScopeFinder::new(file.file.content.clone(), position);
+            let (contract, spi, imports) = scope_finder.find(&file.ast);
+            
+            let mut completes: Vec<CompletionItem> = vec![];
+
+            if let Some(contract) = contract {
+                completes.append(&mut self.while_inherits(&contract, &file.file.path));
             }
-            return completes
-                .iter()
-                .map(|node| CompletionItem {
-                    label: node.get_name(),
-                    kind: node.get_kind(),
-                } )
-                .collect();
-        */
+
+            completes
         }
         vec![]
     }
