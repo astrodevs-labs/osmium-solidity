@@ -34,7 +34,8 @@
         {
           "type": "webview",
           "id": "osmium.sidebar",
-          "name": "Osmium: Deploy/Interact"
+          "name": "Osmium: Deploy/Interact",
+          "when": "Osmium.showsidebar"
         }
       ]
     },
@@ -51,6 +52,61 @@
           "group": "2_workspace"
         }
       ]
+    },
+    "configuration": {
+      "title": "Osmium",
+      "properties": {
+        "Osmium.linter": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable LINTER feature"
+        },
+        "Osmium.formatter": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable FORMATTER feature"
+        },
+        "Osmium.gas estimation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable GAS ESTIMATION feature"
+        },
+        "Osmium.slither": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable SLITHER feature"
+        },
+        "Osmium.sidebar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable INTERACT & DEPLOY feature"
+        },
+        "Osmium.debugger": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable DEBUGGER feature"
+        },
+        "Osmium.tests": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable TESTS VIA FOUNDRY feature"
+        },
+        "Osmium.compilator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable COMPILATOR feature"
+        },
+        "Osmium.references": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable REFERENCES feature"
+        },
+        "Osmium.auto format": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable AUTO FORMAT on save"
+        }
+      }
     },
     "commands": [
       {
@@ -108,8 +164,7 @@
     "format": "prettier --write src/**/*.ts ",
     "format:check": "prettier src/**/*.ts",
     "test:ui": "vscode-test",
-    "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies",
-    "build:extension": "webpack"
+    "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",

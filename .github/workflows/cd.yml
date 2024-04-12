@@ -27,4 +27,3 @@ jobs:
     secrets:
       CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       VSCE_PAT: ${{ secrets.VSCE_PAT }}
-

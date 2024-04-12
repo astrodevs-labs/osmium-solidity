@@ -21,5 +21,6 @@
     "format:check": "turbo format:check",
     "lint": "turbo lint",
     "lint:check": "turbo lint:check"
-  }
+  },
+  "packageManager": "pnpm@8.15.6"
 }
