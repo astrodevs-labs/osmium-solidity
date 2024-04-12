@@ -144,9 +144,10 @@ impl LanguageServer for Backend {
             }
         );
         let completes = completes.iter().map(|item| {
+            let kind: i64 = item.kind.value();
             CompletionItem {
                 label: item.label.clone(),
-                // kind: Some(item.kind as i64), //TODO: transform to lsp kind
+                kind: Some(self.completion_kind_from_i64(kind)), //TODO: transform to lsp kind
                 ..Default::default()
             }
         
@@ -169,6 +170,38 @@ impl LanguageServer for Backend {
 }
 
 impl Backend {
+    fn completion_kind_from_i64(&self, value: i64) -> CompletionItemKind {
+        match value {
+            1 => CompletionItemKind::TEXT,
+            2 => CompletionItemKind::METHOD,
+            3 => CompletionItemKind::FUNCTION,
+            4 => CompletionItemKind::CONSTRUCTOR,
+            5 => CompletionItemKind::FIELD,
+            6 => CompletionItemKind::VARIABLE,
+            7 => CompletionItemKind::CLASS,
+            8 => CompletionItemKind::INTERFACE,
+            9 => CompletionItemKind::MODULE,
+            10 => CompletionItemKind::PROPERTY,
+            11 => CompletionItemKind::UNIT,
+            12 => CompletionItemKind::VALUE,
+            13 => CompletionItemKind::ENUM,
+            14 => CompletionItemKind::KEYWORD,
+            15 => CompletionItemKind::SNIPPET,
+            16 => CompletionItemKind::COLOR,
+            17 => CompletionItemKind::FILE,
+            18 => CompletionItemKind::REFERENCE,
+            19 => CompletionItemKind::FOLDER,
+            20 => CompletionItemKind::ENUM_MEMBER,
+            21 => CompletionItemKind::CONSTANT,
+            22 => CompletionItemKind::STRUCT,
+            23 => CompletionItemKind::EVENT,
+            24 => CompletionItemKind::OPERATOR,
+            25 => CompletionItemKind::TYPE_PARAMETER,
+            _ => CompletionItemKind::TEXT,
+        }
+
+    }
+
     async fn update(&self) {
         if let Err(e) = self.references_provider.lock().await.update_file_content() {
             error!("Error updating file content: {}", e);

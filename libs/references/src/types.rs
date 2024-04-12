@@ -67,6 +67,10 @@ impl CompletionItemKind {
     pub const EVENT: CompletionItemKind = CompletionItemKind(23);
     pub const OPERATOR: CompletionItemKind = CompletionItemKind(24);
     pub const TYPE_PARAMETER: CompletionItemKind = CompletionItemKind(25);
+
+    pub fn value(&self) -> i64 {
+        self.0
+    }
 }
 
 #[derive(Debug, Clone)]
