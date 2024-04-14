@@ -59,7 +59,7 @@ export const DeployUsingContract = ({
           </label>
           <VSCodeDropdown id="dropdown" {...logic.form?.register('contract', { required: true })}>
             {deployContracts?.map((deployContracts) => (
-              <VSCodeOption value={deployContracts.path}>
+              <VSCodeOption value={deployContracts.id}>
                 {' '}
                 {deployContracts.name} ({deployContracts.path})
               </VSCodeOption>
