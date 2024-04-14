@@ -1,5 +1,5 @@
 import { VSCode } from '@/types';
-import { DeployContracts, InteractContracts, Wallets } from '@backend/actions/types';
+import { DeployContracts, Environment, InteractContracts, Wallets } from '@backend/actions/types';
 import { useDeployContract } from '@hooks/useDeployContract.ts';
 import { useInteractContracts } from '@hooks/useInteractContracts.ts';
 import {
@@ -17,13 +17,15 @@ export const DeployUsingContract = ({
   deployContracts,
   vscode,
   editContracts,
+  environments,
 }: {
   wallets: Wallets;
   deployContracts: DeployContracts;
   vscode: VSCode;
   editContracts: InteractContracts;
+  environments: Environment[];
 }) => {
-  const logic = useDeployContract(vscode);
+  const logicContract = useDeployContract(vscode);
   const edit = useInteractContracts(editContracts, vscode);
 
   return (
@@ -38,7 +40,7 @@ export const DeployUsingContract = ({
             <VSCodeDropdown
               id="dropdown-wallets"
               className="dropdown-wallets"
-              {...logic.form?.register('wallet', {
+              {...logicContract.form?.register('wallet', {
                 required: true,
               })}
             >
@@ -57,7 +59,7 @@ export const DeployUsingContract = ({
           <label htmlFor="dropdown" className="label">
             Select contract:
           </label>
-          <VSCodeDropdown id="dropdown" {...logic.form?.register('contract', { required: true })}>
+          <VSCodeDropdown id="dropdown" {...logicContract.form?.register('contract', { required: true })}>
             {deployContracts?.map((deployContracts) => (
               <VSCodeOption value={deployContracts.id}>
                 {' '}
@@ -66,24 +68,40 @@ export const DeployUsingContract = ({
             ))}
           </VSCodeDropdown>
         </div>
+        <div className="environment-container">
+          <VSCodeDropdown
+            id="dropdown-environment"
+            className="dropdown-environment"
+            {...logicContract.form?.register('environment', { required: true })}
+          >
+            {environments.map((environment) => (
+              <VSCodeOption>
+                {environment.name} ({environment.rpc})
+              </VSCodeOption>
+            ))}
+          </VSCodeDropdown>
+          <VSCodeButton className="add-wallet-button" onClick={logicContract.editEnvironment}>
+            Edit
+          </VSCodeButton>
+        </div>
         <div className="gas-limit-container">
           <VSCodeTextField
             className="gas-limit-textfield"
-            {...logic.form?.register('gasLimit', {
+            {...logicContract.form?.register('gasLimit', {
               required: true,
               valueAsNumber: true,
             })}
           >
             Gas limit
           </VSCodeTextField>
-          {logic.errors.gasLimit && <span className="error-message">Invalid number</span>}
+          {logicContract.errors.gasLimit && <span className="error-message">Invalid number</span>}
         </div>
         <div className="value-container">
           <label className="label">Value:</label>
           <div className="value-field-container">
             <VSCodeTextField
               className="value-textfield"
-              {...logic.form?.register('value', {
+              {...logicContract.form?.register('value', {
                 required: true,
                 valueAsNumber: true,
               })}
@@ -91,7 +109,7 @@ export const DeployUsingContract = ({
             <VSCodeDropdown
               className="value-dropdown"
               id="dropdown"
-              {...logic.form?.register('valueUnit', {
+              {...logicContract.form?.register('valueUnit', {
                 required: true,
               })}
             >
@@ -100,7 +118,7 @@ export const DeployUsingContract = ({
               <VSCodeOption value="ether">Eth</VSCodeOption>
             </VSCodeDropdown>
           </div>
-          {logic.errors.value && <span className="error-message">Invalid number</span>}
+          {logicContract.errors.value && <span className="error-message">Invalid number</span>}
         </div>
       </div>
       <VSCodeDivider className="divider" />

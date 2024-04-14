@@ -29,6 +29,7 @@ export const DeployPage = (props: { vscode: VSCode }) => {
             deployContracts={logicContract.contracts}
             vscode={props.vscode}
             editContracts={edit.contracts}
+            environments={logicContract.environments}
           />
         </form>
       </FormProvider>
