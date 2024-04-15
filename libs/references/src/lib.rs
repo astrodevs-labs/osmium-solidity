@@ -38,13 +38,19 @@ impl ReferencesProvider {
         Ok(())
     }
 
-    fn while_inherits(&self, contract: &ContractDefinition, self_path: &str) -> Vec<CompletionItem> {
+    fn while_inherits(&self, contract: &ContractDefinition, file: &SolidityAstFile) -> Vec<CompletionItem> {
         let mut complete_finder = inheritence_finder::InheritenceFinder::new(contract.clone());
         let mut completes: Vec<CompletionItem> = vec![];
-        let mut inheritences = vec![contract.clone()];
+        let mut inheritences = vec![];
+        let (items, inheritences_res) = complete_finder.find(&file.ast, true, contract.clone());
+        completes.append(&mut items.clone());
+        inheritences.append(&mut inheritences_res.clone());
         while inheritences.len() > 0 {
             for file in &self.files {
-                let (items, inheritences_res) = complete_finder.find(&file.ast, file.file.path == self_path, inheritences.last().unwrap().clone());
+                if inheritences.len() == 0 {
+                    break;
+                }
+                let (items, inheritences_res) = complete_finder.find(&file.ast, false, inheritences.last().unwrap().clone());
                 completes.append(&mut items.clone());
                 inheritences.pop();
                 inheritences.append(&mut inheritences_res.clone());
@@ -54,6 +60,7 @@ impl ReferencesProvider {
     }
 
     fn get_import_completes(&self, imports: Vec<ImportDirective>) -> Vec<CompletionItem> {
+        info!("Imports: {:?}", imports);
         let mut completes: Vec<CompletionItem> = vec![];
         let mut imports_to_check: Vec<ImportDirective> = vec![];
         for import in imports {
@@ -90,7 +97,7 @@ impl ReferencesProvider {
             let mut completes: Vec<CompletionItem> = vec![];
 
             if let Some(contract) = contract {
-                completes.append(&mut self.while_inherits(&contract, &file.file.path));
+                completes.append(&mut self.while_inherits(&contract, &file));
             }
 
             let spi_finder = ScopedCompletionFinder::new(spi);

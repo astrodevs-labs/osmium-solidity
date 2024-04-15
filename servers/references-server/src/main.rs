@@ -2,7 +2,7 @@ mod utils;
 
 use crate::utils::*;
 
-use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging};
+use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
 use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
 use osmium_libs_solidity_references::*;
 use std::sync::Arc;
@@ -143,6 +143,12 @@ impl LanguageServer for Backend {
                 column: position.character,
             }
         );
+        if completes.is_empty() {
+            warn!("No completions found");
+        }
+        for complete in &completes {
+            info!("Complete: {:?}", complete);
+        }
         let completes = completes.iter().map(|item| {
             let kind: i64 = item.kind.value();
             CompletionItem {
@@ -158,9 +164,7 @@ impl LanguageServer for Backend {
             }
             acc
         });
-        for complete in &completes {
-            info!("Complete: {:?}", complete);
-        }
+
         Ok(Some(CompletionResponse::Array(completes)))
     }
 
