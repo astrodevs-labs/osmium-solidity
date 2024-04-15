@@ -119,7 +119,7 @@ async function launchFeatures() {
 		testsPositionsClient.stop();
 		testsPositionsClient = null;
 	}
-	
+
 	const folders = workspace.workspaceFolders;
 	if (folders) {
 		const files = await workspace.findFiles('**/*.sol', `${folders[0].uri.fsPath}/**`);
