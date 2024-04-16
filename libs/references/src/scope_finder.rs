@@ -104,9 +104,7 @@ impl<'ast> Visit<'ast> for ScopeFinder {
     }
 
     fn visit_import_directive(&mut self,import: &'ast ImportDirective) {
-        if is_node_in_range(&import.src, &self.position, &self.source) {
-            self.imports.push(import.clone());
-        }
+        self.imports.push(import.clone());
         visit::visit_import_directive(self, import);
     }
 
