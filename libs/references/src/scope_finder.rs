@@ -3,6 +3,7 @@ use std::vec;
 use crate::types::InteractableNode;
 use crate::utils::is_node_in_range;
 use crate::Position;
+use osmium_libs_solidity_ast_extractor::kw::is;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
@@ -62,6 +63,17 @@ impl<'ast> Visit<'ast> for ScopeFinder {
         }
         if is_node_in_range(&r#for.src, &self.position, &self.source) {
             self.spi.push(InteractableNode::ForStatement(r#for.clone()));
+        }
+    }
+
+    fn visit_function_definition(&mut self, function: &'ast FunctionDefinition) {
+        if is_node_in_range(&function.src, &self.position, &self.source) {
+            self.spi.push(InteractableNode::FunctionDefinition(function.clone()));
+        }
+        else if let Some(body) = &function.body {
+            if is_node_in_range(&body.src, &self.position, &self.source) {
+                self.spi.push(InteractableNode::FunctionDefinition(function.clone()));
+            }
         }
     }
 
