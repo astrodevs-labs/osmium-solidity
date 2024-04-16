@@ -46,13 +46,13 @@ impl ReferencesProvider {
         completes.append(&mut items.clone());
         inheritences.append(&mut inheritences_res.clone());
         while inheritences.len() > 0 {
+            let current = inheritences.pop();
             for file in &self.files {
                 if inheritences.len() == 0 {
                     break;
                 }
-                let (items, inheritences_res) = complete_finder.find(&file.ast, false, inheritences.last().unwrap().clone());
+                let (items, inheritences_res) = complete_finder.find(&file.ast, false, current.clone().unwrap());
                 completes.append(&mut items.clone());
-                inheritences.pop();
                 inheritences.append(&mut inheritences_res.clone());
             }
         }
@@ -60,7 +60,6 @@ impl ReferencesProvider {
     }
 
     fn get_import_completes(&self, imports: Vec<ImportDirective>) -> Vec<CompletionItem> {
-        info!("Imports: {:?}", imports);
         let mut completes: Vec<CompletionItem> = vec![];
         let mut imports_to_check: Vec<ImportDirective> = vec![];
         for import in imports {
