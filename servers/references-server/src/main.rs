@@ -43,6 +43,7 @@ impl LanguageServer for Backend {
                 .set_base_path(normalize_path(params.root_uri.unwrap().path()));
         }
         Ok(InitializeResult {
+
             server_info: None,
             capabilities: ServerCapabilities {
                 text_document_sync: Some(TextDocumentSyncCapability::Kind(
@@ -228,7 +229,7 @@ async fn main() {
     let (service, socket) = LspService::new(Backend::new);
     let stdin = tokio::io::stdin();
     let stdout = tokio::io::stdout();
-    Server::new(stdin, stdout, socket).serve(service).await;
+    Server::new(stdin, stdout, socket).concurrency_level(2).serve(service).await;
 
     //Ok(())
 }

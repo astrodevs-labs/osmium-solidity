@@ -8,6 +8,8 @@ mod scoped_completion_finder;
 mod imports_completion_finder;
 mod inheritence_finder;
 mod scope_finder;
+use core::time;
+
 use definitions::DefinitionFinder;
 use error::ReferencesError;
 use log::{info, warn};
@@ -19,6 +21,7 @@ pub use solc_ast_rs_types::types::*;
 use types::{CompletionItem, InteractableNode};
 pub use types::{Location, Position};
 use usages::UsagesFinder;
+use std::time::Instant;
 
 use crate::{scope_finder::ScopeFinder, scoped_completion_finder::ScopedCompletionFinder, utils::get_location};
 
@@ -80,7 +83,7 @@ impl ReferencesProvider {
             }
         }
         let mut import_finder = imports_completion_finder::ImportCompletionFinder::new(imports_to_check.clone());
-        let mut files = import_finder.get_files_from_imports(&self.files);
+        let files = import_finder.get_files_from_imports(&self.files);
         for file in files {
             completes.append(&mut import_finder.find(&file.ast));
         }
@@ -90,19 +93,24 @@ impl ReferencesProvider {
     pub fn get_scoped_completes(&self, uri: &str, position: Position) -> Vec<CompletionItem> {
         if let Some(file) = self.files.iter().find(|file| file.file.path == uri) {
 
+            let initTime = std::time::Instant::now();
             let mut scope_finder = ScopeFinder::new(file.file.content.clone(), position);
             let (contract, spi, imports) = scope_finder.find(&file.ast);
-            
+            // log scope info finding time duration
+            info!("duration [SCOPE INFOS]: {:?}", initTime.elapsed());
             let mut completes: Vec<CompletionItem> = vec![];
 
             if let Some(contract) = contract {
                 completes.append(&mut self.while_inherits(&contract, &file));
             }
+            info!("duration [INHERITENCE]: {:?}", initTime.elapsed());
 
             let spi_finder = ScopedCompletionFinder::new(spi);
             completes.append(&mut spi_finder.inspect());
+            info!("duration [SPI]: {:?}", initTime.elapsed());
 
             completes.append(&mut self.get_import_completes(imports));
+            info!("duration [IMPORTS]: {:?}", initTime.elapsed());
 
             return completes;
         }
