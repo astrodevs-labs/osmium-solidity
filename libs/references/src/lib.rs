@@ -89,24 +89,18 @@ impl ReferencesProvider {
     pub fn get_scoped_completes(&self, uri: &str, position: Position) -> Vec<CompletionItem> {
         if let Some(file) = self.files.iter().find(|file| file.file.path == uri) {
 
-            let initTime = std::time::Instant::now();
             let mut scope_finder = ScopeFinder::new(file.file.content.clone(), position);
             let (contract, spi, imports) = scope_finder.find(&file.ast);
-            // log scope info finding time duration
-            info!("duration [SCOPE INFOS]: {:?}", initTime.elapsed());
             let mut completes: Vec<CompletionItem> = vec![];
 
             if let Some(contract) = contract {
                 completes.append(&mut self.while_inherits(&contract, &file));
             }
-            info!("duration [INHERITENCE]: {:?}", initTime.elapsed());
 
             let spi_finder = ScopedCompletionFinder::new(spi);
             completes.append(&mut spi_finder.inspect());
-            info!("duration [SPI]: {:?}", initTime.elapsed());
 
             completes.append(&mut self.get_import_completes(imports));
-            info!("duration [IMPORTS]: {:?}", initTime.elapsed());
 
             return completes;
         }

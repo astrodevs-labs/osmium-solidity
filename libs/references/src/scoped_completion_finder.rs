@@ -72,10 +72,12 @@ impl ScopedCompletionFinder {
     }
 
     fn search_block(&self, block: &Block) -> Vec<CompletionItem> {
+        info!("Searching block statements: {:?}", block.statements);
         let mut items: Vec<CompletionItem> = vec![];
         if let Some(stmts) = &block.statements {
             for statement in stmts {
                 if let Statement::VariableDeclarationStatement(var_decl) = statement {
+                    info!("Found var decl: {:?}", var_decl.declarations);
                     for var_decl in var_decl.declarations.iter().flatten() {
                         items.push(CompletionItem {
                             label: var_decl.name.clone(),

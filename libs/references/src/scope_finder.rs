@@ -71,10 +71,12 @@ impl<'ast> Visit<'ast> for ScopeFinder {
     fn visit_function_definition(&mut self, function: &'ast FunctionDefinition) {
         if is_node_in_range(&function.src, &self.position, &self.source) {
             self.spi.push(InteractableNode::FunctionDefinition(function.clone()));
+            visit::visit_function_definition(self, function);
         }
         else if let Some(body) = &function.body {
             if is_node_in_range(&body.src, &self.position, &self.source) {
                 self.spi.push(InteractableNode::FunctionDefinition(function.clone()));
+                visit::visit_function_definition(self, function);
             }
         }
     }
