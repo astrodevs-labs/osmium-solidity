@@ -80,7 +80,7 @@ impl Compiler {
         let workspace_path = self
             .find_closest_workspace(file_path)
             .ok_or_else(|| Error::InvalidFilePath(file_path.to_string()))?;
-        info!("Workspace to compile: {}", workspace_path);
+        //info!("Workspace to compile: {}", workspace_path);
         let _ = Command::new(&self.inner.executable_path)
             .current_dir(&workspace_path)
             .arg("compile")

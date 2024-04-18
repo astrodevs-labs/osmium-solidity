@@ -5,6 +5,7 @@ use crate::utils::*;
 use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
 use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
 use osmium_libs_solidity_references::*;
+use std::cell::RefCell;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result;
@@ -13,17 +14,14 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 struct Backend {
-    references_provider: Arc<Mutex<ReferencesProvider>>,
+    references_provider: Arc<ReferencesProvider>,
 }
 
 impl Backend {
     pub fn new(client: Client) -> Self {
         init_logging(client);
         Self {
-            references_provider: Arc::new(Mutex::new(ReferencesProvider {
-                files: Vec::new(),
-                base_path: String::new(),
-            })),
+            references_provider: Arc::new(ReferencesProvider::new()),
         }
     }
 }
@@ -33,17 +31,12 @@ impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         if let Some(workspace) = params.workspace_folders {
             self.references_provider
-                .lock()
-                .await
                 .set_base_path(normalize_path(workspace[0].uri.path()));
         } else {
             self.references_provider
-                .lock()
-                .await
                 .set_base_path(normalize_path(params.root_uri.unwrap().path()));
         }
         Ok(InitializeResult {
-
             server_info: None,
             capabilities: ServerCapabilities {
                 text_document_sync: Some(TextDocumentSyncCapability::Kind(
@@ -76,7 +69,11 @@ impl LanguageServer for Backend {
     }
 
     async fn did_save(&self, _: DidSaveTextDocumentParams) {
+        eprintln!("Compile requested");
+        let init_time = std::time::Instant::now();
         self.update().await;
+        info!("Compile done");
+       //info!("Compile and Update time: {:?}", init_time.elapsed().as_secs());
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<LspLocation>>> {
@@ -86,7 +83,7 @@ impl LanguageServer for Backend {
         position.line += 1;
         position.character += 1;
 
-        let locations = self.references_provider.lock().await.get_references(
+        let locations = self.references_provider.get_references(
             &normalize_path(uri.path()),
             osmium_libs_solidity_references::Position {
                 line: position.line,
@@ -114,7 +111,7 @@ impl LanguageServer for Backend {
         position.line += 1;
         position.character += 1;
 
-        let location = self.references_provider.lock().await.get_definition(
+        let location = self.references_provider.get_definition(
             &normalize_path(uri.path()),
             osmium_libs_solidity_references::Position {
                 line: position.line,
@@ -133,11 +130,11 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        info!("Completion requested");
+        eprintln!("Completion requested");
         let mut position = params.text_document_position.position;
         position.line += 1;
         position.character += 1;
-        let completes = self.references_provider.lock().await.get_scoped_completes(
+        let completes = self.references_provider.get_scoped_completes(
             &normalize_path(&params.text_document_position.text_document.uri.path()),
             osmium_libs_solidity_references::Position {
                 line: position.line,
@@ -147,9 +144,6 @@ impl LanguageServer for Backend {
         if completes.is_empty() {
             warn!("No completions found");
         }
-        for complete in &completes {
-            info!("Complete: {:?}", complete);
-        }
         let completes = completes.iter().map(|item| {
             let kind: i64 = item.kind.value();
             CompletionItem {
@@ -158,14 +152,13 @@ impl LanguageServer for Backend {
                 ..Default::default()
             }
         
-        }).collect::<Vec<CompletionItem>>();
-        let completes = completes.into_iter().fold(Vec::new(), |mut acc, x| {
+        }).collect::<Vec<CompletionItem>>().into_iter().fold(Vec::new(), |mut acc, x| {
             if !acc.contains(&x) {
                 acc.push(x);
             }
             acc
         });
-
+        info!("Completions found: {:?}", completes.len());
         Ok(Some(CompletionResponse::Array(completes)))
     }
 
@@ -208,9 +201,13 @@ impl Backend {
     }
 
     async fn update(&self) {
-        if let Err(e) = self.references_provider.lock().await.update_file_content() {
-            error!("Error updating file content: {}", e);
-        }
+        let ref_provider = self.references_provider.clone();
+        let _ = tokio::spawn(async move {
+            info!("Updating references");
+            if let Err(e) = ref_provider.update_file_content() {
+                error!("Error updating references: {}", e);
+            }
+        }).await;
     }
 }
 

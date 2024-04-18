@@ -23,7 +23,6 @@ impl ScopedCompletionFinder {
         let mut completions = vec![];
 
         for path in self.spi.iter() {
-            info!("SPI node: {:?}", path.get_name());
             let items = match path {
                 InteractableNode::FunctionDefinition(func) => self.search_function(func),
                 InteractableNode::ForStatement(r#for) => self.search_for_statement(r#for),
@@ -72,12 +71,10 @@ impl ScopedCompletionFinder {
     }
 
     fn search_block(&self, block: &Block) -> Vec<CompletionItem> {
-        info!("Searching block statements: {:?}", block.statements);
         let mut items: Vec<CompletionItem> = vec![];
         if let Some(stmts) = &block.statements {
             for statement in stmts {
                 if let Statement::VariableDeclarationStatement(var_decl) = statement {
-                    info!("Found var decl: {:?}", var_decl.declarations);
                     for var_decl in var_decl.declarations.iter().flatten() {
                         items.push(CompletionItem {
                             label: var_decl.name.clone(),
