@@ -1,3 +1,4 @@
+use log::info;
 use solc_ast_rs_types::types::*;
 
 use crate::types::{CompletionItem, CompletionItemKind, InteractableNode};
@@ -22,6 +23,7 @@ impl ScopedCompletionFinder {
         let mut completions = vec![];
 
         for path in self.spi.iter() {
+            info!("SPI node: {:?}", path.get_name());
             let items = match path {
                 InteractableNode::FunctionDefinition(func) => self.search_function(func),
                 InteractableNode::ForStatement(r#for) => self.search_for_statement(r#for),

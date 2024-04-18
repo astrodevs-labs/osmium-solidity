@@ -41,24 +41,20 @@ impl ReferencesProvider {
         Ok(())
     }
 
-    fn while_inherits(&self, contract: &ContractDefinition, file: &SolidityAstFile) -> Vec<CompletionItem> {
+    fn while_inherits(&self, contract: &ContractDefinition, root_file: &SolidityAstFile) -> Vec<CompletionItem> {
         let mut complete_finder = inheritence_finder::InheritenceFinder::new(contract.clone());
         let mut completes: Vec<CompletionItem> = vec![];
-        let mut inheritences = vec![];
-        let (items, inheritences_res) = complete_finder.find(&file.ast, true, contract.clone());
-        completes.append(&mut items.clone());
-        inheritences.append(&mut inheritences_res.clone());
+        let mut inheritences = vec![contract.clone()];
+        
         while inheritences.len() > 0 {
-            let current = inheritences.pop();
+            let current = inheritences.pop().unwrap();
+            info!("Current contract to search for inheritence: {:?}", current.name);
             for file in &self.files {
-                if inheritences.len() == 0 {
-                    break;
-                }
-                let (items, inheritences_res) = complete_finder.find(&file.ast, false, current.clone().unwrap());
+                let (items, inheritences_res) = complete_finder.find(&file.ast, root_file.file.path == file.file.path, current.clone());
                 completes.append(&mut items.clone());
                 inheritences.append(&mut inheritences_res.clone());
             }
-        }
+        } 
         completes
     }
 

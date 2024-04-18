@@ -2,7 +2,9 @@ use std::vec;
 
 use crate::types::InteractableNode;
 use crate::utils::is_node_in_range;
+use crate::utils::log_is_node_in_range;
 use crate::Position;
+use log::info;
 use osmium_libs_solidity_ast_extractor::kw::is;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;

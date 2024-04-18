@@ -1,7 +1,10 @@
+use std::vec;
+
 use crate::types::CompletionItem;
 use crate::types::CompletionItemKind;
+use crate::types::InteractableNode;
+use log::info;
 use solc_ast_rs_types::types::*;
-use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
 
 
@@ -16,28 +19,25 @@ pub struct InheritenceFinder {
 impl<'ast> Visit<'ast> for InheritenceFinder {
 
     fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
-        if self.contract.contract_dependencies.contains(&contract.id) || self.is_self {
+        if self.contract.base_contracts.iter().find(|elem| {
+            InteractableNode::InheritanceSpecifier(elem.to_owned().clone()).get_reference_id().is_some_and(|id| id == contract.id)
+        }).is_some() || self.is_self {
             if !self.is_self{
                 self.inheritences.push(contract.clone());
             }
-            visit::visit_contract_definition(self, contract);
-        }
-    }
-
-    fn visit_function_definition(&mut self, function: &'ast FunctionDefinition) {
-        if function.visibility != Visibility::Private || self.is_self {
-            self.items.push(CompletionItem{
-                label: function.name.clone(),
-                kind: CompletionItemKind::FUNCTION
-            });
-        }
-    }
-
-    fn visit_variable_declaration(&mut self, variable: &'ast VariableDeclaration) {
-        if variable.visibility != Visibility::Private || self.is_self {
-            self.items.push(CompletionItem{
-                label: variable.name.clone(),
-                kind: CompletionItemKind::VARIABLE
+            info!("Visiting contract definition: {}", contract.name);
+            contract.nodes.iter().for_each(|node| {
+                match node {
+                    ContractDefinitionNodesItem::VariableDeclaration(var) => self.items.push(CompletionItem{
+                        label: var.name.clone(),
+                        kind: CompletionItemKind::VARIABLE
+                    }),
+                    ContractDefinitionNodesItem::FunctionDefinition(func) => self.items.push(CompletionItem{
+                        label: func.name.clone(),
+                        kind: CompletionItemKind::FUNCTION
+                    }),
+                    _ => {}
+                }
             });
         }
     }
@@ -54,6 +54,8 @@ impl InheritenceFinder {
     pub fn find(&mut self, src: &SourceUnit, is_self: bool, current_contract: ContractDefinition) -> (Vec<CompletionItem>, Vec<ContractDefinition>) {
         self.contract = current_contract;
         self.is_self = is_self;
+        self.inheritences = vec![];
+        self.items = vec![];
         self.visit_source_unit(src);
         (self.items.clone(), self.inheritences.clone())
     }

@@ -64,7 +64,7 @@ impl ImportCompletionFinder {
         let mut new_files: Vec<SolidityAstFile> = vec![];
         for file in files {
             for import in &self.import_directives {
-                if file.file.path == import.absolute_path {
+                if file.file.path.ends_with(&import.absolute_path) {
                     new_files.push(file.clone());
                 }
             }
