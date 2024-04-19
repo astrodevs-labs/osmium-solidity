@@ -12,7 +12,7 @@ import {
 import { TextDecoder } from 'util';
 import * as net from 'net';
 
-export async function createReferencesClient(context: ExtensionContext): Promise<LanguageClient> {
+export async function createCodeActionsClient(context: ExtensionContext): Promise<LanguageClient> {
 	/*
 	let connectionInfo = {
 		port: 9001,
@@ -39,7 +39,7 @@ export async function createReferencesClient(context: ExtensionContext): Promise
 	const serverBinary = context.asAbsolutePath(
 		path.join(
 			'dist', 
-			os.platform().startsWith("win") ? 'references-server.exe' : 'references-server'
+			os.platform().startsWith("win") ? 'code-actions-server.exe' : 'code-actions-server'
 		)
 	);
 
@@ -64,8 +64,8 @@ export async function createReferencesClient(context: ExtensionContext): Promise
 
 	// Create the language client and start the client.
 	const client = new LanguageClient(
-		'osmium-solidity-references',
-		'Osmium Solidity References Language Server',
+		'osmium-solidity-code-actions',
+		'Osmium Solidity Code Actions Language Server',
 		serverOptions,
 		clientOptions
 	);

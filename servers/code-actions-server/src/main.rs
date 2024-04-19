@@ -4,24 +4,22 @@ use crate::utils::*;
 
 use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
 use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
-use osmium_libs_solidity_references::*;
-use std::cell::RefCell;
+use osmium_libs_solidity_code_actions::*;
 use std::sync::Arc;
-use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::Location as LspLocation;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 struct Backend {
-    references_provider: Arc<ReferencesProvider>,
+    code_actions_provider: Arc<CodeActionsProvider>,
 }
 
 impl Backend {
     pub fn new(client: Client) -> Self {
         init_logging(client);
         Self {
-            references_provider: Arc::new(ReferencesProvider::new()),
+            code_actions_provider: Arc::new(CodeActionsProvider::new()),
         }
     }
 }
@@ -30,10 +28,10 @@ impl Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         if let Some(workspace) = params.workspace_folders {
-            self.references_provider
+            self.code_actions_provider
                 .set_base_path(normalize_path(workspace[0].uri.path()));
         } else {
-            self.references_provider
+            self.code_actions_provider
                 .set_base_path(normalize_path(params.root_uri.unwrap().path()));
         }
         Ok(InitializeResult {
@@ -72,8 +70,7 @@ impl LanguageServer for Backend {
         eprintln!("Compile requested");
         let init_time = std::time::Instant::now();
         self.update().await;
-        info!("Compile done");
-       //info!("Compile and Update time: {:?}", init_time.elapsed().as_secs());
+        info!("Compile and Update time: {:?}", init_time.elapsed().as_secs());
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<LspLocation>>> {
@@ -83,9 +80,9 @@ impl LanguageServer for Backend {
         position.line += 1;
         position.character += 1;
 
-        let locations = self.references_provider.get_references(
+        let locations = self.code_actions_provider.get_references(
             &normalize_path(uri.path()),
-            osmium_libs_solidity_references::Position {
+            osmium_libs_solidity_code_actions::Position {
                 line: position.line,
                 column: position.character,
             },
@@ -111,9 +108,9 @@ impl LanguageServer for Backend {
         position.line += 1;
         position.character += 1;
 
-        let location = self.references_provider.get_definition(
+        let location = self.code_actions_provider.get_definition(
             &normalize_path(uri.path()),
-            osmium_libs_solidity_references::Position {
+            osmium_libs_solidity_code_actions::Position {
                 line: position.line,
                 column: position.character,
             },
@@ -134,9 +131,9 @@ impl LanguageServer for Backend {
         let mut position = params.text_document_position.position;
         position.line += 1;
         position.character += 1;
-        let completes = self.references_provider.get_scoped_completes(
+        let completes = self.code_actions_provider.get_completions(
             &normalize_path(&params.text_document_position.text_document.uri.path()),
-            osmium_libs_solidity_references::Position {
+            osmium_libs_solidity_code_actions::Position {
                 line: position.line,
                 column: position.character,
             }
@@ -201,7 +198,7 @@ impl Backend {
     }
 
     async fn update(&self) {
-        let ref_provider = self.references_provider.clone();
+        let ref_provider = self.code_actions_provider.clone();
         let _ = tokio::spawn(async move {
             info!("Updating references");
             if let Err(e) = ref_provider.update_file_content() {

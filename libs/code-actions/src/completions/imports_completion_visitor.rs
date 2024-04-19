@@ -6,12 +6,12 @@ use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
 
-pub struct ImportCompletionFinder {
+pub struct ImportCompletionVisitor {
     import_directives: Vec<ImportDirective>,
     items: Vec<CompletionItem>,
 }
 
-impl<'ast> Visit<'ast> for ImportCompletionFinder {
+impl<'ast> Visit<'ast> for ImportCompletionVisitor {
     fn visit_struct_definition(&mut self, struct_def: &'ast StructDefinition) {
         if struct_def.visibility == Visibility::Private || struct_def.visibility == Visibility::Internal {
             return;
@@ -52,9 +52,9 @@ impl<'ast> Visit<'ast> for ImportCompletionFinder {
     }
 }
 
-impl ImportCompletionFinder {
+impl ImportCompletionVisitor {
     pub fn new(import_directives: Vec<ImportDirective>) -> Self {
-        ImportCompletionFinder {
+        ImportCompletionVisitor {
             import_directives,
             items: vec![],
         }

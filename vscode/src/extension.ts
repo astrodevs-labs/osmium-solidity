@@ -11,13 +11,13 @@ import { TestManager } from './tests/test-manager';
 import { createFoundryCompilerClient } from './foundry-compiler';
 import { createTestsPositionsClient } from './tests-positions';
 import { registerGasEstimation } from './gas-estimation';
-import { createReferencesClient } from './references';
+import { createCodeActionsClient } from './code-actions';
 
 let linterClient: LanguageClient;
 let slitherClient: LanguageClient;
 let foundryCompilerClient: LanguageClient;
 let testsPositionsClient: LanguageClient;
-let referencesClient: LanguageClient;
+let codeActionsClient: LanguageClient;
 let testManager: TestManager;
 
 // This method is called when your extension is activated
@@ -27,7 +27,7 @@ export async function activate(context: ExtensionContext) {
 	slitherClient = await createSlitherClient(context);
 	foundryCompilerClient = await createFoundryCompilerClient(context);
 	testsPositionsClient = await createTestsPositionsClient(context);
-	referencesClient = await createReferencesClient(context);
+	codeActionsClient = await createCodeActionsClient(context);
 	if (workspace.workspaceFolders?.length) {
 		testManager = new TestManager(testsPositionsClient, workspace.workspaceFolders[0].uri.fsPath);
 	}
@@ -35,7 +35,14 @@ export async function activate(context: ExtensionContext) {
 	registerForgeFmtLinter(context);
 	registerGasEstimation();
 	
-	context.subscriptions.push(linterClient, slitherClient, foundryCompilerClient, testsPositionsClient, testManager.testController);
+	context.subscriptions.push(
+		linterClient,
+		slitherClient,
+		foundryCompilerClient,
+		testsPositionsClient,
+		testManager.testController,
+		codeActionsClient
+	);
 
 	const folders = workspace.workspaceFolders;
 	if (folders) {

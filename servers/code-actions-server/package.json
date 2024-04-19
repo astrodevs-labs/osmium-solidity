@@ -1,5 +1,5 @@
 {
-    "name": "osmium-solidity-references-server",
+    "name": "osmium-solidity-code-actions-server",
     "license": "GNU-GPL-3.0",
     "scripts": {
       "build": "cargo build --release --target-dir ./target ",

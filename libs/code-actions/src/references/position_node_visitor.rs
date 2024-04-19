@@ -1,18 +1,17 @@
 use crate::types::{InteractableNode, Position};
 use crate::utils::*;
-use log::trace;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
 
-pub struct NodeVisitor {
+pub struct PositionNodeVisitor {
     position: Position,
     pub node: Option<InteractableNode>,
     above_node: Option<InteractableNode>,
     source: String,
 }
 
-impl<'ast> Visit<'ast> for NodeVisitor {
+impl<'ast> Visit<'ast> for PositionNodeVisitor {
     fn visit_user_defined_type_name(&mut self, _udt: &'ast UserDefinedTypeName) {
         if is_node_in_range(&_udt.src, &self.position, &self.source) {
             self.node = Some(InteractableNode::UserDefinedTypeName(_udt.clone()));
@@ -144,7 +143,7 @@ impl<'ast> Visit<'ast> for NodeVisitor {
 
     fn visit_identifier(&mut self, identifier: &'ast Identifier) {
         if is_node_in_range(&identifier.src, &self.position, &self.source) {
-            trace!("Identifier in range: {:?}", identifier);
+            // trace!("Identifier in range: {:?}", identifier);
             self.above_node = self.node.clone();
             self.node = Some(InteractableNode::Identifier(identifier.clone()));
         }
@@ -171,9 +170,9 @@ impl<'ast> Visit<'ast> for NodeVisitor {
     }
 }
 
-impl NodeVisitor {
+impl PositionNodeVisitor {
     pub fn new(position: Position, source: &str) -> Self {
-        NodeVisitor {
+        PositionNodeVisitor {
             position,
             node: None,
             above_node: None,
@@ -182,7 +181,6 @@ impl NodeVisitor {
     }
     pub fn find(&mut self, src: &SourceUnit) -> Option<InteractableNode> {
         self.visit_source_unit(src);
-        //eprintln!("[NODE FINDER] Found node: {:?}", self.node);
         self.node.clone()
     }
 }

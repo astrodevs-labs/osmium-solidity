@@ -16,6 +16,7 @@ pub fn is_node_in_range(node: &SourceLocation, position: &Position, source: &str
     false
 }
 
+#[allow(dead_code)]
 pub fn log_is_node_in_range(node: &SourceLocation, position: &Position, source: &str) -> bool {
     let range = source_location_to_range(node);
     let index = position_to_index(position, source);
@@ -86,8 +87,6 @@ pub fn get_location(node: &InteractableNode, file: &SolidityAstFile) -> Location
 
 #[cfg(test)]
 mod test {
-    use osmium_libs_solidity_ast_extractor::kw::exp;
-
     pub use super::*;
 
     #[test]

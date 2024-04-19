@@ -74,6 +74,17 @@ impl CompletionItemKind {
 }
 
 #[derive(Debug, Clone)]
+pub enum SPINode {
+    FunctionDefinition(FunctionDefinition),
+    Block(Block),
+    ForStatement(ForStatement),
+    UncheckedBlock(UncheckedBlock),
+    TryCatchClause(TryCatchClause),
+    TryStatement(TryStatement),
+    VariableDeclaration(VariableDeclaration),
+}
+
+#[derive(Debug, Clone)]
 pub enum InteractableNode {
     ContractDefinition(ContractDefinition),
     FunctionDefinition(FunctionDefinition),
@@ -94,54 +105,10 @@ pub enum InteractableNode {
     NewExpression(NewExpression, Box<InteractableNode>),
     UserDefinedTypeName(UserDefinedTypeName),
     IdentifierPath(IdentifierPath),
-    Block(Block),
-    IfStatement(IfStatement),
-    WhileStatement(WhileStatement),
-    ForStatement(ForStatement),
-    DoWhileStatement(DoWhileStatement),
-    UncheckedBlock(UncheckedBlock),
-    TryCatchClause(TryCatchClause),
-    TryStatement(TryStatement),
+
 }
+
 impl InteractableNode {
-
-    pub fn get_name(&self) -> String
-    {
-        match self {
-            InteractableNode::ContractDefinition(node) => node.name.clone(),
-            InteractableNode::FunctionDefinition(node) => node.name.clone(),
-            InteractableNode::ModifierDefinition(node) => node.name.clone(),
-            InteractableNode::StructDefinition(node) => node.name.clone(),
-            InteractableNode::EnumDefinition(node) => node.name.clone(),
-            InteractableNode::VariableDeclaration(node) => node.name.clone(),
-            InteractableNode::EventDefinition(node) => node.name.clone(),
-            InteractableNode::EnumValue(node) => node.name.clone(),
-            InteractableNode::UsingForDirective(node) => "".to_string(),
-            InteractableNode::ImportDirective(node) => "".to_string(),
-            InteractableNode::ErrorDefinition(node) => node.name.clone(),
-            InteractableNode::FunctionCall(node) => "".to_string(),
-            InteractableNode::ModifierInvocation(node) => "".to_string(),
-            InteractableNode::InheritanceSpecifier(node) => "".to_string(),
-            InteractableNode::Identifier(node) => node.name.clone(),
-            InteractableNode::MemberAccess(node) => node.member_name.clone(),
-            InteractableNode::NewExpression(node, _) => "".to_string(),
-            InteractableNode::UserDefinedTypeName(node) => node.name.clone().unwrap(),
-            InteractableNode::IdentifierPath(node) => "".to_string(),
-            _ => "".to_string(),
-        }
-    }
-
-    pub fn get_scope(&self) -> i64 {
-        match self {
-            InteractableNode::ContractDefinition(node) => node.scope,
-            InteractableNode::FunctionDefinition(node) => node.scope,
-            InteractableNode::StructDefinition(node) => node.scope,
-            InteractableNode::VariableDeclaration(node) => node.scope,
-            InteractableNode::ImportDirective(node) => node.scope,
-            _ => -1,
-        }
-    }
-    
     pub fn get_id(&self) -> i64 {
         match self {
             InteractableNode::ContractDefinition(node) => node.id,
@@ -163,7 +130,6 @@ impl InteractableNode {
             InteractableNode::NewExpression(node, _) => node.id,
             InteractableNode::UserDefinedTypeName(udt) => udt.id,
             InteractableNode::IdentifierPath(ip) => ip.id,
-            _ => -1,
         }
     }
 
@@ -287,37 +253,6 @@ impl InteractableNode {
             InteractableNode::NewExpression(node, _) => source_location_to_range(&node.src),
             InteractableNode::UserDefinedTypeName(udt) => source_location_to_range(&udt.src),
             InteractableNode::IdentifierPath(ip) => source_location_to_range(&ip.src),
-            InteractableNode::Block(block) => source_location_to_range(&block.src),
-            _ => Range {
-                index: 0,
-                length: 0,
-            },
-        }
-    }
-
-    pub fn get_kind(&self) -> CompletionItemKind {
-        match self {
-            InteractableNode::ContractDefinition(_) => CompletionItemKind::CLASS,
-            InteractableNode::FunctionDefinition(_) => CompletionItemKind::FUNCTION,
-            InteractableNode::ModifierDefinition(_) => CompletionItemKind::METHOD,
-            InteractableNode::StructDefinition(_) => CompletionItemKind::STRUCT,
-            InteractableNode::EnumDefinition(_) => CompletionItemKind::ENUM,
-            InteractableNode::VariableDeclaration(_) => CompletionItemKind::VARIABLE,
-            InteractableNode::EventDefinition(_) => CompletionItemKind::EVENT,
-            InteractableNode::EnumValue(_) => CompletionItemKind::ENUM_MEMBER,
-            InteractableNode::UsingForDirective(_) => CompletionItemKind::REFERENCE,
-            InteractableNode::ImportDirective(_) => CompletionItemKind::REFERENCE,
-            InteractableNode::ErrorDefinition(_) => CompletionItemKind::STRUCT,
-            InteractableNode::FunctionCall(_) => CompletionItemKind::FUNCTION,
-            InteractableNode::ModifierInvocation(_) => CompletionItemKind::METHOD,
-            InteractableNode::InheritanceSpecifier(_) => CompletionItemKind::REFERENCE,
-            InteractableNode::Identifier(_) => CompletionItemKind::VARIABLE,
-            InteractableNode::MemberAccess(_) => CompletionItemKind::VARIABLE,
-            InteractableNode::NewExpression(_, _) => CompletionItemKind::CONSTRUCTOR,
-            InteractableNode::UserDefinedTypeName(_) => CompletionItemKind::TYPE_PARAMETER,
-            InteractableNode::IdentifierPath(_) => CompletionItemKind::VARIABLE,
-            InteractableNode::Block(_) => CompletionItemKind::UNIT,
-            _ => CompletionItemKind::TEXT,
         }
     }
 }

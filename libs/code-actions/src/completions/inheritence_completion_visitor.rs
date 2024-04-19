@@ -3,12 +3,11 @@ use std::vec;
 use crate::types::CompletionItem;
 use crate::types::CompletionItemKind;
 use crate::types::InteractableNode;
-use log::info;
 use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit::*;
 
 
-pub struct InheritenceFinder {
+pub struct InheritenceCompletionVisitor {
     contract: ContractDefinition,
     is_self: bool,
     items: Vec<CompletionItem>,
@@ -17,7 +16,7 @@ pub struct InheritenceFinder {
 }
 
 
-impl<'ast> Visit<'ast> for InheritenceFinder {
+impl<'ast> Visit<'ast> for InheritenceCompletionVisitor {
 
     fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
         if !self.ids_visited.contains(&contract.id) && (self.contract.base_contracts.iter().find(|elem| {
@@ -45,11 +44,11 @@ impl<'ast> Visit<'ast> for InheritenceFinder {
 
 }
 
-impl InheritenceFinder {
+impl InheritenceCompletionVisitor {
 
 
     pub fn new(contract: ContractDefinition) -> Self {
-        InheritenceFinder {contract, is_self: false, items: vec![], inheritences: vec![], ids_visited: vec![]}
+        InheritenceCompletionVisitor {contract, is_self: false, items: vec![], inheritences: vec![], ids_visited: vec![]}
     }
 
     pub fn find(&mut self, src: &SourceUnit, is_self: bool, current_contract: ContractDefinition) -> (Vec<CompletionItem>, Vec<ContractDefinition>) {

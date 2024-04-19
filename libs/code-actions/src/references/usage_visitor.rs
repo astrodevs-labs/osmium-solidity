@@ -3,13 +3,13 @@ use solc_ast_rs_types::types::*;
 use solc_ast_rs_types::visit;
 use solc_ast_rs_types::visit::*;
 
-pub struct UsagesFinder {
+pub struct UsageVisitor {
     pub id: i64,
     pub to_find: Vec<InteractableNode>,
     above_node: Option<InteractableNode>,
 }
 
-impl<'ast> Visit<'ast> for UsagesFinder {
+impl<'ast> Visit<'ast> for UsageVisitor {
     fn visit_type_descriptions(&mut self, type_descriptions: &'ast TypeDescriptions) {
         if self.above_node.clone().is_some_and(|node| {
             !matches!(
@@ -81,9 +81,9 @@ impl<'ast> Visit<'ast> for UsagesFinder {
     }
 }
 
-impl UsagesFinder {
+impl UsageVisitor {
     pub fn new(id: i64) -> Self {
-        UsagesFinder {
+        UsageVisitor {
             id,
             to_find: Vec::new(),
             above_node: None,

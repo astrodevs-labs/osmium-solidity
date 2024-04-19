@@ -212,6 +212,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98cc8fbded0c607b7ba9dd60cd98df59af97e84d24e49c8557331cfc26d301ce"
 
 [[package]]
+name = "code-actions-server"
+version = "0.2.3"
+dependencies = [
+ "glob",
+ "osmium-libs-solidity-code-actions",
+ "osmium-libs-solidity-lsp-utils",
+ "osmium-libs-solidity-path-utils",
+ "tokio",
+ "tower-lsp",
+]
+
+[[package]]
 name = "colorchoice"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -603,6 +615,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "osmium-libs-solidity-code-actions"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "osmium-libs-solidity-ast-extractor",
+ "osmium-libs-solidity-path-utils",
+ "solc-ast-rs-types",
+ "thiserror",
+]
+
+[[package]]
 name = "osmium-libs-solidity-foundry-wrapper"
 version = "0.1.0"
 dependencies = [
@@ -629,17 +652,6 @@ dependencies = [
 [[package]]
 name = "osmium-libs-solidity-path-utils"
 version = "0.1.0"
-
-[[package]]
-name = "osmium-libs-solidity-references"
-version = "0.1.0"
-dependencies = [
- "log",
- "osmium-libs-solidity-ast-extractor",
- "osmium-libs-solidity-path-utils",
- "solc-ast-rs-types",
- "thiserror",
-]
 
 [[package]]
 name = "parking_lot"
@@ -733,18 +745,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4722d768eff46b75989dd134e5c353f0d6296e5aaa3132e776cbdb56be7731aa"
 dependencies = [
  "bitflags 1.3.2",
-]
-
-[[package]]
-name = "references-server"
-version = "0.2.3"
-dependencies = [
- "glob",
- "osmium-libs-solidity-lsp-utils",
- "osmium-libs-solidity-path-utils",
- "osmium-libs-solidity-references",
- "tokio",
- "tower-lsp",
 ]
 
 [[package]]

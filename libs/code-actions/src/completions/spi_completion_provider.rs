@@ -1,19 +1,18 @@
-use log::info;
 use solc_ast_rs_types::types::*;
 
-use crate::types::{CompletionItem, CompletionItemKind, InteractableNode};
+use crate::types::{CompletionItem, CompletionItemKind, InteractableNode, SPINode};
 
 
 
 
-pub struct ScopedCompletionFinder {
-    pub spi: Vec<InteractableNode>,
+pub struct SPICompletionProvider {
+    pub spi: Vec<SPINode>,
 }
 
 
-impl ScopedCompletionFinder {
+impl SPICompletionProvider {
 
-    pub fn new(spi: Vec<InteractableNode>) -> Self {
+    pub fn new(spi: Vec<SPINode>) -> Self {
         Self {
             spi,
         }
@@ -24,11 +23,10 @@ impl ScopedCompletionFinder {
 
         for path in self.spi.iter() {
             let items = match path {
-                InteractableNode::FunctionDefinition(func) => self.search_function(func),
-                InteractableNode::ForStatement(r#for) => self.search_for_statement(r#for),
-                InteractableNode::Block(block) => self.search_block(block),
-                InteractableNode::UncheckedBlock(block) => self.search_unchecked_block(block),
-                // InteractableNode::TryStatement(r#try) => self.search_try(r#try),
+                SPINode::FunctionDefinition(func) => self.search_function(func),
+                SPINode::ForStatement(r#for) => self.search_for_statement(r#for),
+                SPINode::Block(block) => self.search_block(block),
+                SPINode::UncheckedBlock(block) => self.search_unchecked_block(block),
                 _ => vec![],
             };
             completions.extend(items);
