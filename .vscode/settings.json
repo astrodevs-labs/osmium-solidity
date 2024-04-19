@@ -12,6 +12,6 @@
     "typescript.tsc.autoDetect": "off",
     "npm.packageManager": "pnpm",
     "rust-analyzer.linkedProjects": [
-        ".\\libs\\references\\Cargo.toml"
+        ".\\libs\\code-actions\\Cargo.toml"
     ]
 }

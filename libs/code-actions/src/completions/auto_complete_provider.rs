@@ -33,7 +33,6 @@ impl AutoCompleteProvider {
         let mut inheritences = vec![contract.clone()];
 
         while let Some(current) = inheritences.pop() {
-            
             // info!("Current contract to search for inheritence: {:?}", current.name);
             for file in files {
                 let (items, inheritences_res) = complete_finder.find(

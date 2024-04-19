@@ -1,6 +1,5 @@
 use std::vec;
 
-
 use crate::types::SPINode;
 use crate::utils::is_node_in_range;
 use crate::Position;

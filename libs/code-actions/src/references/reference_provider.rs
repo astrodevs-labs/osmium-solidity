@@ -19,7 +19,7 @@ impl ReferenceProvider {
         &self,
         uri: &str,
         position: Position,
-        files: &Vec<SolidityAstFile>,
+        files: &[SolidityAstFile],
     ) -> Option<(SolidityAstFile, InteractableNode)> {
         let found_node: Option<InteractableNode>;
         let source_file;

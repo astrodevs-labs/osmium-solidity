@@ -17,17 +17,11 @@ pub struct InheritenceCompletionVisitor {
 impl<'ast> Visit<'ast> for InheritenceCompletionVisitor {
     fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
         if !self.ids_visited.contains(&contract.id)
-            && (self
-                .contract
-                .base_contracts
-                .iter()
-                .find(|elem| {
-                    InteractableNode::InheritanceSpecifier(elem.to_owned().clone())
-                        .get_reference_id()
-                        .is_some_and(|id| id == contract.id)
-                })
-                .is_some()
-                || self.is_self)
+            && (self.contract.base_contracts.iter().any(|elem| {
+                InteractableNode::InheritanceSpecifier(elem.to_owned().clone())
+                    .get_reference_id()
+                    .is_some_and(|id| id == contract.id)
+            }) || self.is_self)
         {
             if !self.is_self {
                 self.inheritences.push(contract.clone());

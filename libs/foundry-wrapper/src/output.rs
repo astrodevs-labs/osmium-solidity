@@ -2,11 +2,9 @@ use crate::error::Error;
 use crate::types::FoundryJsonFile;
 use osmium_libs_solidity_path_utils::join_path;
 
-
 use std::fs::{read_dir, DirEntry};
 use std::io;
 use std::path::PathBuf;
-
 
 pub fn get_files_from_foundry_output(base_path: &str) -> Result<Vec<FoundryJsonFile>, Error> {
     let mut files = Vec::new();
