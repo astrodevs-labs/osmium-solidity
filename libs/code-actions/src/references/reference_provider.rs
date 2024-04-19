@@ -1,16 +1,16 @@
-use crate::types::{Location, Position, InteractableNode};
-use crate::references::{definition_visitor::DefinitionVisitor, usage_visitor::UsageVisitor, position_node_visitor::PositionNodeVisitor};
-use crate::utils::{get_location};
-use osmium_libs_solidity_path_utils::join_path;
+use crate::references::{
+    definition_visitor::DefinitionVisitor, position_node_visitor::PositionNodeVisitor,
+    usage_visitor::UsageVisitor,
+};
+use crate::types::{InteractableNode, Location, Position};
+use crate::utils::get_location;
 use log::{info, warn};
 use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
+use osmium_libs_solidity_path_utils::join_path;
 
-
-pub struct ReferenceProvider {
-}
+pub struct ReferenceProvider {}
 
 impl ReferenceProvider {
-
     pub fn new() -> Self {
         Self {}
     }
@@ -38,7 +38,13 @@ impl ReferenceProvider {
         Some((source_file.clone(), found_node.unwrap()))
     }
 
-    pub fn get_definition(&self, uri: &str, position: Position, files: &Vec<SolidityAstFile>, base_path: &str) -> Option<Location> {
+    pub fn get_definition(
+        &self,
+        uri: &str,
+        position: Position,
+        files: &Vec<SolidityAstFile>,
+        base_path: &str,
+    ) -> Option<Location> {
         let (source_file, found_node) = match self.get_node(uri, position, files) {
             Some((file, node)) => (file, node),
             None => return None,
@@ -68,7 +74,12 @@ impl ReferenceProvider {
         None
     }
 
-    pub fn get_references(&self, uri: &str, position: Position, files: &Vec<SolidityAstFile>) -> Vec<Location> {
+    pub fn get_references(
+        &self,
+        uri: &str,
+        position: Position,
+        files: &Vec<SolidityAstFile>,
+    ) -> Vec<Location> {
         let mut references: Vec<Location> = Vec::new();
         let (_, found_node) = match self.get_node(uri, position, files) {
             Some((file, node)) => (file, node),

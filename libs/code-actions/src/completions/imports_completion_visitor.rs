@@ -1,4 +1,3 @@
-
 use crate::types::CompletionItem;
 use crate::types::CompletionItemKind;
 use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
@@ -13,7 +12,9 @@ pub struct ImportCompletionVisitor {
 
 impl<'ast> Visit<'ast> for ImportCompletionVisitor {
     fn visit_struct_definition(&mut self, struct_def: &'ast StructDefinition) {
-        if struct_def.visibility == Visibility::Private || struct_def.visibility == Visibility::Internal {
+        if struct_def.visibility == Visibility::Private
+            || struct_def.visibility == Visibility::Internal
+        {
             return;
         }
         self.items.push(CompletionItem {
@@ -21,34 +22,34 @@ impl<'ast> Visit<'ast> for ImportCompletionVisitor {
             kind: CompletionItemKind::STRUCT,
         });
     }
-    
-    fn visit_contract_definition(&mut self,contract: &'ast ContractDefinition) {
+
+    fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
         self.items.push(CompletionItem {
             label: contract.name.clone(),
             kind: CompletionItemKind::CLASS,
         });
         visit::visit_contract_definition(self, contract);
     }
-    
-    fn visit_enum_definition(&mut self,enumm: &'ast EnumDefinition) {
+
+    fn visit_enum_definition(&mut self, enumm: &'ast EnumDefinition) {
         self.items.push(CompletionItem {
             label: enumm.name.clone(),
             kind: CompletionItemKind::ENUM,
         });
     }
 
-    fn visit_event_definition(&mut self,event: &'ast EventDefinition) {
+    fn visit_event_definition(&mut self, event: &'ast EventDefinition) {
         self.items.push(CompletionItem {
             label: event.name.clone(),
             kind: CompletionItemKind::EVENT,
-        });    
+        });
     }
 
-    fn visit_error_definition(&mut self,error: &'ast ErrorDefinition) {
+    fn visit_error_definition(&mut self, error: &'ast ErrorDefinition) {
         self.items.push(CompletionItem {
             label: error.name.clone(),
             kind: CompletionItemKind::CONSTANT,
-        });    
+        });
     }
 }
 
@@ -76,5 +77,4 @@ impl ImportCompletionVisitor {
         self.visit_source_unit(src);
         self.items.clone()
     }
-       
 }

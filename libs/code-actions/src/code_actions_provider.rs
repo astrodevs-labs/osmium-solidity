@@ -1,20 +1,19 @@
-use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
-use osmium_libs_solidity_ast_extractor::extract::extract_ast_from_foundry;
-use std::sync::{Arc, Mutex};
-use std::sync::RwLock;
-use crate::references::reference_provider::ReferenceProvider;
 use crate::completions::auto_complete_provider::AutoCompleteProvider;
 use crate::error::CodeActionError;
-use crate::types::{Position, CompletionItem, Location};
+use crate::references::reference_provider::ReferenceProvider;
+use crate::types::{CompletionItem, Location, Position};
+use osmium_libs_solidity_ast_extractor::extract::extract_ast_from_foundry;
+use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
+use std::sync::RwLock;
+use std::sync::{Arc, Mutex};
 
 #[derive(Debug)]
 pub struct CodeActionsProvider {
     pub files: Arc<Mutex<Vec<SolidityAstFile>>>,
     pub base_path: RwLock<String>,
-} 
+}
 
 impl CodeActionsProvider {
-    
     pub fn new() -> Self {
         Self {
             files: Arc::new(Mutex::new(vec![])),
@@ -43,7 +42,12 @@ impl CodeActionsProvider {
     pub fn get_definition(&self, uri: &str, position: Position) -> Option<Location> {
         let files = self.files.lock().unwrap();
         let provider = ReferenceProvider::new();
-        provider.get_definition(uri, position, &files, self.base_path.read().unwrap().as_str())
+        provider.get_definition(
+            uri,
+            position,
+            &files,
+            self.base_path.read().unwrap().as_str(),
+        )
     }
 
     pub fn get_completions(&self, uri: &str, position: Position) -> Vec<CompletionItem> {
@@ -51,5 +55,4 @@ impl CodeActionsProvider {
         let provider = AutoCompleteProvider::new();
         provider.get_suggestions(uri, position, &files)
     }
-
 }

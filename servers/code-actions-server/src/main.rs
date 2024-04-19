@@ -2,9 +2,9 @@ mod utils;
 
 use crate::utils::*;
 
+use osmium_libs_solidity_code_actions::*;
 use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
 use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
-use osmium_libs_solidity_code_actions::*;
 use std::sync::Arc;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::Location as LspLocation;
@@ -70,7 +70,10 @@ impl LanguageServer for Backend {
         eprintln!("Compile requested");
         let init_time = std::time::Instant::now();
         self.update().await;
-        info!("Compile and Update time: {:?}", init_time.elapsed().as_secs());
+        info!(
+            "Compile and Update time: {:?}",
+            init_time.elapsed().as_secs()
+        );
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<LspLocation>>> {
@@ -136,25 +139,29 @@ impl LanguageServer for Backend {
             osmium_libs_solidity_code_actions::Position {
                 line: position.line,
                 column: position.character,
-            }
+            },
         );
         if completes.is_empty() {
             warn!("No completions found");
         }
-        let completes = completes.iter().map(|item| {
-            let kind: i64 = item.kind.value();
-            CompletionItem {
-                label: item.label.clone(),
-                kind: Some(self.completion_kind_from_i64(kind)), //TODO: transform to lsp kind
-                ..Default::default()
-            }
-        
-        }).collect::<Vec<CompletionItem>>().into_iter().fold(Vec::new(), |mut acc, x| {
-            if !acc.contains(&x) {
-                acc.push(x);
-            }
-            acc
-        });
+        let completes = completes
+            .iter()
+            .map(|item| {
+                let kind: i64 = item.kind.value();
+                CompletionItem {
+                    label: item.label.clone(),
+                    kind: Some(self.completion_kind_from_i64(kind)), //TODO: transform to lsp kind
+                    ..Default::default()
+                }
+            })
+            .collect::<Vec<CompletionItem>>()
+            .into_iter()
+            .fold(Vec::new(), |mut acc, x| {
+                if !acc.contains(&x) {
+                    acc.push(x);
+                }
+                acc
+            });
         info!("Completions found: {:?}", completes.len());
         Ok(Some(CompletionResponse::Array(completes)))
     }
@@ -194,7 +201,6 @@ impl Backend {
             25 => CompletionItemKind::TYPE_PARAMETER,
             _ => CompletionItemKind::TEXT,
         }
-
     }
 
     async fn update(&self) {
@@ -204,7 +210,8 @@ impl Backend {
             if let Err(e) = ref_provider.update_file_content() {
                 error!("Error updating references: {}", e);
             }
-        }).await;
+        })
+        .await;
     }
 }
 
@@ -223,7 +230,10 @@ async fn main() {
     let (service, socket) = LspService::new(Backend::new);
     let stdin = tokio::io::stdin();
     let stdout = tokio::io::stdout();
-    Server::new(stdin, stdout, socket).concurrency_level(2).serve(service).await;
+    Server::new(stdin, stdout, socket)
+        .concurrency_level(2)
+        .serve(service)
+        .await;
 
     //Ok(())
 }

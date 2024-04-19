@@ -1,19 +1,21 @@
-import * as path from 'path';
-import * as os from 'os';
+import * as path from "path";
+import * as os from "os";
 import { workspace, ExtensionContext, Uri } from "vscode";
 import {
-	LanguageClient,
-	LanguageClientOptions,
-	ServerOptions,
-	TransportKind,
-	SocketTransport,
-	StreamInfo
-} from 'vscode-languageclient/node';
-import { TextDecoder } from 'util';
-import * as net from 'net';
+  LanguageClient,
+  LanguageClientOptions,
+  ServerOptions,
+  TransportKind,
+  SocketTransport,
+  StreamInfo,
+} from "vscode-languageclient/node";
+import { TextDecoder } from "util";
+import * as net from "net";
 
-export async function createCodeActionsClient(context: ExtensionContext): Promise<LanguageClient> {
-	/*
+export async function createCodeActionsClient(
+  context: ExtensionContext,
+): Promise<LanguageClient> {
+  /*
 	let connectionInfo = {
 		port: 9001,
 		host: "127.0.0.1"
@@ -34,44 +36,45 @@ export async function createCodeActionsClient(context: ExtensionContext): Promis
 		kind: TransportKind.socket,
 	};
 	*/
-	
-	// The server is implemented in node
-	const serverBinary = context.asAbsolutePath(
-		path.join(
-			'dist', 
-			os.platform().startsWith("win") ? 'code-actions-server.exe' : 'code-actions-server'
-		)
-	);
 
-	const serverOptions: ServerOptions = {
-		run: { command: serverBinary, transport: TransportKind.stdio },
-		debug: {
-			command: serverBinary,
-			transport: TransportKind.stdio,
-		}
-	};
+  // The server is implemented in node
+  const serverBinary = context.asAbsolutePath(
+    path.join(
+      "dist",
+      os.platform().startsWith("win")
+        ? "code-actions-server.exe"
+        : "code-actions-server",
+    ),
+  );
 
+  const serverOptions: ServerOptions = {
+    run: { command: serverBinary, transport: TransportKind.stdio },
+    debug: {
+      command: serverBinary,
+      transport: TransportKind.stdio,
+    },
+  };
 
-	// Options to control the language client
-	const clientOptions: LanguageClientOptions = {
-		// Register the server for plain text documents
-		documentSelector: [{ scheme: 'file', language: 'solidity' }],
-		synchronize: {
-			// Notify the server about file changes to '.clientrc files contained in the workspace
-			fileEvents: workspace.createFileSystemWatcher('**/.solidhunter.json')
-		}
-	};
+  // Options to control the language client
+  const clientOptions: LanguageClientOptions = {
+    // Register the server for plain text documents
+    documentSelector: [{ scheme: "file", language: "solidity" }],
+    synchronize: {
+      // Notify the server about file changes to '.clientrc files contained in the workspace
+      fileEvents: workspace.createFileSystemWatcher("**/.solidhunter.json"),
+    },
+  };
 
-	// Create the language client and start the client.
-	const client = new LanguageClient(
-		'osmium-solidity-code-actions',
-		'Osmium Solidity Code Actions Language Server',
-		serverOptions,
-		clientOptions
-	);
+  // Create the language client and start the client.
+  const client = new LanguageClient(
+    "osmium-solidity-code-actions",
+    "Osmium Solidity Code Actions Language Server",
+    serverOptions,
+    clientOptions,
+  );
 
-	// Start the client. This will also launch the server
-	await client.start();
+  // Start the client. This will also launch the server
+  await client.start();
 
-    return client;
+  return client;
 }

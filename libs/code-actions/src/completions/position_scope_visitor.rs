@@ -13,11 +13,10 @@ pub struct PositionScopeVisitor {
     pub spi: Vec<SPINode>,
     pub imports: Vec<ImportDirective>,
     position: Position,
-    source: String
+    source: String,
 }
 
 impl<'ast> Visit<'ast> for PositionScopeVisitor {
-
     fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
         if is_node_in_range(&contract.src, &self.position, &self.source) {
             self.contract = Some(contract.clone());
@@ -25,7 +24,7 @@ impl<'ast> Visit<'ast> for PositionScopeVisitor {
         }
     }
 
-    fn visit_block(&mut self,block: &'ast Block) {
+    fn visit_block(&mut self, block: &'ast Block) {
         if is_node_in_range(&block.src, &self.position, &self.source) {
             self.spi.push(SPINode::Block(block.clone()));
             visit::visit_block(self, block);
@@ -68,8 +67,7 @@ impl<'ast> Visit<'ast> for PositionScopeVisitor {
         if is_node_in_range(&function.src, &self.position, &self.source) {
             self.spi.push(SPINode::FunctionDefinition(function.clone()));
             visit::visit_function_definition(self, function);
-        }
-        else if let Some(body) = &function.body {
+        } else if let Some(body) = &function.body {
             if is_node_in_range(&body.src, &self.position, &self.source) {
                 self.spi.push(SPINode::FunctionDefinition(function.clone()));
                 visit::visit_function_definition(self, function);
@@ -80,8 +78,7 @@ impl<'ast> Visit<'ast> for PositionScopeVisitor {
     fn visit_try(&mut self, r#try: &'ast TryStatement) {
         if is_node_in_range(&r#try.src, &self.position, &self.source) {
             self.spi.push(SPINode::TryStatement(r#try.clone()));
-        }
-        else {
+        } else {
             for clause in &r#try.clauses {
                 if is_node_in_range(&clause.src, &self.position, &self.source) {
                     self.spi.push(SPINode::TryStatement(r#try.clone()));
@@ -92,11 +89,11 @@ impl<'ast> Visit<'ast> for PositionScopeVisitor {
             }
         }
     }
-    
 
     fn visit_variable_declaration(&mut self, variable: &'ast VariableDeclaration) {
         if is_node_in_range(&variable.src, &self.position, &self.source) {
-            self.spi.push(SPINode::VariableDeclaration(variable.clone()));
+            self.spi
+                .push(SPINode::VariableDeclaration(variable.clone()));
             visit::visit_variable_declaration(self, variable);
         }
     }
@@ -113,21 +110,36 @@ impl<'ast> Visit<'ast> for PositionScopeVisitor {
         }
     }
 
-    fn visit_import_directive(&mut self,import: &'ast ImportDirective) {
+    fn visit_import_directive(&mut self, import: &'ast ImportDirective) {
         self.imports.push(import.clone());
         visit::visit_import_directive(self, import);
     }
-
 }
 
 impl PositionScopeVisitor {
-
     pub fn new(source: String, position: Position) -> Self {
-        PositionScopeVisitor {spi: vec![], contract: None, imports: vec![], position, source}
+        PositionScopeVisitor {
+            spi: vec![],
+            contract: None,
+            imports: vec![],
+            position,
+            source,
+        }
     }
 
-    pub fn find(&mut self, src: &SourceUnit) -> (Option<ContractDefinition>, Vec<SPINode>, Vec<ImportDirective>){
+    pub fn find(
+        &mut self,
+        src: &SourceUnit,
+    ) -> (
+        Option<ContractDefinition>,
+        Vec<SPINode>,
+        Vec<ImportDirective>,
+    ) {
         self.visit_source_unit(src);
-        (self.contract.clone(), self.spi.clone(), self.imports.clone())
+        (
+            self.contract.clone(),
+            self.spi.clone(),
+            self.imports.clone(),
+        )
     }
 }

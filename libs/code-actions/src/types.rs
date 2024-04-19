@@ -31,14 +31,11 @@ pub struct CompletionItemKind(i64);
 
 #[derive(Debug, Clone)]
 pub struct CompletionItem {
-
     pub label: String,
 
     pub kind: CompletionItemKind,
-
     // TODO
     // pub documentation: Option<Documentation>,
-
 }
 
 impl CompletionItemKind {
@@ -105,7 +102,6 @@ pub enum InteractableNode {
     NewExpression(NewExpression, Box<InteractableNode>),
     UserDefinedTypeName(UserDefinedTypeName),
     IdentifierPath(IdentifierPath),
-
 }
 
 impl InteractableNode {

@@ -2,20 +2,13 @@ use solc_ast_rs_types::types::*;
 
 use crate::types::{CompletionItem, CompletionItemKind, InteractableNode, SPINode};
 
-
-
-
 pub struct SPICompletionProvider {
     pub spi: Vec<SPINode>,
 }
 
-
 impl SPICompletionProvider {
-
     pub fn new(spi: Vec<SPINode>) -> Self {
-        Self {
-            spi,
-        }
+        Self { spi }
     }
 
     pub fn inspect(&self) -> Vec<CompletionItem> {
@@ -55,13 +48,15 @@ impl SPICompletionProvider {
 
     fn search_for_statement(&self, r#for: &ForStatement) -> Vec<CompletionItem> {
         let mut items = vec![];
-        if let Some(ForStatementInitializationExpression::VariableDeclarationStatement(init_var)) = &r#for.initialization_expression {
+        if let Some(ForStatementInitializationExpression::VariableDeclarationStatement(init_var)) =
+            &r#for.initialization_expression
+        {
             for var_decl in &init_var.declarations {
                 if let Some(var_decl) = var_decl.clone() {
                     items.push(CompletionItem {
                         label: var_decl.name.clone(),
                         kind: CompletionItemKind::VARIABLE,
-                });
+                    });
                 }
             }
         }
@@ -99,5 +94,4 @@ impl SPICompletionProvider {
         }
         items
     }
-
 }

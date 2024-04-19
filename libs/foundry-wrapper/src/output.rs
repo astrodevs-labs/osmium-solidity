@@ -28,7 +28,7 @@ pub fn get_files_from_foundry_output(base_path: &str) -> Result<Vec<FoundryJsonF
         });
     }
 
-   /*  let current_time = SystemTime::now().duration_since(init_time).unwrap();
+    /*  let current_time = SystemTime::now().duration_since(init_time).unwrap();
     info!(
         "Finished retreiving json ast in: {:?} seconds",
         current_time.as_secs()

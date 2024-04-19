@@ -46,7 +46,7 @@ pub fn position_to_index(position: &Position, source: &str) -> u32 {
         if (line == position.line && column == position.column) || line > position.line {
             break;
         }
-        if c == '\n'{
+        if c == '\n' {
             line += 1;
             column = 1;
         } else {
@@ -114,7 +114,10 @@ contract Counter {
         number;
     }
 }";
-        let position = Position { line: 12, column: 10 };
+        let position = Position {
+            line: 12,
+            column: 10,
+        };
         let index = position_to_index(&position, source);
         let expected_idx = 240;
         assert_eq!(index, expected_idx);

@@ -39,7 +39,7 @@ function isFmtInstalled(): boolean {
 
 function forgeFmt(
   args: ForgeFmtArgs,
-  debug?: boolean
+  debug?: boolean,
 ): Promise<ForgeFmtResult> {
   const { options, files } = args;
   const { root, check, raw } = options;
@@ -59,7 +59,7 @@ function forgeFmt(
   }
 
   commandArgs.push(
-    ...files.map((file) => (file.includes(" ") ? `"${file}"` : file))
+    ...files.map((file) => (file.includes(" ") ? `"${file}"` : file)),
   );
 
   const command = `forge ${commandArgs.join(" ")}`;
@@ -88,7 +88,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
     function () {
       if (!isFmtInstalled()) {
         vscode.window.showErrorMessage(
-          "Forge fmt is not installed. Please install it and try again."
+          "Forge fmt is not installed. Please install it and try again.",
         );
         return;
       }
@@ -104,7 +104,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
           editor.document.fileName.split(".").pop() !== "sol"
         ) {
           vscode.window.showErrorMessage(
-            "Forge fmt is only available for solidity files."
+            "Forge fmt is only available for solidity files.",
           );
           return;
         }
@@ -124,11 +124,11 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
           .then((result) => {
             if (result.exitCode === 0) {
               vscode.window.showInformationMessage(
-                "Forge fmt ran successfully."
+                "Forge fmt ran successfully.",
               );
             } else {
               vscode.window.showErrorMessage(
-                "Forge fmt failed. Please check the output for details."
+                "Forge fmt failed. Please check the output for details.",
               );
 
               console.log(result.output);
@@ -136,16 +136,16 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
           })
           .catch((error) => {
             vscode.window.showErrorMessage(
-              "Forge fmt failed. Please check the output for details."
+              "Forge fmt failed. Please check the output for details.",
             );
             console.error(error);
           });
       } else {
         vscode.window.showErrorMessage(
-          "Forge fmt is only available for solidity files."
+          "Forge fmt is only available for solidity files.",
         );
       }
-    }
+    },
   );
 
   const lintSolWorkspace = vscode.commands.registerCommand(
@@ -153,14 +153,14 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
     function () {
       if (!isFmtInstalled()) {
         vscode.window.showErrorMessage(
-          "Forge fmt is not installed. Please install it and try again."
+          "Forge fmt is not installed. Please install it and try again.",
         );
         return;
       }
 
       if (!vscode.workspace.workspaceFolders?.[0]) {
         vscode.window.showErrorMessage(
-          "Unable to find workspace root. Please open a folder and try again."
+          "Unable to find workspace root. Please open a folder and try again.",
         );
         return;
       }
@@ -182,7 +182,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage("Forge fmt ran successfully.");
           } else {
             vscode.window.showErrorMessage(
-              "Forge fmt failed. Please check the output for details."
+              "Forge fmt failed. Please check the output for details.",
             );
 
             console.log(result.output);
@@ -190,11 +190,11 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
         })
         .catch((error) => {
           vscode.window.showErrorMessage(
-            "Forge fmt failed. Please check the output for details."
+            "Forge fmt failed. Please check the output for details.",
           );
           console.error(error);
         });
-    }
+    },
   );
 
   const formatter = vscode.languages.registerDocumentFormattingEditProvider(
@@ -203,7 +203,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
       provideDocumentFormattingEdits: (document) => {
         if (!isFmtInstalled()) {
           vscode.window.showErrorMessage(
-            "Forge fmt is not installed. Please install it and try again."
+            "Forge fmt is not installed. Please install it and try again.",
           );
           return;
         }
@@ -224,7 +224,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage("Forge fmt ran successfully.");
           } else {
             vscode.window.showErrorMessage(
-              "Forge fmt failed. Please check the output for details."
+              "Forge fmt failed. Please check the output for details.",
             );
 
             console.log(result.output);
@@ -233,7 +233,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext) {
           return [];
         });
       },
-    }
+    },
   );
 
   context.subscriptions.push(lintSolFile);
