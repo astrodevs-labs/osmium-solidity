@@ -68,7 +68,7 @@ impl ReferenceProvider {
         let mut def_finder = DefinitionVisitor::new(ref_id);
         for file in files {
             if let Some(node) = def_finder.find(&file.ast) {
-                return Some(get_location(&node, &file));
+                return Some(get_location(&node, file));
             }
         }
         None
@@ -93,7 +93,7 @@ impl ReferenceProvider {
         for file in files {
             let nodes = usages_finder.find(&file.ast);
             for node in nodes {
-                references.push(get_location(&node, &file));
+                references.push(get_location(&node, file));
             }
         }
         references

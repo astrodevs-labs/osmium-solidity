@@ -32,8 +32,8 @@ impl AutoCompleteProvider {
         let mut completes: Vec<CompletionItem> = vec![];
         let mut inheritences = vec![contract.clone()];
 
-        while inheritences.len() > 0 {
-            let current = inheritences.pop().unwrap();
+        while let Some(current) = inheritences.pop() {
+            
             // info!("Current contract to search for inheritence: {:?}", current.name);
             for file in files {
                 let (items, inheritences_res) = complete_finder.find(
@@ -92,13 +92,13 @@ impl AutoCompleteProvider {
             let mut completes: Vec<CompletionItem> = vec![];
 
             if let Some(contract) = contract {
-                completes.append(&mut self.while_inherits(&contract, &file, &files));
+                completes.append(&mut self.while_inherits(&contract, file, files));
             }
 
             let spi_finder = SPICompletionProvider::new(spi);
             completes.append(&mut spi_finder.inspect());
 
-            completes.append(&mut self.get_import_completes(imports, &files));
+            completes.append(&mut self.get_import_completes(imports, files));
 
             return completes;
         }

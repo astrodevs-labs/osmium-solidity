@@ -2,16 +2,16 @@ use crate::error::Error;
 use crate::types::FoundryJsonFile;
 use osmium_libs_solidity_path_utils::join_path;
 
-use log::info;
+
 use std::fs::{read_dir, DirEntry};
 use std::io;
 use std::path::PathBuf;
-use std::time::SystemTime;
+
 
 pub fn get_files_from_foundry_output(base_path: &str) -> Result<Vec<FoundryJsonFile>, Error> {
     let mut files = Vec::new();
 
-    let init_time = SystemTime::now();
+    // let init_time = SystemTime::now();
     let output = std::fs::read_to_string(get_last_build_info(base_path)?)?;
     let json: serde_json::Value = serde_json::from_str(&output)?;
     for (file, json) in json["output"]["sources"]

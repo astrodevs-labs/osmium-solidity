@@ -135,7 +135,7 @@ impl LanguageServer for Backend {
         position.line += 1;
         position.character += 1;
         let completes = self.code_actions_provider.get_completions(
-            &normalize_path(&params.text_document_position.text_document.uri.path()),
+            &normalize_path(params.text_document_position.text_document.uri.path()),
             osmium_libs_solidity_code_actions::Position {
                 line: position.line,
                 column: position.character,

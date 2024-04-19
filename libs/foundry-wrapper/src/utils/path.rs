@@ -1,5 +1,5 @@
 use glob::glob;
-use log::info;
+
 use std::path::PathBuf;
 
 pub fn find_projects_paths(root_path: &str) -> Result<Vec<PathBuf>, glob::PatternError> {

@@ -5,8 +5,8 @@ use crate::{
     utils::{check_executable_argument, find_forge_executable, find_projects_paths},
     FoundryJsonFile,
 };
-use log::info;
-use osmium_libs_solidity_path_utils::{normalize_path, slashify_path};
+
+use osmium_libs_solidity_path_utils::slashify_path;
 use std::process::Command;
 
 #[derive(Debug)]

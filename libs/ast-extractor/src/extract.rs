@@ -8,7 +8,6 @@ use crate::types::*;
 use log::error;
 use osmium_libs_solidity_foundry_wrapper::{Compiler, FoundryJsonFile};
 use proc_macro2::TokenStream;
-use serde_json::Error;
 use solc_ast_rs_types::types::SourceUnit;
 use std::str::FromStr;
 

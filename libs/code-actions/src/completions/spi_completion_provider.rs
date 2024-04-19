@@ -1,6 +1,6 @@
 use solc_ast_rs_types::types::*;
 
-use crate::types::{CompletionItem, CompletionItemKind, InteractableNode, SPINode};
+use crate::types::{CompletionItem, CompletionItemKind, SPINode};
 
 pub struct SPICompletionProvider {
     pub spi: Vec<SPINode>,
@@ -36,7 +36,7 @@ impl SPICompletionProvider {
             });
         }
         for param in &func.return_parameters.parameters {
-            if param.name != "" {
+            if !param.name.is_empty() {
                 items.push(CompletionItem {
                     label: param.name.clone(),
                     kind: CompletionItemKind::VARIABLE,

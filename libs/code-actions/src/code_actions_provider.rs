@@ -13,6 +13,12 @@ pub struct CodeActionsProvider {
     pub base_path: RwLock<String>,
 }
 
+impl Default for CodeActionsProvider {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl CodeActionsProvider {
     pub fn new() -> Self {
         Self {
