@@ -1,5 +1,5 @@
 import { VSCode } from '@/types';
-import { Environment, Scripts } from '@backend/actions/types';
+import { Environments, Scripts } from '@backend/actions/types';
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
 import './DeployUsingScript.css';
 import { useDeployUsingScript } from './DeployUsingScript.logic.ts';
@@ -11,7 +11,7 @@ export const DeployUsingScript = ({
 }: {
   scripts: Scripts;
   vscode: VSCode;
-  environments: Environment[];
+  environments: Environments;
 }) => {
   const logic = useDeployUsingScript(vscode);
 

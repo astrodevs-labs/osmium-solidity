@@ -21,6 +21,8 @@ export const useDeployContractsParams = (contracts: DeployContracts) => {
     return res;
   }, [selectedContractFile, contracts]);
 
+  const displayParams = inputs && inputs.length > 0;
+
   useEffect(() => {
     return () => {
       inputs.forEach((_, idx) => {
@@ -32,5 +34,6 @@ export const useDeployContractsParams = (contracts: DeployContracts) => {
   return {
     inputs,
     form,
+    displayParams,
   };
 };

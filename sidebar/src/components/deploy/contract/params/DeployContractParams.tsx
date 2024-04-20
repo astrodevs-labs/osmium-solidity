@@ -1,15 +1,14 @@
 import { DeployContracts } from '@backend/actions/types';
-import { useDeployContractsParams } from '@hooks/useDeployContractsParams.ts';
+import { useDeployContractsParams } from './DeployContractParams.logic.ts';
 import { VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
-import './DeployContracts.css';
+import './DeployContractParams.css';
 
-export const DeployContractsParams = (props: { contracts: DeployContracts }) => {
+export const DeployContractParams = (props: { contracts: DeployContracts }) => {
   const logic = useDeployContractsParams(props.contracts);
 
-  const displayParams = logic.inputs && logic.inputs.length > 0;
   return (
     <>
-      {displayParams && (
+      {logic.displayParams && (
         <div className="params-container">
           {logic.inputs?.map((input, index) => {
             return (

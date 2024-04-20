@@ -3,30 +3,26 @@ import { DeployUsingContract } from '@components/deploy/contract/DeployUsingCont
 import { DeployUsingScript } from '@components/deploy/script/DeployUsingScript.tsx';
 import { FormProvider } from 'react-hook-form';
 import './DeployPage.css';
-import { useDeployPageContract, useDeployPageScript } from './DeployPage.logic.ts';
+import { useDeployPage } from './DeployPage.logic.ts';
+import { ResourceManager } from '@hooks/useResourceManager.ts';
 
-export const DeployPage = (props: { vscode: VSCode }) => {
-  const logicScript = useDeployPageScript(props.vscode);
-  const logicContract = useDeployPageContract(props.vscode);
+export const DeployPage = (props: { vscode: VSCode; resourceManager: ResourceManager }) => {
+  const logic = useDeployPage(props.vscode, props.resourceManager);
 
   return (
     <div className="page-container">
-      <FormProvider {...logicScript.formScript}>
-        <form onSubmit={logicScript.formScript.handleSubmit(logicScript.onSubmit)}>
-          <DeployUsingScript
-            scripts={logicScript.scripts}
-            vscode={props.vscode}
-            environments={logicContract.environments}
-          />
+      <FormProvider {...logic.scriptForm}>
+        <form onSubmit={logic.scriptForm.handleSubmit(logic.onSubmitScriptForm)}>
+          <DeployUsingScript scripts={logic.scripts} vscode={logic.vscode} environments={logic.environments} />
         </form>
       </FormProvider>
-      <FormProvider {...logicContract.formContract}>
-        <form onSubmit={logicContract.formContract.handleSubmit(logicContract.onSubmit)}>
+      <FormProvider {...logic.contractForm}>
+        <form onSubmit={logic.contractForm.handleSubmit(logic.onSubmitContractForm)}>
           <DeployUsingContract
-            wallets={logicContract.wallets}
-            deployContracts={logicContract.contracts}
-            vscode={props.vscode}
-            environments={logicContract.environments}
+            wallets={logic.wallets}
+            deployContracts={logic.contracts}
+            vscode={logic.vscode}
+            environments={logic.environments}
           />
         </form>
       </FormProvider>

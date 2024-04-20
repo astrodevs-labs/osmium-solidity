@@ -1,26 +1,9 @@
 import { IInteractForm, VSCode } from '@/types';
-import { InteractContract, Wallets } from '@backend/actions/types';
+import { InteractContract } from '@backend/actions/types';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-
-export enum MessageType {
-  GET_WALLETS = 'GET_WALLETS',
-  WALLETS = 'WALLETS',
-  GET_INTERACT_CONTRACTS = 'GET_INTERACT_CONTRACTS',
-  INTERACT_CONTRACTS = 'INTERACT_CONTRACTS',
-  WRITE = 'WRITE',
-  WRITE_RESPONSE = 'WRITE_RESPONSE',
-  READ = 'READ',
-  READ_RESPONSE = 'READ_RESPONSE',
-  EDIT_WALLETS = 'EDIT_WALLETS',
-  EDIT_CONTRACTS = 'EDIT_CONTRACTS',
-  UNKNOWN = 'UNKNOWN',
-}
-
-export enum ResponseType {
-  READ,
-  WRITE,
-}
+import { ResourceManager } from '@hooks/useResourceManager.ts';
+import { MessageType } from '@backend/enums.ts';
 
 const getFunctionAction = (func: string, contract: string, contracts: InteractContract[]): MessageType => {
   const selectedContract = contracts?.find((c) => c.id === contract);
@@ -37,9 +20,7 @@ const getFunctionAction = (func: string, contract: string, contracts: InteractCo
   return MessageType.WRITE;
 };
 
-export const useInteractPage = (vscode: VSCode) => {
-  const [wallets, setWallets] = useState<Wallets>([]);
-  const [contracts, setContracts] = useState<InteractContract[]>([]);
+export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager) => {
   const form = useForm<IInteractForm>({
     defaultValues: {
       wallet: '',
@@ -50,51 +31,42 @@ export const useInteractPage = (vscode: VSCode) => {
       gasLimit: 300000,
     },
   });
-  const [response, setResponse] = useState<{ responseType: ResponseType; data: unknown }>();
-
-  const param = form.watch('inputs');
-
-  useEffect(() => {
-    console.log(param);
-  }, [param]);
+  const [response, setResponse] = useState<{ responseType: MessageType; data: string }>();
 
   const onSubmit: SubmitHandler<IInteractForm> = (data) => {
-    console.log(data);
     if (isNaN(data.gasLimit)) form.setError('gasLimit', { type: 'manual', message: 'Invalid number' });
     if (isNaN(data.value)) form.setError('value', { type: 'manual', message: 'Invalid number' });
 
-    vscode.postMessage({ type: getFunctionAction(data.function, data.contract, contracts), data });
+    vscode.postMessage({
+      type: getFunctionAction(data.function, data.contract, resourceManager.interactContracts),
+      data,
+    });
   };
 
   useEffect(() => {
-    if (!vscode) {
-      return;
-    }
-    vscode.postMessage({ type: MessageType.GET_WALLETS });
-    vscode.postMessage({ type: MessageType.GET_INTERACT_CONTRACTS });
-  }, [vscode]);
+    form.setValue(
+      'wallet',
+      resourceManager.wallets && resourceManager.wallets.length ? resourceManager.wallets[0].id : '',
+    );
+  }, [resourceManager.wallets]);
+
+  useEffect(() => {
+    form.setValue(
+      'contract',
+      resourceManager.interactContracts && resourceManager.interactContracts.length
+        ? resourceManager.interactContracts[0].id
+        : '',
+    );
+  }, [resourceManager.interactContracts]);
 
   useEffect(() => {
     const listener = (event: WindowEventMap['message']) => {
       switch (event.data.type) {
-        case MessageType.WALLETS: {
-          form.setValue('wallet', event.data.wallets && event.data.wallets.length ? event.data.wallets[0].id : '');
-          setWallets(event.data.wallets);
-          break;
-        }
-        case MessageType.INTERACT_CONTRACTS: {
-          form.setValue(
-            'contract',
-            event.data.contracts && event.data.contracts.length ? event.data.contracts[0].id : '',
-          );
-          setContracts(event.data.contracts);
-          break;
-        }
         case MessageType.WRITE_RESPONSE:
-          setResponse({ responseType: ResponseType.WRITE, data: event.data.response });
+          setResponse({ responseType: MessageType.WRITE, data: event.data.response });
           break;
         case MessageType.READ_RESPONSE:
-          setResponse({ responseType: ResponseType.READ, data: event.data.response });
+          setResponse({ responseType: MessageType.READ, data: event.data.response });
           break;
         default: {
           throw Error('Unknown command: ' + event.type);
@@ -108,9 +80,9 @@ export const useInteractPage = (vscode: VSCode) => {
   return {
     form,
     vscode,
-    wallets,
-    contracts,
+    wallets: resourceManager.wallets,
+    contracts: resourceManager.interactContracts,
     onSubmit,
-    result: response,
+    response,
   };
 };

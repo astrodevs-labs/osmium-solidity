@@ -4,25 +4,22 @@ import { InteractParams } from '@components/interact/contracts/params/InteractPa
 import { VSCodeButton, VSCodeDivider } from '@vscode/webview-ui-toolkit/react';
 import { FormProvider } from 'react-hook-form';
 import './InteractPage.css';
-import { ResponseType, useInteractPage } from './InteractPage.logic.ts';
+import { useInteractPage } from './InteractPage.logic.ts';
+import { ResourceManager } from '@hooks/useResourceManager.ts';
+import { MessageType } from '@backend/enums.ts';
 
-export const InteractPage = (props: { vscode: VSCode }) => {
-  const logic = useInteractPage(props.vscode);
+const Response = (result: { responseType: MessageType; data: string }) => {
+  return (
+    <div>
+      <VSCodeDivider className="divider" />
+      <p>{result.responseType === MessageType.READ ? 'Read response:' : 'Transaction hash:'}</p>
+      <p>{result.data}</p>
+    </div>
+  );
+};
 
-  interface ResultProps {
-    responseType: ResponseType;
-    data: any;
-  }
-
-  const Result = (result: ResultProps) => {
-    return (
-      <div>
-        <VSCodeDivider className="divider" />
-        <p>{result.responseType === ResponseType.READ ? 'Read response:' : 'Transaction hash:'}</p>
-        <p>{result.data + ''}</p>
-      </div>
-    );
-  };
+export const InteractPage = (props: { vscode: VSCode; resourceManager: ResourceManager }) => {
+  const logic = useInteractPage(props.vscode, props.resourceManager);
 
   return (
     <div className="page-container">
@@ -34,7 +31,7 @@ export const InteractPage = (props: { vscode: VSCode }) => {
           <VSCodeButton className="submit-button" type="submit">
             Send transaction
           </VSCodeButton>
-          {logic.result && Result({ ...logic.result })}
+          {logic.response && Response({ ...logic.response })}
         </form>
       </FormProvider>
     </div>

@@ -1,10 +1,9 @@
 import { VSCode } from '@/types';
-import { MessageTypeContract } from '@pages/DeployPage/DeployPage.logic.ts';
-import { MessageType } from '@pages/InteractPage/InteractPage.logic.ts';
+import { MessageType } from '@backend/enums.ts';
 
 export const useEdit = (vscode: VSCode) => {
   const editEnvironment = () => {
-    vscode.postMessage({ type: MessageTypeContract.EDIT_ENVIRONMENT });
+    vscode.postMessage({ type: MessageType.EDIT_ENVIRONMENT });
   };
 
   const editWallet = () => {

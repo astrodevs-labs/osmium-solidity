@@ -8,7 +8,7 @@ import {
   VSCodeTextField,
 } from '@vscode/webview-ui-toolkit/react';
 import './DeployUsingContract.css';
-import { DeployContractsParams } from './params/DeployContractsParams.tsx';
+import { DeployContractParams } from './params/DeployContractParams.tsx';
 import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
 
 export const DeployUsingContract = ({
@@ -122,7 +122,7 @@ export const DeployUsingContract = ({
         </div>
       </div>
       <VSCodeDivider className="divider" />
-      <DeployContractsParams contracts={deployContracts} />
+      <DeployContractParams contracts={deployContracts} />
       <VSCodeButton className="submit-button" type="submit">
         Deploy with contract
       </VSCodeButton>
