@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type VSCode = any;
 
-export interface IFormInput {
+export interface IInteractForm {
   wallet: string;
   contract: string;
   function: string;
@@ -11,13 +11,13 @@ export interface IFormInput {
   inputs: any[];
 }
 
-export interface DFormScript {
+export interface IDeployScriptForm {
   wallet: string;
   script: string;
   environment: string;
 }
 
-export interface DFormContract {
+export interface IDeployContractForm {
   wallet: string;
   contract: string;
   environment: string;

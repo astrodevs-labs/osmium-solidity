@@ -1,9 +1,8 @@
 import { VSCode } from '@/types';
 import { Environment, Scripts } from '@backend/actions/types';
-import { useDeployContract } from '@hooks/useDeployContract.ts';
-import { useDeployScript } from '@hooks/useDeployScript.ts';
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
 import './DeployUsingScript.css';
+import { useDeployUsingScript } from './DeployUsingScript.logic.ts';
 
 export const DeployUsingScript = ({
   scripts,
@@ -14,8 +13,7 @@ export const DeployUsingScript = ({
   vscode: VSCode;
   environments: Environment[];
 }) => {
-  const logic = useDeployScript();
-  const logicContract = useDeployContract(vscode);
+  const logic = useDeployUsingScript(vscode);
 
   return (
     <div>
@@ -33,12 +31,12 @@ export const DeployUsingScript = ({
                 {...logic.form?.register('environment', { required: true })}
               >
                 {environments.map((environment) => (
-                  <VSCodeOption>
+                  <VSCodeOption value={environment.id}>
                     {environment.name} ({environment.rpc})
                   </VSCodeOption>
                 ))}
               </VSCodeDropdown>
-              <VSCodeButton className="add-wallet-button" onClick={logicContract.editEnvironment}>
+              <VSCodeButton className="add-wallet-button" onClick={logic.editEnvironment}>
                 Edit
               </VSCodeButton>
             </div>
@@ -54,9 +52,9 @@ export const DeployUsingScript = ({
               required: true,
             })}
           >
-            {scripts?.map((scripts) => (
-              <VSCodeOption>
-                {scripts.name} ({scripts.path})
+            {scripts?.map((script) => (
+              <VSCodeOption value={script.id}>
+                {script.name} ({script.path})
               </VSCodeOption>
             ))}
           </VSCodeDropdown>

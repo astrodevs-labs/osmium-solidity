@@ -1,7 +1,5 @@
 import { VSCode } from '@/types';
-import { DeployContracts, Environment, InteractContracts, Wallets } from '@backend/actions/types';
-import { useDeployContract } from '@hooks/useDeployContract.ts';
-import { useInteractContracts } from '@hooks/useInteractContracts.ts';
+import { DeployContracts, Environment, Wallets } from '@backend/actions/types';
 import {
   VSCodeButton,
   VSCodeDivider,
@@ -11,27 +9,25 @@ import {
 } from '@vscode/webview-ui-toolkit/react';
 import './DeployUsingContract.css';
 import { DeployContractsParams } from './params/DeployContractsParams.tsx';
+import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
 
 export const DeployUsingContract = ({
   wallets,
   deployContracts,
   vscode,
-  editContracts,
   environments,
 }: {
   wallets: Wallets;
   deployContracts: DeployContracts;
   vscode: VSCode;
-  editContracts: InteractContracts;
   environments: Environment[];
 }) => {
-  const logicContract = useDeployContract(vscode);
-  const edit = useInteractContracts(editContracts, vscode);
+  const logic = useDeployUsingContract(vscode);
 
   return (
     <div>
       <div>
-        <div> DEPLOY USING CONTRACT </div>
+        <div> DEPLOY USING CONTRACT</div>
         <div className="dropdown-container">
           <label htmlFor="dropdown-wallets" className="label">
             Select account:
@@ -40,7 +36,7 @@ export const DeployUsingContract = ({
             <VSCodeDropdown
               id="dropdown-wallets"
               className="dropdown-wallets"
-              {...logicContract.form?.register('wallet', {
+              {...logic.form?.register('wallet', {
                 required: true,
               })}
             >
@@ -50,7 +46,7 @@ export const DeployUsingContract = ({
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={edit.editWallet}>
+            <VSCodeButton className="add-wallet-button" onClick={logic.editWallet}>
               Edit
             </VSCodeButton>
           </div>
@@ -59,49 +55,53 @@ export const DeployUsingContract = ({
           <label htmlFor="dropdown" className="label">
             Select contract:
           </label>
-          <VSCodeDropdown id="dropdown" {...logicContract.form?.register('contract', { required: true })}>
-            {deployContracts?.map((deployContracts) => (
-              <VSCodeOption value={deployContracts.id}>
-                {' '}
-                {deployContracts.name} ({deployContracts.path})
+          <VSCodeDropdown id="dropdown" {...logic.form?.register('contract', { required: true })}>
+            {deployContracts?.map((deployContract) => (
+              <VSCodeOption value={deployContract.id}>
+                {deployContract.name} ({deployContract.path})
               </VSCodeOption>
             ))}
           </VSCodeDropdown>
         </div>
-        <div className="environment-container">
-          <VSCodeDropdown
-            id="dropdown-environment"
-            className="dropdown-environment"
-            {...logicContract.form?.register('environment', { required: true })}
-          >
-            {environments.map((environment) => (
-              <VSCodeOption>
-                {environment.name} ({environment.rpc})
-              </VSCodeOption>
-            ))}
-          </VSCodeDropdown>
-          <VSCodeButton className="add-wallet-button" onClick={logicContract.editEnvironment}>
-            Edit
-          </VSCodeButton>
+        <div className="dropdown-container">
+          <label htmlFor="dropdown-environment" className="label">
+            Select environment:
+          </label>
+          <div className="environment-container">
+            <VSCodeDropdown
+              id="dropdown-environment"
+              className="dropdown-environment"
+              {...logic.form?.register('environment', { required: true })}
+            >
+              {environments.map((environment) => (
+                <VSCodeOption value={environment.id}>
+                  {environment.name} ({environment.rpc})
+                </VSCodeOption>
+              ))}
+            </VSCodeDropdown>
+            <VSCodeButton className="add-wallet-button" onClick={logic.editEnvironment}>
+              Edit
+            </VSCodeButton>
+          </div>
         </div>
         <div className="gas-limit-container">
           <VSCodeTextField
             className="gas-limit-textfield"
-            {...logicContract.form?.register('gasLimit', {
+            {...logic.form?.register('gasLimit', {
               required: true,
               valueAsNumber: true,
             })}
           >
             Gas limit
           </VSCodeTextField>
-          {logicContract.errors.gasLimit && <span className="error-message">Invalid number</span>}
+          {logic.errors.gasLimit && <span className="error-message">Invalid number</span>}
         </div>
         <div className="value-container">
           <label className="label">Value:</label>
           <div className="value-field-container">
             <VSCodeTextField
               className="value-textfield"
-              {...logicContract.form?.register('value', {
+              {...logic.form?.register('value', {
                 required: true,
                 valueAsNumber: true,
               })}
@@ -109,7 +109,7 @@ export const DeployUsingContract = ({
             <VSCodeDropdown
               className="value-dropdown"
               id="dropdown"
-              {...logicContract.form?.register('valueUnit', {
+              {...logic.form?.register('valueUnit', {
                 required: true,
               })}
             >
@@ -118,7 +118,7 @@ export const DeployUsingContract = ({
               <VSCodeOption value="ether">Eth</VSCodeOption>
             </VSCodeDropdown>
           </div>
-          {logicContract.errors.value && <span className="error-message">Invalid number</span>}
+          {logic.errors.value && <span className="error-message">Invalid number</span>}
         </div>
       </div>
       <VSCodeDivider className="divider" />

@@ -99,6 +99,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         this._walletRepository,
         this._scriptRepository,
         this._environmentRepository,
+        fsPath,
       );
       this._osmiumWatcher = vscode.workspace.createFileSystemWatcher('**/.osmium/*.json');
       this._osmiumWatcher.onDidChange((uri) => this._osmiumWatcherCallback(uri));

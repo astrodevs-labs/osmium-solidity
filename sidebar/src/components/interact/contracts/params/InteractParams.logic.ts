@@ -1,10 +1,10 @@
-import { IFormInput } from '@/types';
-import { InteractContract } from '@backend/actions/types';
-import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { IInteractForm } from '@/types';
+import { useEffect } from 'react';
+import { InteractContracts } from '@backend/actions/types';
 
-export const useInteractParams = (contracts: InteractContract[]) => {
-  const form = useFormContext<IFormInput>();
+export const useInteractParams = (contracts: InteractContracts) => {
+  const form = useFormContext<IInteractForm>();
   const selectedFunction = form.watch('function');
   const selectedContractAddress = form.watch('contract');
   const selectedContract = contracts?.find((contract) => contract.id === selectedContractAddress);
@@ -16,6 +16,7 @@ export const useInteractParams = (contracts: InteractContract[]) => {
     }) || [];
   const func = functions?.find((func) => func?.name === selectedFunction) || null;
   const inputs = func?.inputs || [];
+  const displayParams = inputs && inputs.length > 0;
 
   useEffect(() => {
     form.resetField('inputs');
@@ -24,5 +25,6 @@ export const useInteractParams = (contracts: InteractContract[]) => {
   return {
     inputs,
     form,
+    displayParams,
   };
 };

@@ -1,10 +1,10 @@
-import { DFormContract } from '@/types';
+import { IDeployContractForm } from '@/types';
 import { DeployContracts } from '@backend/actions/types';
 import { useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 export const useDeployContractsParams = (contracts: DeployContracts) => {
-  const form = useFormContext<DFormContract>();
+  const form = useFormContext<IDeployContractForm>();
   const selectedContractFile = form.watch('contract');
   const inputs = useMemo(() => {
     const res = [];

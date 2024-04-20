@@ -1,6 +1,6 @@
 import { VSCode } from '@/types';
 import { InteractContract, Wallets } from '@backend/actions/types';
-import { useInteractContracts } from '@hooks/useInteractContracts.ts';
+import { useInteractContracts } from './InteractContracts.logic.ts';
 import { VSCodeButton, VSCodeDropdown, VSCodeOption, VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
 import './InteractContracts.css';
 
@@ -15,7 +15,7 @@ export const InteractContracts = ({ wallets, contracts, vscode }: InteractContra
 
   return (
     <div>
-      <div className="dropdow</div>n-container">
+      <div className="dropdown-container">
         <label htmlFor="dropdown-wallets" className="label">
           Select account:
         </label>
