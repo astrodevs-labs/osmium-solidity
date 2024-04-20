@@ -9,9 +9,7 @@ use dap::responses::{
     ThreadsResponse,
 };
 use dap::server::Server;
-use dap::types::{
-    SteppingGranularity, Thread,
-};
+use dap::types::{SteppingGranularity, Thread};
 
 pub struct DapSession<R: Read, W: Write> {
     server: Server<R, W>,
@@ -20,9 +18,7 @@ pub struct DapSession<R: Read, W: Write> {
 }
 
 impl<'a, R: Read, W: Write> DapSession<R, W> {
-    pub fn new(
-        server: Server<R, W>,
-    ) -> Self {
+    pub fn new(server: Server<R, W>) -> Self {
         Self {
             server,
             running: false,
@@ -56,9 +52,13 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
                     self.handle_set_instruction_breakpoints(req)?;
                 }
                 Command::Threads => {
-                    self.server.respond(req.success(ResponseBody::Threads(ThreadsResponse {
-                        threads: vec![Thread { id: 0, name: "main".to_string() }],
-                    })))?;
+                    self.server
+                        .respond(req.success(ResponseBody::Threads(ThreadsResponse {
+                            threads: vec![Thread {
+                                id: 0,
+                                name: "main".to_string(),
+                            }],
+                        })))?;
                 }
                 Command::StackTrace(_) => {
                     self.handle_stack_trace(req)?;
@@ -67,24 +67,30 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
                     self.handle_disassemble(req)?;
                 }
                 Command::StepIn(ref args) => {
-                    let granularity =
-                        args.granularity.as_ref().unwrap_or(&SteppingGranularity::Statement);
+                    let granularity = args
+                        .granularity
+                        .as_ref()
+                        .unwrap_or(&SteppingGranularity::Statement);
                     match granularity {
                         SteppingGranularity::Instruction => self.handle_step(req)?,
                         _ => self.handle_next(req)?,
                     }
                 }
                 Command::StepOut(ref args) => {
-                    let granularity =
-                        args.granularity.as_ref().unwrap_or(&SteppingGranularity::Statement);
+                    let granularity = args
+                        .granularity
+                        .as_ref()
+                        .unwrap_or(&SteppingGranularity::Statement);
                     match granularity {
                         SteppingGranularity::Instruction => self.handle_step(req)?,
                         _ => self.handle_next(req)?,
                     }
                 }
                 Command::Next(ref args) => {
-                    let granularity =
-                        args.granularity.as_ref().unwrap_or(&SteppingGranularity::Statement);
+                    let granularity = args
+                        .granularity
+                        .as_ref()
+                        .unwrap_or(&SteppingGranularity::Statement);
                     match granularity {
                         SteppingGranularity::Instruction => self.handle_step(req)?,
                         _ => self.handle_next(req)?,
@@ -96,9 +102,8 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
                 Command::Scopes(_) => {
                     let scopes = vec![];
 
-                    self.server.respond(
-                        req.success(ResponseBody::Scopes(ScopesResponse { scopes })),
-                    )?;
+                    self.server
+                        .respond(req.success(ResponseBody::Scopes(ScopesResponse { scopes })))?;
                 }
                 _ => {
                     eprintln!("ERROR: unhandled command: {:?}", req.command);
@@ -111,25 +116,26 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
     fn handle_stack_trace(&mut self, req: Request) -> Result<(), ServerError> {
         let stack_frames = vec![];
         let total_frames = Some(stack_frames.len() as i64);
-        self.server.respond(req.success(ResponseBody::StackTrace(StackTraceResponse {
-            stack_frames,
-            total_frames,
-        })))?;
+        self.server
+            .respond(req.success(ResponseBody::StackTrace(StackTraceResponse {
+                stack_frames,
+                total_frames,
+            })))?;
         Ok(())
     }
 
     fn handle_scopes(&mut self, req: Request) -> Result<(), ServerError> {
         let scopes = vec![];
-        self.server.respond(
-            req.success(ResponseBody::Scopes(ScopesResponse { scopes })),
-        )?;
+        self.server
+            .respond(req.success(ResponseBody::Scopes(ScopesResponse { scopes })))?;
         Ok(())
     }
 
     fn handle_set_exceptions_breakpoints(&mut self, req: Request) -> Result<(), ServerError> {
-        self.server.respond(req.success(ResponseBody::SetExceptionBreakpoints(
-            SetExceptionBreakpointsResponse { breakpoints: None },
-        )))?;
+        self.server
+            .respond(req.success(ResponseBody::SetExceptionBreakpoints(
+                SetExceptionBreakpointsResponse { breakpoints: None },
+            )))?;
         Ok(())
     }
 
@@ -140,9 +146,10 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
 
         let instructions = vec![];
 
-        self.server.respond(
-            req.success(ResponseBody::Disassemble(DisassembleResponse { instructions })),
-        )?;
+        self.server
+            .respond(req.success(ResponseBody::Disassemble(DisassembleResponse {
+                instructions,
+            })))?;
         Ok(())
     }
 
@@ -160,9 +167,10 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
 
     fn handle_continue(&mut self, req: Request) -> Result<(), ServerError> {
         eprintln!("INFO: continue");
-        self.server.respond(req.success(ResponseBody::Continue(ContinueResponse {
-            all_threads_continued: Some(true),
-        })))?;
+        self.server
+            .respond(req.success(ResponseBody::Continue(ContinueResponse {
+                all_threads_continued: Some(true),
+            })))?;
         Ok(())
     }
 
@@ -180,9 +188,10 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
         let breakpoints = vec![];
 
         // response to request
-        self.server.respond(req.success(ResponseBody::SetInstructionBreakpoints(
-            SetInstructionBreakpointsResponse { breakpoints },
-        )))?;
+        self.server
+            .respond(req.success(ResponseBody::SetInstructionBreakpoints(
+                SetInstructionBreakpointsResponse { breakpoints },
+            )))?;
         Ok(())
     }
 
@@ -194,17 +203,16 @@ impl<'a, R: Read, W: Write> DapSession<R, W> {
         let breakpoints = vec![];
 
         self.server.respond(
-            req.success(ResponseBody::SetBreakpoints(SetBreakpointsResponse { breakpoints })),
+            req.success(ResponseBody::SetBreakpoints(SetBreakpointsResponse {
+                breakpoints,
+            })),
         )?;
         Ok(())
     }
 }
 
-pub fn run_session<R: Read, W: Write>(
-    server: Server<R, W>,
-) -> Result<(), ServerError> {
-    let mut session =
-        DapSession::new(server);
+pub fn run_session<R: Read, W: Write>(server: Server<R, W>) -> Result<(), ServerError> {
+    let mut session = DapSession::new(server);
 
     session.run_loop()
 }
