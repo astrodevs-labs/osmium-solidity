@@ -13,7 +13,7 @@ export const DeployUsingScript = ({
   vscode: VSCode;
   environments: Environments;
 }) => {
-  const logic = useDeployUsingScript(vscode);
+  const logic = useDeployUsingScript(vscode, scripts, environments);
 
   return (
     <div>
@@ -65,6 +65,12 @@ export const DeployUsingScript = ({
         Deploy with script
       </VSCodeButton>
       <VSCodeDivider className="divider" />
+      {logic.response && (
+        <div className={logic.response.exitCode !== 0 ? 'error-message' : ''}>
+          {logic.response.output}
+          <VSCodeDivider className="divider" />
+        </div>
+      )}
     </div>
   );
 };

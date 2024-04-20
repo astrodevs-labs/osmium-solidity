@@ -1,5 +1,5 @@
 import { VSCode } from '@/types';
-import { DeployContracts, Environment, Wallets } from '@backend/actions/types';
+import { DeployContracts, Environments, Wallets } from '@backend/actions/types';
 import {
   VSCodeButton,
   VSCodeDivider,
@@ -20,9 +20,9 @@ export const DeployUsingContract = ({
   wallets: Wallets;
   deployContracts: DeployContracts;
   vscode: VSCode;
-  environments: Environment[];
+  environments: Environments;
 }) => {
-  const logic = useDeployUsingContract(vscode);
+  const logic = useDeployUsingContract(vscode, wallets, deployContracts, environments);
 
   return (
     <div>
@@ -121,11 +121,17 @@ export const DeployUsingContract = ({
           {logic.errors.value && <span className="error-message">Invalid number</span>}
         </div>
       </div>
-      <VSCodeDivider className="divider" />
       <DeployContractParams contracts={deployContracts} />
+      <VSCodeDivider className="divider" />
       <VSCodeButton className="submit-button" type="submit">
         Deploy with contract
       </VSCodeButton>
+      {logic.response && (
+        <div className={logic.response.exitCode !== 0 ? 'error-message' : ''}>
+          <VSCodeDivider className="divider" />
+          {logic.response.output}
+        </div>
+      )}
     </div>
   );
 };

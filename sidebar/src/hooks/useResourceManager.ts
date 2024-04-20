@@ -52,9 +52,6 @@ export const useResourceManager = (vscode: VSCode): ResourceManager => {
           setInteractContracts(event.data.contracts);
           break;
         }
-        default: {
-          throw Error('Unknown command: ' + event.type);
-        }
       }
     };
     window.addEventListener('message', listener);

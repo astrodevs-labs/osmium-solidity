@@ -25,3 +25,7 @@
     width: 20%;
     height: calc(var(--input-height) * 1px);;
 }
+
+.error-message {
+    color: var(--vscode-errorForeground);
+}

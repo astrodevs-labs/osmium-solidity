@@ -68,9 +68,6 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
         case MessageType.READ_RESPONSE:
           setResponse({ responseType: MessageType.READ, data: event.data.response });
           break;
-        default: {
-          throw Error('Unknown command: ' + event.type);
-        }
       }
     };
     window.addEventListener('message', listener);

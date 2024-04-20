@@ -59,7 +59,6 @@ export class ScriptRepository {
   }
 
   public getScripts(): Scripts {
-    console.log(this._scripts)
     return this._scripts;
   }
 

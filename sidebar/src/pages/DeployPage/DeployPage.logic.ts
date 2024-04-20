@@ -19,6 +19,7 @@ export const useDeployPage = (vscode: VSCode, resourceManager: ResourceManager) 
       value: 0,
       valueUnit: 'wei',
       gasLimit: 300000,
+      inputs: [],
     },
   });
 
@@ -30,7 +31,13 @@ export const useDeployPage = (vscode: VSCode, resourceManager: ResourceManager) 
   };
 
   const onSubmitContractForm: SubmitHandler<IDeployContractForm> = (data) => {
-    console.log(data);
+    if (isNaN(data.gasLimit)) contractForm.setError('gasLimit', { type: 'manual', message: 'Invalid number' });
+    if (isNaN(data.value)) contractForm.setError('value', { type: 'manual', message: 'Invalid number' });
+
+    vscode.postMessage({
+      type: MessageType.DEPLOY_CONTRACT,
+      data,
+    });
   };
 
   return {

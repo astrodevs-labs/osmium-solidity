@@ -9,6 +9,7 @@ import { DeployContractRepository } from './DeployContractRepository';
 import fs from 'fs';
 import { getTomlValue } from '../utils';
 import path from 'path';
+import { array } from 'vscode-languageclient/lib/common/utils/is';
 
 export interface DeployScriptOptions {
   environmentId: string;
@@ -70,12 +71,15 @@ export class Deploy {
       throw new Error(`script id ${scriptId} not found`);
     }
 
-    const command = `forge script ${path.join(this._scriptFolderPath, scriptInfos.path)}:${scriptInfos.name} --rpc-url ${environmentInfos.rpc} ${verify ?? '--verify'}`;
+    const command = `forge script ${path.join(this._scriptFolderPath, scriptInfos.path)}:${scriptInfos.name} --rpc-url ${environmentInfos.rpc} ${verify ? '--verify' : ''}`;
 
     return new Promise((resolve, reject) => {
       exec(command, { cwd: this._projectPath }, (error, stdout, _stderr) => {
         if (error) {
-          reject(error);
+          resolve({
+            exitCode: error.code,
+            output: error.message,
+          });
         } else {
           resolve({
             exitCode: 0,
@@ -112,15 +116,13 @@ export class Deploy {
     const command = [
       'forge',
       'create',
-      `${contractInfos.path}:${contractInfos.name}`,
+      `"${contractInfos.path}:${contractInfos.name}"`,
       '--private-key',
       walletInfos.privateKey,
       '--rpc-url',
       environmentInfos.rpc,
       '--value',
       value.toString(),
-      '--contructor-args',
-      ...params,
     ];
 
     if (gasLimit) {
@@ -131,10 +133,17 @@ export class Deploy {
       command.push('--verify');
     }
 
+    if (params.length) {
+      command.push(`--constructor-args ${params.join(' ')}`);
+    }
+
     return new Promise((resolve, reject) => {
       exec(command.join(' '), (error, stdout, _stderr) => {
         if (error) {
-          reject(error);
+          resolve({
+            exitCode: error.code,
+            output: error.message,
+          });
         } else {
           resolve({
             exitCode: 0,

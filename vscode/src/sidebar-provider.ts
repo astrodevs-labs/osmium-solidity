@@ -288,7 +288,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         }
         break;
       case MessageType.DEPLOY_SCRIPT:
-        const deployScriptResponse = this._deploy.deployScript({
+        const deployScriptResponse = await this._deploy.deployScript({
           environmentId: message.data.environment,
           scriptId: message.data.script,
           verify: message.data.verify,
@@ -299,7 +299,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         });
         break;
       case MessageType.DEPLOY_CONTRACT:
-        const deployContractResponse = this._deploy.deployContract({
+        const deployContractResponse = await this._deploy.deployContract({
           contractId: message.data.contract,
           environmentId: message.data.environment,
           walletId: message.data.wallet,
