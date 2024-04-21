@@ -88,6 +88,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build
+        run: pnpm run build
+
       - name: Publish
         run: pnpm run publish:extension -- --no-update-package-json ${{ inputs.pre-release && '--pre-release' || '' }} ${{ inputs.version }} --target ${{ inputs.code-target }}
         env:
