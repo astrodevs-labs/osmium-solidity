@@ -58,9 +58,9 @@ export async function activate(context: ExtensionContext) {
 
     const sidebarProvider = new SidebarProvider(context.extensionUri);
 
-    context.subscriptions.push(
-        window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider),
-    );
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
+
+  context.subscriptions.push(window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider));
 }
 
 // This method is called when your extension is deactivated
