@@ -29,14 +29,14 @@ struct Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         if !is_slither_installed() {
-            error!("Slither is not installed!");
             self.client
                 .show_message(
                     MessageType::ERROR,
                     "Slither is not installed! Please install it and restart the extension",
                 )
                 .await;
-            return Err(tower_lsp::jsonrpc::Error::internal_error());
+            error!("Slither is not installed!");
+            self.data.lock().await.has_to_shutdown = true;
         }
         if !is_solc_installed() {
             self.client
@@ -46,7 +46,7 @@ impl LanguageServer for Backend {
                 )
                 .await;
             error!("Solc is not installed!");
-            return Err(tower_lsp::jsonrpc::Error::internal_error());
+            self.data.lock().await.has_to_shutdown = true;
         }
 
         info!("Initializing diagnostic receiver ...");
@@ -94,7 +94,14 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        info!("Osmium-slither initialized!");
+        if self.data.lock().await.has_to_shutdown {
+            error!("Osmium-Solidity-Slither shuting down ...");
+            info!("This may occur because of missing dependencies or errors. Please check the logs for more information.");
+            self.shutdown().await;
+        }
+        else {
+            info!("Osmium-Solidity-Slither initialized!");
+        }
     }
 
     async fn did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
