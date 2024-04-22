@@ -12,6 +12,7 @@ import { createFoundryCompilerClient } from './foundry-compiler';
 import { createTestsPositionsClient } from './tests-positions';
 import { registerGasEstimation } from './gas-estimation';
 import { createReferencesClient } from './references';
+import { registerDebugger } from './debugger';
 
 let linterClient: LanguageClient;
 let slitherClient: LanguageClient;
@@ -34,6 +35,7 @@ export async function activate(context: ExtensionContext) {
 
 	registerForgeFmtLinter(context);
 	registerGasEstimation();
+	registerDebugger(context);
 	
 	context.subscriptions.push(linterClient, slitherClient, foundryCompilerClient, testsPositionsClient, testManager.testController);
 
