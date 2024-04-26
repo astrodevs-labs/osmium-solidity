@@ -27,6 +27,61 @@ pub struct Location {
 }
 
 #[derive(Debug, Clone)]
+pub struct CompletionItemKind(i64);
+
+#[derive(Debug, Clone)]
+pub struct CompletionItem {
+    pub label: String,
+
+    pub kind: CompletionItemKind,
+    // TODO
+    // pub documentation: Option<Documentation>,
+}
+
+impl CompletionItemKind {
+    pub const TEXT: CompletionItemKind = CompletionItemKind(1);
+    pub const METHOD: CompletionItemKind = CompletionItemKind(2);
+    pub const FUNCTION: CompletionItemKind = CompletionItemKind(3);
+    pub const CONSTRUCTOR: CompletionItemKind = CompletionItemKind(4);
+    pub const FIELD: CompletionItemKind = CompletionItemKind(5);
+    pub const VARIABLE: CompletionItemKind = CompletionItemKind(6);
+    pub const CLASS: CompletionItemKind = CompletionItemKind(7);
+    pub const INTERFACE: CompletionItemKind = CompletionItemKind(8);
+    pub const MODULE: CompletionItemKind = CompletionItemKind(9);
+    pub const PROPERTY: CompletionItemKind = CompletionItemKind(10);
+    pub const UNIT: CompletionItemKind = CompletionItemKind(11);
+    pub const VALUE: CompletionItemKind = CompletionItemKind(12);
+    pub const ENUM: CompletionItemKind = CompletionItemKind(13);
+    pub const KEYWORD: CompletionItemKind = CompletionItemKind(14);
+    pub const SNIPPET: CompletionItemKind = CompletionItemKind(15);
+    pub const COLOR: CompletionItemKind = CompletionItemKind(16);
+    pub const FILE: CompletionItemKind = CompletionItemKind(17);
+    pub const REFERENCE: CompletionItemKind = CompletionItemKind(18);
+    pub const FOLDER: CompletionItemKind = CompletionItemKind(19);
+    pub const ENUM_MEMBER: CompletionItemKind = CompletionItemKind(20);
+    pub const CONSTANT: CompletionItemKind = CompletionItemKind(21);
+    pub const STRUCT: CompletionItemKind = CompletionItemKind(22);
+    pub const EVENT: CompletionItemKind = CompletionItemKind(23);
+    pub const OPERATOR: CompletionItemKind = CompletionItemKind(24);
+    pub const TYPE_PARAMETER: CompletionItemKind = CompletionItemKind(25);
+
+    pub fn value(&self) -> i64 {
+        self.0
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum SPINode {
+    FunctionDefinition(FunctionDefinition),
+    Block(Block),
+    ForStatement(ForStatement),
+    UncheckedBlock(UncheckedBlock),
+    TryCatchClause(TryCatchClause),
+    TryStatement(TryStatement),
+    VariableDeclaration(VariableDeclaration),
+}
+
+#[derive(Debug, Clone)]
 pub enum InteractableNode {
     ContractDefinition(ContractDefinition),
     FunctionDefinition(FunctionDefinition),
@@ -48,6 +103,7 @@ pub enum InteractableNode {
     UserDefinedTypeName(UserDefinedTypeName),
     IdentifierPath(IdentifierPath),
 }
+
 impl InteractableNode {
     pub fn get_id(&self) -> i64 {
         match self {

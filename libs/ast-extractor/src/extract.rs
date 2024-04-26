@@ -34,13 +34,15 @@ fn get_ast_from_foundry_output(
         if file.file.contains("safeconsole.sol") {
             continue;
         }
-        let ast: SourceUnit = serde_json::from_value(file.clone().json).map_err(|e| {
+        let ast: Result<SourceUnit, serde_json::Error> = serde_json::from_value(file.clone().json);
+        if let Err(e) = &ast {
             error!(
                 "Error while parsing json ast in file '{}': {:?}",
                 file.file, e
             );
-            e
-        })?;
+            continue;
+        }
+        let ast = ast.unwrap();
         let out_path = &file.file;
         ast_files.push(SolidityAstFile {
             file: SolidityFile {

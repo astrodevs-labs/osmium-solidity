@@ -6,22 +6,47 @@ import {
   LanguageClientOptions,
   ServerOptions,
   TransportKind,
+  SocketTransport,
+  StreamInfo,
 } from "vscode-languageclient/node";
 import { TextDecoder } from "util";
+import * as net from "net";
 
-export async function createSlitherClient(
+export async function createCodeActionsClient(
   context: ExtensionContext,
 ): Promise<LanguageClient> {
+  /*
+	let connectionInfo = {
+		port: 9001,
+		host: "127.0.0.1"
+    };
+	let serverOptions = () => {
+        // Connect to language server via socket
+        let socket = net.connect(connectionInfo);
+        let result: StreamInfo = {
+            writer: socket,
+            reader: socket
+        };
+		return Promise.resolve(result);
+	};
+	// If the extension is launched in debug mode then the debug server options are used
+	// Otherwise the run options are used
+	const socketOptions: SocketTransport = {
+		port: 9001,
+		kind: TransportKind.socket,
+	};
+	*/
+
   // The server is implemented in node
   const serverBinary = context.asAbsolutePath(
     path.join(
       "dist",
-      os.platform().startsWith("win") ? "slither-server.exe" : "slither-server",
+      os.platform().startsWith("win")
+        ? "code-actions-server.exe"
+        : "code-actions-server",
     ),
   );
 
-  // If the extension is launched in debug mode then the debug server options are used
-  // Otherwise the run options are used
   const serverOptions: ServerOptions = {
     run: { command: serverBinary, transport: TransportKind.stdio },
     debug: {
@@ -42,19 +67,11 @@ export async function createSlitherClient(
 
   // Create the language client and start the client.
   const client = new LanguageClient(
-    "osmium-slither",
-    "Osmium Slither Language Server",
+    "osmium-solidity-code-actions",
+    "Osmium Solidity Code Actions Language Server",
     serverOptions,
     clientOptions,
   );
-
-  client.onRequest("osmium/getContent", async (params: { uri: string }) => {
-    const contentUint8 = await workspace.fs.readFile(Uri.parse(params.uri));
-    const content = new TextDecoder().decode(contentUint8);
-    return {
-      content,
-    };
-  });
 
   // Start the client. This will also launch the server
   await client.start();

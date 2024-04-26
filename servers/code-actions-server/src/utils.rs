@@ -4,7 +4,7 @@ use tower_lsp::lsp_types::{
 
 pub fn location_to_lsp_location(
     new_uri: &Url,
-    location: &osmium_libs_solidity_references::Location,
+    location: &osmium_libs_solidity_code_actions::Location,
 ) -> LspLocation {
     LspLocation {
         uri: new_uri.clone(),

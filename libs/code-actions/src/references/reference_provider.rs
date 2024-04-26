@@ -1,48 +1,30 @@
-mod definitions;
-mod error;
-mod node_finder;
-mod types;
-mod usages;
-mod utils;
-use definitions::DefinitionFinder;
-use error::ReferencesError;
+use crate::references::{
+    definition_visitor::DefinitionVisitor, position_node_visitor::PositionNodeVisitor,
+    usage_visitor::UsageVisitor,
+};
+use crate::types::{InteractableNode, Location, Position};
+use crate::utils::get_location;
 use log::{info, warn};
-use node_finder::NodeVisitor;
-use osmium_libs_solidity_ast_extractor::extract::extract_ast_from_foundry;
 use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
 use osmium_libs_solidity_path_utils::join_path;
-pub use solc_ast_rs_types::types::*;
-use types::InteractableNode;
-pub use types::{Location, Position};
-use usages::UsagesFinder;
 
-use crate::utils::get_location;
+pub struct ReferenceProvider {}
 
-#[derive(Debug)]
-pub struct ReferencesProvider {
-    pub files: Vec<SolidityAstFile>,
-    pub base_path: String,
-}
-
-impl ReferencesProvider {
-    pub fn set_base_path(&mut self, base_path: String) {
-        self.base_path = base_path;
-    }
-
-    pub fn update_file_content(&mut self) -> Result<(), ReferencesError> {
-        self.files = extract_ast_from_foundry(&self.base_path)?; // will always find the root foundry project
-        Ok(())
+impl ReferenceProvider {
+    pub fn new() -> Self {
+        Self {}
     }
 
     fn get_node(
         &self,
         uri: &str,
         position: Position,
+        files: &[SolidityAstFile],
     ) -> Option<(SolidityAstFile, InteractableNode)> {
         let found_node: Option<InteractableNode>;
         let source_file;
-        if let Some(file) = self.files.iter().find(|file| file.file.path == uri) {
-            let mut node_finder = NodeVisitor::new(position.clone(), &file.file.content);
+        if let Some(file) = files.iter().find(|file| file.file.path == uri) {
+            let mut node_finder = PositionNodeVisitor::new(position.clone(), &file.file.content);
             source_file = file;
             found_node = node_finder.find(&file.ast);
         } else {
@@ -56,8 +38,14 @@ impl ReferencesProvider {
         Some((source_file.clone(), found_node.unwrap()))
     }
 
-    pub fn get_definition(&self, uri: &str, position: Position) -> Option<Location> {
-        let (source_file, found_node) = match self.get_node(uri, position) {
+    pub fn get_definition(
+        &self,
+        uri: &str,
+        position: Position,
+        files: &Vec<SolidityAstFile>,
+        base_path: &str,
+    ) -> Option<Location> {
+        let (source_file, found_node) = match self.get_node(uri, position, files) {
             Some((file, node)) => (file, node),
             None => return None,
         };
@@ -69,7 +57,7 @@ impl ReferencesProvider {
                     return Some(Location {
                         start: Position::default(),
                         end: Position::default(),
-                        uri: join_path(&self.base_path, &import.absolute_path),
+                        uri: join_path(base_path, &import.absolute_path),
                     });
                 }
                 _ => {
@@ -77,8 +65,8 @@ impl ReferencesProvider {
                 }
             },
         };
-        let mut def_finder = DefinitionFinder::new(ref_id);
-        for file in &self.files {
+        let mut def_finder = DefinitionVisitor::new(ref_id);
+        for file in files {
             if let Some(node) = def_finder.find(&file.ast) {
                 return Some(get_location(&node, file));
             }
@@ -86,9 +74,14 @@ impl ReferencesProvider {
         None
     }
 
-    pub fn get_references(&self, uri: &str, position: Position) -> Vec<Location> {
+    pub fn get_references(
+        &self,
+        uri: &str,
+        position: Position,
+        files: &Vec<SolidityAstFile>,
+    ) -> Vec<Location> {
         let mut references: Vec<Location> = Vec::new();
-        let (_, found_node) = match self.get_node(uri, position) {
+        let (_, found_node) = match self.get_node(uri, position, files) {
             Some((file, node)) => (file, node),
             None => return vec![],
         };
@@ -96,8 +89,8 @@ impl ReferencesProvider {
         let id = found_node.get_id();
         info!("Id: {:?}", id);
 
-        let mut usages_finder = UsagesFinder::new(id);
-        for file in &self.files {
+        let mut usages_finder = UsageVisitor::new(id);
+        for file in files {
             let nodes = usages_finder.find(&file.ast);
             for node in nodes {
                 references.push(get_location(&node, file));
