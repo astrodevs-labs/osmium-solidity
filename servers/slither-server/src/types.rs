@@ -24,6 +24,7 @@ pub struct SlitherData {
     pub sender: Sender<SlitherDiag>,
     pub src_paths: Vec<String>,
     pub workspace: String,
+    pub has_to_shutdown: bool,
 }
 
 impl SlitherData {
@@ -35,6 +36,7 @@ impl SlitherData {
             receiver: Some(receiver),
             sender,
             workspace: String::new(),
+            has_to_shutdown: false,
         }
     }
 }
