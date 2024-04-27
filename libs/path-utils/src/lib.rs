@@ -53,7 +53,6 @@ pub fn escape_path(path: &str) -> String {
     path.to_string()
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -74,7 +73,10 @@ mod tests {
     fn test_join_path() {
         let base_path = "C:/Users/username/Documents";
         let file = "file.sol";
-        assert_eq!(join_path(base_path, file), "C:/Users/username/Documents/file.sol");
+        assert_eq!(
+            join_path(base_path, file),
+            "C:/Users/username/Documents/file.sol"
+        );
     }
 
     #[test]

@@ -186,6 +186,81 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
         files: [document.fileName],
       };
 
+      forgeFmt(args)
+        .then((result) => {
+          if (result.exitCode === 0) {
+            vscode.window.showInformationMessage('Forge fmt ran successfully.');
+          } else {
+            vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
+
+            console.log(result.output);
+          }
+        })
+        .catch((error) => {
+          vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
+          console.error(error);
+        });
+    } else {
+      vscode.window.showErrorMessage('Forge fmt is only available for solidity files.');
+    }
+  });
+
+  const lintSolWorkspace = vscode.commands.registerCommand('osmium.format-sol-workspace', function () {
+    if (!isFmtInstalled()) {
+      vscode.window.showErrorMessage('Forge fmt is not installed. Please install it and try again.');
+      return;
+    }
+
+    if (!vscode.workspace.workspaceFolders?.[0]) {
+      vscode.window.showErrorMessage('Unable to find workspace root. Please open a folder and try again.');
+      return;
+    }
+
+    const options: ForgeFmtOptions = {
+      root: vscode.workspace.workspaceFolders?.[0].uri.fsPath,
+      check: false,
+      raw: false,
+    };
+
+    const args: ForgeFmtArgs = {
+      options,
+      files: [vscode.workspace.workspaceFolders?.[0].uri.fsPath],
+    };
+
+    forgeFmt(args)
+      .then((result) => {
+        if (result.exitCode === 0) {
+          vscode.window.showInformationMessage('Forge fmt ran successfully.');
+        } else {
+          vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
+
+          console.log(result.output);
+        }
+      })
+      .catch((error) => {
+        vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
+        console.error(error);
+      });
+  });
+
+  const formatter = vscode.languages.registerDocumentFormattingEditProvider('solidity', {
+    provideDocumentFormattingEdits: (document) => {
+      if (!isFmtInstalled()) {
+        vscode.window.showErrorMessage('Forge fmt is not installed. Please install it and try again.');
+        return;
+      }
+
+      const options: ForgeFmtOptions = {
+        root: vscode.workspace.workspaceFolders?.[0].uri.fsPath,
+        check: false,
+        raw: false,
+      };
+
+      const args: ForgeFmtArgs = {
+        options,
+        files: [document.fileName],
+      };
+
       return forgeFmt(args).then((result) => {
         if (result.exitCode === 0) {
           vscode.window.showInformationMessage('Forge fmt ran successfully.');
