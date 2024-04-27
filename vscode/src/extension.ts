@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { workspace, ExtensionContext } from "vscode";
+import { workspace, ExtensionContext, window } from "vscode";
 import { LanguageClient } from "vscode-languageclient/node";
 import { createLinterClient } from "./linter";
 import { createSlitherClient } from "./slither";
@@ -10,6 +10,7 @@ import { createFoundryCompilerClient } from "./foundry-compiler";
 import { createTestsPositionsClient } from "./tests-positions";
 import { registerGasEstimation } from "./gas-estimation";
 import { createCodeActionsClient } from "./code-actions";
+import {SidebarProvider} from "./sidebar-provider";
 
 let linterClient: LanguageClient;
 let slitherClient: LanguageClient;
@@ -45,18 +46,19 @@ export async function activate(context: ExtensionContext) {
     codeActionsClient,
   );
 
-  const folders = workspace.workspaceFolders;
-  if (folders) {
-    const files = await workspace.findFiles(
-      "**/*.sol",
-      `${folders[0].uri.fsPath}/**`,
-    );
-    files.forEach((file) => {
-      if (!file.path.includes("forge-std")) {
-        workspace.openTextDocument(file);
-      }
-    });
-  }
+	const folders = workspace.workspaceFolders;
+	if (folders) {
+		const files = await workspace.findFiles('**/*.sol', `${folders[0].uri.fsPath}/**`);
+		files.forEach(file => {
+			if (!file.path.includes('forge-std')) {
+				workspace.openTextDocument(file);
+			}
+		});
+	}
+
+  const sidebarProvider = new SidebarProvider(context.extensionUri);
+
+  context.subscriptions.push(window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider));
 }
 
 // This method is called when your extension is deactivated
