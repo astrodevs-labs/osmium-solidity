@@ -14,6 +14,8 @@ importers:
 
   libs/ast-extractor: {}
 
+  libs/code-actions: {}
+
   libs/foundry-wrapper: {}
 
   libs/lsp-server-wrapper: {}
@@ -22,19 +24,17 @@ importers:
 
   libs/path-utils: {}
 
-  libs/references: {}
-
   libs/solidhunter:
     dependencies:
       osmium-libs-solidity-ast-extractor:
         specifier: workspace:*
         version: link:../ast-extractor
 
+  servers/code-actions-server: {}
+
   servers/foundry-compiler-server: {}
 
   servers/linter-server: {}
-
-  servers/references-server: {}
 
   servers/slither-server: {}
 

@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { workspace, ExtensionContext } from "vscode";
+import { workspace, ExtensionContext, window } from "vscode";
 import { LanguageClient } from "vscode-languageclient/node";
 import { createLinterClient } from "./linter";
 import { createSlitherClient } from "./slither";
@@ -55,8 +55,6 @@ export async function activate(context: ExtensionContext) {
 			}
 		});
 	}
-
-    const sidebarProvider = new SidebarProvider(context.extensionUri);
 
   const sidebarProvider = new SidebarProvider(context.extensionUri);
 
