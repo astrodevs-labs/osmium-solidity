@@ -9,12 +9,11 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity as Severity, Position,
 pub struct SlitherDiag {
     pub diagnostics: Vec<Diagnostic>,
     pub uri: Url,
-    pub has_to_shutdown: bool,
 }
 
 impl SlitherDiag {
     pub fn new(uri: Url, diagnostics: Vec<Diagnostic>) -> Self {
-        Self { uri, diagnostics, has_to_shutdown: false }
+        Self { uri, diagnostics }
     }
 }
 
@@ -25,6 +24,7 @@ pub struct SlitherData {
     pub sender: Sender<SlitherDiag>,
     pub src_paths: Vec<String>,
     pub workspace: String,
+    pub has_to_shutdown: bool,
 }
 
 impl SlitherData {
@@ -36,6 +36,7 @@ impl SlitherData {
             receiver: Some(receiver),
             sender,
             workspace: String::new(),
+            has_to_shutdown: false,
         }
     }
 }

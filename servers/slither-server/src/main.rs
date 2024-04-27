@@ -97,9 +97,8 @@ impl LanguageServer for Backend {
         if self.data.lock().await.has_to_shutdown {
             error!("Osmium-Solidity-Slither shuting down ...");
             info!("This may occur because of missing dependencies or errors. Please check the logs for more information.");
-            self.shutdown().await;
-        }
-        else {
+            let _ = self.shutdown().await;
+        } else {
             info!("Osmium-Solidity-Slither initialized!");
         }
     }
