@@ -22,4 +22,10 @@ pub enum Error {
 
     #[error("Invalid json output: {0}")]
     InvalidJsonOutput(#[from] serde_json::Error),
+
+    #[error("No build info file found")]
+    NoBuildInfo,
+
+    #[error("Cannot read build info file")]
+    ReadBuildInfo(#[from] std::io::Error),
 }

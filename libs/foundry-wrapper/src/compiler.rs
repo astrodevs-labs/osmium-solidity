@@ -1,10 +1,12 @@
 use crate::{
     error::Error,
+    output::get_files_from_foundry_output,
     types::ProjectCompileOutput,
-    utils::{
-        check_executable_argument, find_forge_executable, find_projects_paths, normalize_path,
-    },
+    utils::{check_executable_argument, find_forge_executable, find_projects_paths},
+    FoundryJsonFile,
 };
+
+use osmium_libs_solidity_path_utils::slashify_path;
 use std::process::Command;
 
 #[derive(Debug)]
@@ -33,11 +35,10 @@ impl Compiler {
     }
 
     fn find_closest_workspace(&self, file_path: &str) -> Option<String> {
-        let filepath = normalize_path(file_path);
         self.inner
             .workspaces
             .iter()
-            .filter(|path| filepath.starts_with(path.as_str()))
+            .filter(|path| file_path.starts_with(path.as_str()))
             .max_by_key(|path| path.len())
             .map(|path| path.to_string())
     }
@@ -46,7 +47,7 @@ impl Compiler {
         let paths = find_projects_paths(&root_folder)?;
         for path in paths {
             if let Some(path) = path.to_str() {
-                self.inner.workspaces.push(normalize_path(path));
+                self.inner.workspaces.push(slashify_path(path));
             }
         }
         self.inner.root_path = root_folder;
@@ -70,5 +71,25 @@ impl Compiler {
         let output_str = String::from_utf8_lossy(&json.stdout);
         let compile_output: ProjectCompileOutput = serde_json::from_str(&output_str)?;
         Ok((workspace_path, compile_output))
+    }
+
+    pub fn compile_ast(
+        &mut self,
+        file_path: &str,
+    ) -> Result<(String, Vec<FoundryJsonFile>), Error> {
+        let workspace_path = self
+            .find_closest_workspace(file_path)
+            .ok_or_else(|| Error::InvalidFilePath(file_path.to_string()))?;
+        //info!("Workspace to compile: {}", workspace_path);
+        let _ = Command::new(&self.inner.executable_path)
+            .current_dir(&workspace_path)
+            .arg("compile")
+            .arg("--build-info")
+            .arg("--no-cache")
+            .output()
+            .map_err(Error::ExecutableError)?;
+
+        let out = get_files_from_foundry_output(&workspace_path)?;
+        Ok((workspace_path, out))
     }
 }

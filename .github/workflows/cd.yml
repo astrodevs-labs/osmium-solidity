@@ -17,7 +17,7 @@ jobs:
   build-and-publish-core:
     uses: ./.github/workflows/publish-core.yml
     secrets:
-      CARBON_REGISTRY_TOKEN: ${{ secrets.CARBON_REGISTRY_TOKEN }}
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       VSCE_PAT: ${{ secrets.VSCE_PAT }}
   publish-extension:
     uses: ./.github/workflows/publish-extension.yml
@@ -25,6 +25,6 @@ jobs:
       version: ${{ github.event.inputs.version }}
       pre-release: ${{ github.event.inputs.pre-release }}
     secrets:
-      CARBON_REGISTRY_TOKEN: ${{ secrets.CARBON_REGISTRY_TOKEN }}
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
       VSCE_PAT: ${{ secrets.VSCE_PAT }}
 

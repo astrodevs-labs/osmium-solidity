@@ -12,10 +12,13 @@ export class TestManager {
   public testController: vscode.TestController;
   private testData = new WeakMap<vscode.TestItem, ItemType>();
 
-  constructor(private client: LanguageClient, private workspace: string) {
+  constructor(
+    private client: LanguageClient,
+    private workspace: string,
+  ) {
     this.testController = vscode.tests.createTestController(
       "solidityTestController",
-      "Solidity test controller"
+      "Solidity test controller",
     );
 
     this.testController.resolveHandler = (test) => {
@@ -25,7 +28,7 @@ export class TestManager {
     this.testController.createRunProfile(
       "Run tests",
       vscode.TestRunProfileKind.Run,
-      (request, token) => this.runHandler(false, request, token)
+      (request, token) => this.runHandler(false, request, token),
     );
     // Uncomment this when debugging is supported
     //this.testController.createRunProfile("Debug tests", vscode.TestRunProfileKind.Run, (request, token) => this.runHandler(true, request, token))
@@ -46,7 +49,7 @@ export class TestManager {
   private async runHandler(
     _shouldDebug: boolean,
     request: vscode.TestRunRequest,
-    token: vscode.CancellationToken
+    token: vscode.CancellationToken,
   ) {
     console.log("Run handler called");
     const run = this.testController.createTestRun(request);
@@ -85,23 +88,23 @@ export class TestManager {
             //get result form foundry wrapper for contract test
             const contractResult = await testContract(
               this.workspace,
-              test.label
+              test.label,
             );
             const contractTime = Date.now() - date;
             if (this.analyzeTestResults(contractResult)) {
               run.appendOutput(
-                this.extractResultLogs(contractResult).join("\r\n")
+                this.extractResultLogs(contractResult).join("\r\n"),
               );
               run.passed(test, contractTime);
             } else {
               run.failed(
                 test,
                 new vscode.TestMessage(
-                  `Contract test failed\n\n${this.extractResultLogs(contractResult).join(
-                    "\n"
-                  )}`
+                  `Contract test failed\n\n${this.extractResultLogs(
+                    contractResult,
+                  ).join("\n")}`,
                 ),
-                contractTime
+                contractTime,
               );
             }
             break;
@@ -110,18 +113,22 @@ export class TestManager {
             const functionResult = await testFunction(
               this.workspace,
               test.parent!.label,
-              test.label
+              test.label,
             );
             const functionTime = Date.now() - date;
-            
+
             if (this.analyzeTestResults(functionResult)) {
-              run.appendOutput(this.extractResultLogs(functionResult).join("\r\n"));
+              run.appendOutput(
+                this.extractResultLogs(functionResult).join("\r\n"),
+              );
               run.passed(test, functionTime);
             } else {
               run.failed(
                 test,
-                new vscode.TestMessage(`Test failed\n\n${this.extractResultLogs(functionResult).join("\n")}`),
-                functionTime
+                new vscode.TestMessage(
+                  `Test failed\n\n${this.extractResultLogs(functionResult).join("\n")}`,
+                ),
+                functionTime,
               );
             }
             break;
@@ -131,7 +138,7 @@ export class TestManager {
         run.failed(test, new vscode.TestMessage("Test failed"));
         if (e === "No forge found") {
           vscode.window.showErrorMessage(
-            "No forge found. Please install forge and make sure it's in your PATH"
+            "No forge found. Please install forge and make sure it's in your PATH",
           );
         }
       }
@@ -197,7 +204,7 @@ export class TestManager {
     const file = this.testController.createTestItem(
       uri.toString(),
       uri.path.split("/").pop()!,
-      uri
+      uri,
     );
     this.testData.set(file, ItemType.file);
     file.canResolveChildren = true;
@@ -230,7 +237,7 @@ export class TestManager {
       vscode.workspace.workspaceFolders.map(async (workspaceFolder) => {
         const pattern = new vscode.RelativePattern(
           workspaceFolder,
-          "**/*.t.sol"
+          "**/*.t.sol",
         );
         const watcher = vscode.workspace.createFileSystemWatcher(pattern);
 
@@ -239,12 +246,12 @@ export class TestManager {
         // When files change, re-parse them. Note that you could optimize this so
         // that you only re-parse children that have been resolved in the past.
         watcher.onDidChange((uri) =>
-          this.parseTestsInFileContents(this.getOrCreateTestFileItem(uri))
+          this.parseTestsInFileContents(this.getOrCreateTestFileItem(uri)),
         );
         // And, finally, delete TestItems for removed files. This is simple, since
         // we use the URI as the TestItem's ID.
         watcher.onDidDelete((uri) =>
-          this.testController.items.delete(uri.toString())
+          this.testController.items.delete(uri.toString()),
         );
 
         for (const file of await vscode.workspace.findFiles(pattern)) {
@@ -252,7 +259,7 @@ export class TestManager {
         }
 
         return watcher;
-      })
+      }),
     );
   }
 
@@ -264,7 +271,7 @@ export class TestManager {
     if (e.uri.scheme === "file" && e.uri.path.endsWith(".t.sol")) {
       this.parseTestsInFileContents(
         this.getOrCreateTestFileItem(e.uri),
-        e.getText()
+        e.getText(),
       );
     }
   }
@@ -276,7 +283,7 @@ export class TestManager {
    */
   private async parseTestsInFileContents(
     file: vscode.TestItem,
-    contents?: string
+    contents?: string,
   ) {
     // If a document is open, VS Code already knows its contents. If this is being
     // called from the resolveHandler when a document isn't open, we'll need to
@@ -295,7 +302,7 @@ export class TestManager {
             const contractItem = this.testController.createTestItem(
               contractName,
               contract.name,
-              file.uri
+              file.uri,
             );
             contractItem.range = convertRange(contract.range);
             this.testData.set(contractItem, ItemType.contractCase);
@@ -305,7 +312,7 @@ export class TestManager {
               const functionItem = this.testController.createTestItem(
                 `${contractName}_${test.name}`,
                 test.name,
-                file.uri
+                file.uri,
               );
               functionItem.range = convertRange(test.range);
               this.testData.set(functionItem, ItemType.testCase);
@@ -329,7 +336,7 @@ export class TestManager {
 function convertRange(lspRange: any): vscode.Range {
   const range = new vscode.Range(
     new vscode.Position(lspRange.start.line - 1, lspRange.start.character),
-    new vscode.Position(lspRange.end.line - 1, lspRange.end.character)
+    new vscode.Position(lspRange.end.line - 1, lspRange.end.character),
   );
   return range;
 }

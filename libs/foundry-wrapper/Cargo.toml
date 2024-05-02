@@ -1,11 +1,11 @@
 [package]
-name = "osmium-libs-foundry-wrapper"
+name = "osmium-libs-solidity-foundry-wrapper"
 version = "0.1.0"
 edition = "2021"
 authors = ["Astrodevs-Labs"]
 description = "Foundry abstractions for all extensions"
 license = "GPL-3.0-or-later"
-repository = "https://github.com/astrodevs-labs/osmium"
+repository = "https://github.com/astrodevs-labs/osmium-solidity"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -17,3 +17,5 @@ thiserror = "1.0.50"
 which = "5.0"
 serde = { version = "1.0.149", features = ["derive"] }
 serde_json = "1.0.108"
+osmium-libs-solidity-path-utils = { path = "../../libs/path-utils" }
+log = "0.4.21"

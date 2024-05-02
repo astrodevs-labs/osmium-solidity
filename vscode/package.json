@@ -6,7 +6,7 @@
   "publisher": "OsmiumToolchains",
   "repository": {
     "type": "git",
-    "url": "https://github.com/astrodevs-labs/osmium"
+    "url": "https://github.com/astrodevs-labs/osmium-solidity"
   },
   "icon": "./assets/logo.png",
   "engines": {
@@ -20,6 +20,24 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sidebar",
+          "title": "Osmium Sidebar",
+          "icon": "assets/logo.png"
+        }
+      ]
+    },
+    "views": {
+      "sidebar": [
+        {
+          "type": "webview",
+          "id": "osmium.sidebar",
+          "name": "Osmium: Deploy/Interact"
+        }
+      ]
+    },
     "menus": {
       "explorer/context": [
         {
@@ -84,29 +102,39 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "build": "webpack",
+    "build:extension": "webpack",
     "lint": "eslint src --ext ts --fix",
-    "lint:cehck": "eslint src --ext ts",
+    "lint:check": "eslint src --ext ts",
     "format": "prettier --write src/**/*.ts ",
     "format:check": "prettier src/**/*.ts",
-    "test": "vscode-test",
-    "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies"
+    "test:ui": "vscode-test",
+    "publish:extension": "webpack --mode production --devtool hidden-source-map && vsce publish --no-dependencies",
+    "build:extension": "webpack"
   },
   "devDependencies": {
-    "@types/vscode": "^1.87.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
+    "@types/uuid": "^9.0.8",
+    "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
-    "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
-    "ts-loader": "^9.5.1",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8",
-    "@vscode/vsce": "^2.24.0"
+    "@vscode/vsce": "^2.24.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.5",
+    "toml": "^3.0.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "utf-8-validate": "^6.0.3",
+    "uuid": "^9.0.1",
+    "viem": "^2.8.18",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "bufferutil": "^4.0.8",
+    "sidebar": "workspace:*",
     "vscode-languageclient": "^9.0.1"
   }
 }

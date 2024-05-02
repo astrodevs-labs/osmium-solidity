@@ -1,4 +1,7 @@
-use osmium_libs_foundry_wrapper::{CompilationError, Compiler, Error, ProjectCompileOutput};
+use osmium_libs_solidity_foundry_wrapper::{
+    CompilationError, Compiler, Error, ProjectCompileOutput,
+};
+use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, trace, warn};
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::path::{Path, PathBuf};
@@ -7,7 +10,9 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 mod utils;
-use utils::{convert_severity, get_root_path, normalized_slash_path, slashify_path};
+use osmium_libs_solidity_lsp_utils::get_root_path;
+use osmium_libs_solidity_path_utils::{normalize_path, slashify_path};
+use utils::convert_severity;
 mod affected_files_store;
 use affected_files_store::AffectedFilesStore;
 
@@ -24,30 +29,32 @@ struct Backend {
     state: Mutex<State>,
 }
 
+impl Backend {
+    fn new(client: Client) -> Self {
+        init_logging(client.clone());
+        Self {
+            client,
+            state: Mutex::new(State {
+                compiler: None,
+                initialized: false,
+                affected_files: AffectedFilesStore::new(),
+            }),
+        }
+    }
+}
+
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
-        self.client
-            .log_message(MessageType::INFO, "Foundry server initializing!")
-            .await;
+        info!("Foundry server initializing!");
         if let Some(root_path) = get_root_path(params.clone()) {
-            self.client
-                .log_message(
-                    MessageType::INFO,
-                    &format!(
-                        "Foundry server initializing with workspace path: {:?}",
-                        root_path
-                    ),
-                )
-                .await;
+            info!(
+                "Foundry server initializing with workspace path: {:?}",
+                root_path
+            );
             let _ = self.load_workspace(root_path).await;
         } else {
-            self.client
-                .log_message(
-                    MessageType::INFO,
-                    "Foundry server not initialized : no workspace path!",
-                )
-                .await;
+            info!("Foundry server not initialized : no workspace path!");
         }
         Ok(InitializeResult {
             server_info: None,
@@ -61,32 +68,20 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        self.client
-            .log_message(MessageType::INFO, "Foundry server initialized!")
-            .await;
+        info!("Foundry server initialized!");
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        self.client
-            .log_message(
-                MessageType::INFO,
-                format!("file opened!: {:}", params.text_document.uri),
-            )
-            .await;
+        info!("file opened!: {:}", params.text_document.uri);
         let _ = self
-            .compile(normalized_slash_path(params.text_document.uri.path()))
+            .compile(normalize_path(params.text_document.uri.path()))
             .await;
     }
 
     async fn did_save(&self, params: DidSaveTextDocumentParams) {
-        self.client
-            .log_message(
-                MessageType::INFO,
-                format!("file changed!: {:}", params.text_document.uri),
-            )
-            .await;
+        info!("file changed!: {:}", params.text_document.uri);
         let _ = self
-            .compile(normalized_slash_path(params.text_document.uri.path()))
+            .compile(normalize_path(params.text_document.uri.path()))
             .await;
     }
 
@@ -101,40 +96,24 @@ impl Backend {
         match Compiler::new_with_executable_check() {
             Ok(compiler) => state.compiler = Some(compiler),
             Err(Error::FoundryExecutableNotFound) => {
-                self.client
-                    .show_message(MessageType::WARNING, "Foundry executable not found. Please install foundry and restart the extension.")
-                    .await;
+                warn!("Foundry executable not found. Please install foundry and restart the extension.");
                 return Err(());
             }
             Err(Error::InvalidFoundryVersion) => {
-                self.client
-                    .show_message(MessageType::WARNING, "Foundry executable version is not compatible with this extension. Please update foundry and restart the extension.")
-                    .await;
+                warn!("Foundry executable version is not compatible with this extension. Please update foundry and restart the extension.");
                 return Err(());
             }
             Err(err) => {
-                self.client
-                    .log_message(
-                        MessageType::ERROR,
-                        &format!("Foundry server failed to initialize: {:?}", err),
-                    )
-                    .await;
+                error!("Foundry server failed to initialize: {:?}", err);
                 return Err(());
             }
         }
         if let Err(err) = state.compiler.as_mut().unwrap().load_workspace(path) {
-            self.client
-                .log_message(
-                    MessageType::ERROR,
-                    &format!("Foundry server failed to initialize: {:?}", err),
-                )
-                .await;
+            error!("Foundry server failed to initialize: {:?}", err);
             return Err(());
         } else {
             state.initialized = true;
-            self.client
-                .log_message(MessageType::INFO, "Foundry server initialized!")
-                .await;
+            info!("Foundry server initialized!");
         }
         Ok(())
     }
@@ -150,9 +129,7 @@ impl Backend {
         if !state.initialized {
             drop(state); // unlock the mutex before calling load_workspace
 
-            self.client
-                .log_message(MessageType::INFO, "Foundry server initializing!")
-                .await;
+            info!("Foundry server initializing!");
             let folder_path = Path::new(filepath)
                 .parent()
                 .unwrap()
@@ -168,9 +145,7 @@ impl Backend {
         self.initialize_if_not(&filepath).await?;
         let mut state = self.state.lock().await;
 
-        self.client
-            .log_message(MessageType::INFO, "Foundry server compiling!")
-            .await;
+        info!("Foundry server compiling!");
 
         match state.compiler.as_mut().unwrap().compile(&filepath) {
             Ok((project_path, output)) => {
@@ -182,12 +157,7 @@ impl Backend {
                     .await;
             }
             Err(err) => {
-                self.client
-                    .log_message(
-                        MessageType::ERROR,
-                        format!("error while compiling: {:?}", err),
-                    )
-                    .await;
+                error!("error while compiling: {:?}", err);
             }
         }
         Ok(())
@@ -235,12 +205,7 @@ impl Backend {
                     .publish_diagnostics(url, diags.clone(), None)
                     .await;
             } else {
-                self.client
-                    .log_message(
-                        MessageType::ERROR,
-                        format!("error, cannot parse file uri : {}", uri),
-                    )
-                    .await;
+                error!("error, cannot parse file uri : {}", uri);
             }
         }
     }
@@ -257,7 +222,7 @@ impl Backend {
         compilation_error: &CompilationError,
         project_path: &str,
     ) -> Option<(PathBuf, Diagnostic)> {
-        eprintln!("Compilation error: {:?}", compilation_error);
+        trace!("Compilation error: {:?}", compilation_error);
         let (source_content_filepath, range) = match self
             .extract_diagnostic_range(project_path, compilation_error)
             .await
@@ -300,7 +265,7 @@ impl Backend {
         &self,
         project_path: &str,
         error: &CompilationError,
-    ) -> Option<(PathBuf, osmium_libs_foundry_wrapper::Range)> {
+    ) -> Option<(PathBuf, osmium_libs_solidity_foundry_wrapper::Range)> {
         let source_content_filepath = match error.get_file_path() {
             Some(source_path) => {
                 let mut complete_path = Path::new(project_path).to_path_buf();
@@ -308,39 +273,24 @@ impl Backend {
                 complete_path
             }
             None => {
-                self.client
-                    .log_message(
-                        MessageType::ERROR,
-                        format!("error, cannot get filepath: {:?}", error),
-                    )
-                    .await;
+                error!("error, cannot get filepath: {:?}", error);
                 return None;
             }
         };
         let source_content = match std::fs::read_to_string(&source_content_filepath) {
             Ok(content) => content,
             Err(err) => {
-                self.client
-                    .log_message(
-                        MessageType::ERROR,
-                        format!(
-                            "error, cannot read file: {:?}, error: {:?}",
-                            &source_content_filepath, err
-                        ),
-                    )
-                    .await;
+                error!(
+                    "error, cannot read file: {:?}, error: {:?}",
+                    &source_content_filepath, err
+                );
                 return None;
             }
         };
         let range = match error.get_range(&source_content) {
             Some(range) => range,
             None => {
-                self.client
-                    .log_message(
-                        MessageType::ERROR,
-                        format!("error, cannot get range: {:?}", error),
-                    )
-                    .await;
+                error!("error, cannot get range: {:?}", error);
                 return None;
             }
         };
@@ -369,23 +319,13 @@ impl Backend {
             .affected_files
             .fill_affected_files(raised_files, &project_path);
 
-        self.client
-            .log_message(
-                MessageType::INFO,
-                format!("files without diagnostic: {:?}", without_diagnostics),
-            )
-            .await;
+        info!("files without diagnostic: {:?}", without_diagnostics);
 
         for file in without_diagnostics.iter() {
             if let Ok(url) = Url::parse(&format!("file://{}", &file)) {
                 self.client.publish_diagnostics(url, vec![], None).await;
             } else {
-                self.client
-                    .log_message(
-                        MessageType::ERROR,
-                        format!("error, cannot parse file uri : {}", file),
-                    )
-                    .await;
+                error!("error, cannot parse file uri : {}", file);
             }
         }
     }
@@ -396,13 +336,6 @@ async fn main() {
     let stdin = tokio::io::stdin();
     let stdout = tokio::io::stdout();
 
-    let (service, socket) = LspService::new(|client| Backend {
-        client,
-        state: Mutex::new(State {
-            compiler: None,
-            initialized: false,
-            affected_files: AffectedFilesStore::new(),
-        }),
-    });
+    let (service, socket) = LspService::new(Backend::new);
     Server::new(stdin, stdout, socket).serve(service).await;
 }

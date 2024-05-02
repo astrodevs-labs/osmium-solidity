@@ -2,7 +2,7 @@
   "name": "osmium-libs-solidity-solidhunter",
   "license": "GNU-GPL-3.0",
   "scripts": {
-    "build": "cargo build --release",
+    "build": "cargo build --release --target-dir ./target",
     "format": "cargo fmt --all",
     "format:check": "cargo fmt --check --all",
     "test": "cargo test",
@@ -12,6 +12,6 @@
     "publish:check": "cargo package --allow-dirty && cargo publish --allow-dirty --dry-run"
   },
   "dependencies": {
-    "osmium-libs-solidity-ast-extractor": "*"
+    "osmium-libs-solidity-ast-extractor": "workspace:*"
   }
 }

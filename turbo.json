@@ -2,6 +2,16 @@
     "$schema": "https://turbo.build/schema.json",
     "pipeline": {
       "build": {
+        "inputs": ["src/**"],
+        "outputs": ["target/**", "dist/**"],
+        "cache": false
+      },
+      "build:extension": {
+        "inputs": ["src/**"],
+        "outputs": ["target/**", "dist/**"],
+        "cache": false
+      },
+      "build:extension": {
         "outputs": ["dist/**", "target/**"],
         "cache": false
       },

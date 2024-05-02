@@ -1,4 +1,5 @@
 use glob::glob;
+
 use std::path::PathBuf;
 
 pub fn find_projects_paths(root_path: &str) -> Result<Vec<PathBuf>, glob::PatternError> {
@@ -12,10 +13,4 @@ pub fn find_projects_paths(root_path: &str) -> Result<Vec<PathBuf>, glob::Patter
         .iter()
         .map(|path| path.parent().unwrap().to_path_buf())
         .collect())
-}
-
-pub fn normalize_path(path: &str) -> String {
-    path.replace('\\', "/")
-        .replace("//", "/")
-        .replace("\\\\", "/")
 }

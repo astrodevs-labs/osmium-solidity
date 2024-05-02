@@ -2,7 +2,7 @@
 name = "osmium-libs-solidity-ast-extractor"
 description = "Extracts the AST from a Solidity file"
 license = "GPL-3.0-or-later"
-repository = "https://github.com/astrodevs-labs/osmium"
+repository = "https://github.com/astrodevs-labs/osmium-solidity"
 version = "0.1.3"
 edition = "2021"
 
@@ -14,3 +14,7 @@ proc-macro2 = { version = "1.0.78", features = ["span-locations"]}
 syn-solidity =  { version = "0.6.3", features = ["visit"] }
 thiserror = "1"
 syn = "2"
+osmium-libs-solidity-foundry-wrapper = { path = "../foundry-wrapper"}
+solc-ast-rs-types = { version = "0.1.6" }
+serde_json = "1.0.113"
+log = "0.4.21"
