@@ -21,6 +21,7 @@ let testManager: TestManager | null;
 let saveHandler: Disposable | null;
 let formatterHandlers: {fileDisposable:Disposable, workspaceDisposable: Disposable, formatterDisposable:Disposable} | null;
 let interactDeployHandler: Disposable | null;
+let gasEstimationHandler: {openDisposable:Disposable, SaveDisposable:Disposable, visibleTextEditorsDisposable:Disposable, activeTextEditorDisposable:Disposable, commandDisposable:Disposable} | null;
 
 let Extcontext: ExtensionContext;
 
@@ -72,6 +73,17 @@ async function launchFeatures() {
 		interactDeployHandler = null;
 	}
 	
+	if (isGasEstimationEnable && !gasEstimationHandler) {
+		gasEstimationHandler = registerGasEstimation(Extcontext);
+	} else if (!isGasEstimationEnable && gasEstimationHandler) {
+		gasEstimationHandler.SaveDisposable.dispose();
+		gasEstimationHandler.openDisposable.dispose();
+		gasEstimationHandler.visibleTextEditorsDisposable.dispose();
+		gasEstimationHandler.activeTextEditorDisposable.dispose();
+		gasEstimationHandler.commandDisposable.dispose();
+		gasEstimationHandler = null;
+	}
+	
 	if (isCompilatorEnable && !foundryCompilerClient) {
 		foundryCompilerClient = createFoundryCompilerClient(Extcontext);
 		Extcontext.subscriptions.push(foundryCompilerClient);
@@ -104,10 +116,6 @@ async function launchFeatures() {
 		slitherClient = null;
 	}
 	
-	if (isGasEstimationEnable ) {
-		// registerGasEstimation();
-	}
-	
 	if (isDebuggerEnable) {
 	}
 	
@@ -129,9 +137,6 @@ async function launchFeatures() {
 			}
 		});
 	}
-
-		// const sidebarProvider = new SidebarProvider(Extcontext.extensionUri);
-		// Extcontext.subscriptions.push(window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider));
 }
 		
 // This method is called when your extension is deactivated

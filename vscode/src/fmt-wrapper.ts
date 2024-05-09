@@ -241,8 +241,8 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {fileDisposab
 
   context.subscriptions.push(lintSolFile);
   context.subscriptions.push(lintSolWorkspace);
-
   context.subscriptions.push(formatter);
+  
   return {fileDisposable:lintSolFile, workspaceDisposable:lintSolWorkspace, formatterDisposable:formatter };
 }
 
