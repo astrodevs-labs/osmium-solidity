@@ -59,8 +59,8 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
     }
 
     fn visit_enum_definition(&mut self, enum_def: &'ast EnumDefinition) {
-        if is_node_in_range(&enum_def.src, &self.position, &self.source) {
-            self.above_node.clone_from(&self.node);
+        if log_is_node_in_range(&enum_def.src, &self.position, &self.source) {
+            self.above_node = self.node.clone();
             self.node = Some(InteractableNode::EnumDefinition(enum_def.clone()));
         }
         visit::visit_enum_definition(self, enum_def);
@@ -182,4 +182,148 @@ impl PositionNodeVisitor {
         self.visit_source_unit(src);
         self.node.clone()
     }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::test_utils::create_test_ast_file;
+
+    #[test]
+    fn test_find_function_declaration() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 8,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::FunctionDefinition(function)) = node {
+            assert_eq!(function.name, "notUsed");
+        } else {
+            panic!("Expected FunctionDefinition, got {:?}", node);
+        }
+    }
+    
+    #[test]
+    fn test_find_contract_definition() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 3,
+            column: 14,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::ContractDefinition(contract)) = node {
+            assert_eq!(contract.name, "Test");
+        } else {
+            panic!("Expected ContractDefinition, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_variable_declaration() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 4,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::VariableDeclaration(variable)) = node {
+            assert_eq!(variable.name, "number");
+        } else {
+            panic!("Expected VariableDeclaration, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_modifier_definition() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::ModifierDefinition(modifier)) = node {
+            assert_eq!(modifier.name, "modifier");
+        } else {
+            panic!("Expected ModifierDefinition, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_enum_definition() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::EnumDefinition(enum_def)) = node {
+            assert_eq!(enum_def.name, "TestEnum");
+        } else {
+            panic!("Expected EnumDefinition, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_enum_value() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::EnumValue(enum_value)) = node {
+            assert_eq!(enum_value.name, "TestEnumValue");
+        } else {
+            panic!("Expected EnumValue, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_event_definition() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::EventDefinition(event)) = node {
+            assert_eq!(event.name, "TestEvent");
+        } else {
+            panic!("Expected EventDefinition, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_error_definition() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::ErrorDefinition(error)) = node {
+            assert_eq!(error.name, "TestError");
+        } else {
+            panic!("Expected ErrorDefinition, got {:?}", node);
+        }
+    }
+
+    
 }
