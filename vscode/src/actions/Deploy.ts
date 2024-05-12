@@ -71,7 +71,7 @@ export class Deploy {
       throw new Error(`script id ${scriptId} not found`);
     }
 
-    const command = `forge script ${path.join(this._scriptFolderPath, scriptInfos.path)}:${scriptInfos.name} --rpc-url ${environmentInfos.rpc} ${verify ? '--verify' : ''}`;
+    const command = `forge script --broadcast ${path.join(this._scriptFolderPath, scriptInfos.path)}:${scriptInfos.name} --rpc-url ${environmentInfos.rpc} ${verify ? '--verify' : ''}`;
 
     return new Promise((resolve, reject) => {
       exec(command, { cwd: this._projectPath }, (error, stdout, _stderr) => {
@@ -138,7 +138,7 @@ export class Deploy {
     }
 
     return new Promise((resolve, reject) => {
-      exec(command.join(' '), (error, stdout, _stderr) => {
+      exec(command.join(' '), { cwd: this._projectPath }, (error, stdout, _stderr) => {
         if (error) {
           resolve({
             exitCode: error.code,

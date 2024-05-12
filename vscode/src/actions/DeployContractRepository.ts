@@ -41,6 +41,12 @@ export class DeployContractRepository {
 
     for (const outFile of outFiles) {
       const outFileContent = JSON.parse(fs.readFileSync(path.join(this._outFolderPath, outFile.toString())).toString());
+      console.log(Object.keys(outFileContent));
+
+      if (!Object.keys(outFileContent).includes('metadata')) {
+        continue;
+      }
+
       const target = Object.keys(outFileContent.metadata.settings.compilationTarget)[0];
 
       if (path.parse(target).dir !== path.basename(this._srcFolderPath)) {
