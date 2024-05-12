@@ -895,6 +895,7 @@ dependencies = [
  "os",
  "osmium-libs-solidity-lsp-utils",
  "osmium-libs-solidity-path-utils",
+ "regex",
  "serde",
  "serde_derive",
  "serde_json",
