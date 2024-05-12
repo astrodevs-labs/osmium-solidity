@@ -91,10 +91,10 @@
           "default": true,
           "description": "Enable TESTS VIA FOUNDRY feature"
         },
-        "Osmium.compilator": {
+        "Osmium.compiler": {
           "type": "boolean",
           "default": true,
-          "description": "Enable COMPILATOR feature"
+          "description": "Enable COMPILER feature"
         },
         "Osmium.references": {
           "type": "boolean",
@@ -104,7 +104,7 @@
         "Osmium.auto format": {
           "type": "boolean",
           "default": true,
-          "description": "Enable AUTO FORMAT on save"
+          "description": "Enable AUTO FORMAT"
         }
       }
     },

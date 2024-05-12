@@ -42,7 +42,7 @@ async function launchFeatures() {
 	const isSidebarEnable = configuration.get('sidebar');
 	const isDebuggerEnable = configuration.get('debugger');
 	const isTestsEnable = configuration.get('tests');
-	const isCompilatorEnable = configuration.get('compilator');
+	const isCompilerEnable = configuration.get('compiler');
 	const isreferencesEnable = configuration.get('references');
 	const isAutoFormatEnable = configuration.get('auto format');
 	const isFormatterEnable = configuration.get('formatter');
@@ -84,10 +84,10 @@ async function launchFeatures() {
 		gasEstimationHandler = null;
 	}
 	
-	if (isCompilatorEnable && !foundryCompilerClient) {
+	if (isCompilerEnable && !foundryCompilerClient) {
 		foundryCompilerClient = createFoundryCompilerClient(Extcontext);
 		Extcontext.subscriptions.push(foundryCompilerClient);
-	} else if (!isCompilatorEnable && foundryCompilerClient) {
+	} else if (!isCompilerEnable && foundryCompilerClient) {
 		foundryCompilerClient.stop();
 		foundryCompilerClient = null;
 	}

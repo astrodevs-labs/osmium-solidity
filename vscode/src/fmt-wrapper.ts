@@ -98,7 +98,7 @@ function format() {
       const document = editor.document;
 
       if (
-        document.languageId !== "solidity" &&
+        document.languageId !== "solidity" ||
         editor.document.fileName.split(".").pop() !== "sol"
       ) {
         vscode.window.showErrorMessage(
@@ -128,8 +128,6 @@ function format() {
             vscode.window.showErrorMessage(
               "Forge fmt failed. Please check the output for details.",
             );
-
-            console.log(result.output);
           }
         })
         .catch((error) => {

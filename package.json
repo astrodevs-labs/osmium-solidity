@@ -8,7 +8,7 @@
     "sidebar"
   ],
   "devDependencies": {
-    "turbo": "^1.12.4"
+    "turbo": "^1.13.3"
   },
   "scripts": {
     "build": "turbo build && node ./scripts/copy-servers.js && node ./scripts/copy-front.js",
