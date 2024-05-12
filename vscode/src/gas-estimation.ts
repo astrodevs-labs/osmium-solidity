@@ -38,13 +38,8 @@ async function gasReportTests(cwd: string): Promise<ReportDecorators> {
     exec(
       "forge test --gas-report",
       { cwd },
-      async (error: any, _stdout: any, _stderr: any) => {
-        if (error) {
-          console.log("error", error);
-          reject(error);
-        }
-
-        if (_stdout === "null") {
+      async (_error: any, _stdout: any, _stderr: any) => {
+        if (_stdout === "null\n") {
           resolve();
         }
 
@@ -170,7 +165,7 @@ async function getGasReport(contracts: string[], cwd: string): Promise<Report> {
               reject(error);
             }
 
-            if (_stdout === "null") {
+            if (_stdout === "null\n") {
               resolve();
             }
 
@@ -442,6 +437,9 @@ export function registerGasEstimation(context: vscode.ExtensionContext): {openDi
       );
       reportsSaved = report;
     }
+    vscode.window.visibleTextEditors.forEach((editor) => {
+      showReport(editor, reports, reportsSaved, decorationType);
+    });
   });
 
   context.subscriptions.push(onDidOpenDisposable);
