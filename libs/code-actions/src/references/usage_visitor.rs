@@ -103,3 +103,25 @@ impl UsageVisitor {
         self.to_find.clone()
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::types::InteractableNode;
+    use crate::test_utils::create_test_ast_file;
+
+    #[test]
+    fn test_find_usages() {
+        let file = create_test_ast_file();
+        let id = 3;
+        let mut visitor = UsageVisitor::new(id);
+        let usages = visitor.find(&file.ast);
+        assert_eq!(usages.len(), 1);
+        if let InteractableNode::Identifier(identifier) = &usages[0] {
+            assert_eq!(identifier.referenced_declaration, Some(id));
+            assert_eq!(identifier.name, "number");
+        } else {
+            panic!("Expected IdentifierPath, got: {:?}", usages[0]);
+        }
+    }
+}
