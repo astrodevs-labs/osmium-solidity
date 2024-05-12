@@ -184,7 +184,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         });
         await this._view.webview.postMessage({
           type: MessageType.READ_RESPONSE,
-          response: readResponse,
+          response: readResponse.toString(),
         });
         break;
       case MessageType.EDIT_WALLETS:

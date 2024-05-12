@@ -1,4 +1,4 @@
-import { Abi, Address, createPublicClient, createWalletClient, defineChain, getContract, http, webSocket } from 'viem';
+import { createPublicClient, createWalletClient, defineChain, getContract, http, webSocket } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { InteractContractRepository } from './InteractContractRepository';
 import { WalletRepository } from './WalletRepository';
