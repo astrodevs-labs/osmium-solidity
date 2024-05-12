@@ -227,9 +227,10 @@ impl SolidLinter {
         let mut res: Vec<_> = vec![];
 
         for rule in &self.rules {
-            let mut diags = rule.diagnose(&self.files[self.files.len() - 1], &self.files);
+            let file = self.files.iter().find(|x| x.path == filepath).unwrap();
+            let mut diags = rule.diagnose(file, &self.files);
             for diag in &mut diags {
-                if !self._check_is_diag_ignored(diag, &self.files[self.files.len() - 1]) {
+                if !self._check_is_diag_ignored(diag, file) {
                     res.push(diag.clone());
                 }
             }
