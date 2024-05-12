@@ -1,6 +1,6 @@
-import { LanguageClient } from "vscode-languageclient/node";
-import * as vscode from "vscode";
-import { testContract, testFunction, FileResult } from "./foundry-test";
+import { LanguageClient } from 'vscode-languageclient/node';
+import * as vscode from 'vscode';
+import { testContract, testFunction, FileResult } from './foundry-test';
 
 enum ItemType {
   file,
@@ -16,19 +16,14 @@ export class TestManager {
     private client: LanguageClient,
     private workspace: string,
   ) {
-    this.testController = vscode.tests.createTestController(
-      "solidityTestController",
-      "Solidity test controller",
-    );
+    this.testController = vscode.tests.createTestController('solidityTestController', 'Solidity test controller');
 
     this.testController.resolveHandler = (test) => {
-      console.log("controller resolve");
+      console.log('controller resolve');
       return this.resolve(test);
     };
-    this.testController.createRunProfile(
-      "Run tests",
-      vscode.TestRunProfileKind.Run,
-      (request, token) => this.runHandler(false, request, token),
+    this.testController.createRunProfile('Run tests', vscode.TestRunProfileKind.Run, (request, token) =>
+      this.runHandler(false, request, token),
     );
     // Uncomment this when debugging is supported
     //this.testController.createRunProfile("Debug tests", vscode.TestRunProfileKind.Run, (request, token) => this.runHandler(true, request, token))
@@ -37,7 +32,7 @@ export class TestManager {
       this.parseTestsInDocument(e);
     });
 
-    console.log("Test manager created");
+    console.log('Test manager created');
   }
 
   /**
@@ -46,21 +41,17 @@ export class TestManager {
    * @param request The TestRunRequest containing the tests to run
    * @param token A cancellation token
    */
-  private async runHandler(
-    _shouldDebug: boolean,
-    request: vscode.TestRunRequest,
-    token: vscode.CancellationToken,
-  ) {
-    console.log("Run handler called");
+  private async runHandler(_shouldDebug: boolean, request: vscode.TestRunRequest, token: vscode.CancellationToken) {
+    console.log('Run handler called');
     const run = this.testController.createTestRun(request);
     const queue: vscode.TestItem[] = [];
 
     // Loop through all included tests, or all known tests, and add them to our queue
     if (request.include) {
-      console.log("request include", request.include);
+      console.log('request include', request.include);
       request.include.forEach((test) => queue.push(test));
     } else {
-      console.log("testAll");
+      console.log('testAll');
       this.testController.items.forEach((test) => queue.push(test));
     }
 
@@ -86,48 +77,31 @@ export class TestManager {
             break;
           case ItemType.contractCase:
             //get result form foundry wrapper for contract test
-            const contractResult = await testContract(
-              this.workspace,
-              test.label,
-            );
+            const contractResult = await testContract(this.workspace, test.label);
             const contractTime = Date.now() - date;
             if (this.analyzeTestResults(contractResult)) {
-              run.appendOutput(
-                this.extractResultLogs(contractResult).join("\r\n"),
-              );
+              run.appendOutput(this.extractResultLogs(contractResult).join('\r\n'));
               run.passed(test, contractTime);
             } else {
               run.failed(
                 test,
-                new vscode.TestMessage(
-                  `Contract test failed\n\n${this.extractResultLogs(
-                    contractResult,
-                  ).join("\n")}`,
-                ),
+                new vscode.TestMessage(`Contract test failed\n\n${this.extractResultLogs(contractResult).join('\n')}`),
                 contractTime,
               );
             }
             break;
           case ItemType.testCase:
             //get result form foundry wrapper for test case
-            const functionResult = await testFunction(
-              this.workspace,
-              test.parent!.label,
-              test.label,
-            );
+            const functionResult = await testFunction(this.workspace, test.parent!.label, test.label);
             const functionTime = Date.now() - date;
 
             if (this.analyzeTestResults(functionResult)) {
-              run.appendOutput(
-                this.extractResultLogs(functionResult).join("\r\n"),
-              );
+              run.appendOutput(this.extractResultLogs(functionResult).join('\r\n'));
               run.passed(test, functionTime);
             } else {
               run.failed(
                 test,
-                new vscode.TestMessage(
-                  `Test failed\n\n${this.extractResultLogs(functionResult).join("\n")}`,
-                ),
+                new vscode.TestMessage(`Test failed\n\n${this.extractResultLogs(functionResult).join('\n')}`),
                 functionTime,
               );
             }
@@ -135,11 +109,9 @@ export class TestManager {
         }
       } catch (e: any) {
         run.appendOutput(JSON.stringify(e));
-        run.failed(test, new vscode.TestMessage("Test failed"));
-        if (e === "No forge found") {
-          vscode.window.showErrorMessage(
-            "No forge found. Please install forge and make sure it's in your PATH",
-          );
+        run.failed(test, new vscode.TestMessage('Test failed'));
+        if (e === 'No forge found') {
+          vscode.window.showErrorMessage("No forge found. Please install forge and make sure it's in your PATH");
         }
       }
 
@@ -159,7 +131,7 @@ export class TestManager {
 
     for (const suiteResult of Object.values(result)) {
       for (const testResult of Object.values(suiteResult.test_results)) {
-        if (testResult.status !== "Success") {
+        if (testResult.status !== 'Success') {
           return false;
         }
       }
@@ -185,7 +157,7 @@ export class TestManager {
    * @returns A structure containing the positions of all tests in the file (see /toolchains/solidity/core/tests-positions-server/src/get-tests-positions.rs)
    */
   private async getTestsPositions(content: string): Promise<any> {
-    return this.client.sendRequest("osmium/getTestsPositions", {
+    return this.client.sendRequest('osmium/getTestsPositions', {
       file_content: content, // eslint-disable-line @typescript-eslint/naming-convention
     });
   }
@@ -201,11 +173,7 @@ export class TestManager {
       return existing;
     }
 
-    const file = this.testController.createTestItem(
-      uri.toString(),
-      uri.path.split("/").pop()!,
-      uri,
-    );
+    const file = this.testController.createTestItem(uri.toString(), uri.path.split('/').pop()!, uri);
     this.testData.set(file, ItemType.file);
     file.canResolveChildren = true;
     this.testController.items.add(file);
@@ -235,24 +203,17 @@ export class TestManager {
 
     return Promise.all(
       vscode.workspace.workspaceFolders.map(async (workspaceFolder) => {
-        const pattern = new vscode.RelativePattern(
-          workspaceFolder,
-          "**/*.t.sol",
-        );
+        const pattern = new vscode.RelativePattern(workspaceFolder, '**/*.t.sol');
         const watcher = vscode.workspace.createFileSystemWatcher(pattern);
 
         // When files are created, make sure there's a corresponding "file" node in the tree
         watcher.onDidCreate((uri) => this.getOrCreateTestFileItem(uri));
         // When files change, re-parse them. Note that you could optimize this so
         // that you only re-parse children that have been resolved in the past.
-        watcher.onDidChange((uri) =>
-          this.parseTestsInFileContents(this.getOrCreateTestFileItem(uri)),
-        );
+        watcher.onDidChange((uri) => this.parseTestsInFileContents(this.getOrCreateTestFileItem(uri)));
         // And, finally, delete TestItems for removed files. This is simple, since
         // we use the URI as the TestItem's ID.
-        watcher.onDidDelete((uri) =>
-          this.testController.items.delete(uri.toString()),
-        );
+        watcher.onDidDelete((uri) => this.testController.items.delete(uri.toString()));
 
         for (const file of await vscode.workspace.findFiles(pattern)) {
           this.getOrCreateTestFileItem(file);
@@ -268,11 +229,8 @@ export class TestManager {
    * @param e TextDocument that was opened
    */
   private parseTestsInDocument(e: vscode.TextDocument) {
-    if (e.uri.scheme === "file" && e.uri.path.endsWith(".t.sol")) {
-      this.parseTestsInFileContents(
-        this.getOrCreateTestFileItem(e.uri),
-        e.getText(),
-      );
+    if (e.uri.scheme === 'file' && e.uri.path.endsWith('.t.sol')) {
+      this.parseTestsInFileContents(this.getOrCreateTestFileItem(e.uri), e.getText());
     }
   }
 
@@ -281,10 +239,7 @@ export class TestManager {
    * @param file A TestItem representing the file to parse
    * @param contents The contents of the file. If not provided, the file will be read from disk
    */
-  private async parseTestsInFileContents(
-    file: vscode.TestItem,
-    contents?: string,
-  ) {
+  private async parseTestsInFileContents(file: vscode.TestItem, contents?: string) {
     // If a document is open, VS Code already knows its contents. If this is being
     // called from the resolveHandler when a document isn't open, we'll need to
     // read them from disk ourselves.
@@ -298,12 +253,8 @@ export class TestManager {
       await this.getTestsPositions(contents)
         .then((testPositions) => {
           testPositions.contracts.forEach((contract: any) => {
-            const contractName = contract.name.replace(" ", "");
-            const contractItem = this.testController.createTestItem(
-              contractName,
-              contract.name,
-              file.uri,
-            );
+            const contractName = contract.name.replace(' ', '');
+            const contractItem = this.testController.createTestItem(contractName, contract.name, file.uri);
             contractItem.range = convertRange(contract.range);
             this.testData.set(contractItem, ItemType.contractCase);
             file.children.add(contractItem);
@@ -321,8 +272,8 @@ export class TestManager {
           });
         })
         .catch((error) => {
-          console.log("Error getting tests positions", error);
-          vscode.window.showErrorMessage("Error while getting tests positions");
+          console.log('Error getting tests positions', error);
+          vscode.window.showErrorMessage('Error while getting tests positions');
         });
     }
   }
