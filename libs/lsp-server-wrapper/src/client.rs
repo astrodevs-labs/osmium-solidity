@@ -170,7 +170,7 @@ impl Client {
                 if !value.is_null() && !value.is_array() && !value.is_object() {
                     value = Value::Array(vec![value]);
                 }
-                self.send_notification_unchecked::<TelemetryEvent>(value);
+                self.send_notification_unchecked::<TelemetryEvent>(OneOf::Right(vec![value]));
             }
         }
     }

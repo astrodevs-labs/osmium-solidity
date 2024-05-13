@@ -225,9 +225,9 @@ impl SolidLinter {
 
         self._add_file(filepath, res, content);
         let mut res: Vec<_> = vec![];
+        let file = self.files.iter().find(|x| x.path == filepath).unwrap();
 
         for rule in &self.rules {
-            let file = self.files.iter().find(|x| x.path == filepath).unwrap();
             let mut diags = rule.diagnose(file, &self.files);
             for diag in &mut diags {
                 if !self._check_is_diag_ignored(diag, file) {
