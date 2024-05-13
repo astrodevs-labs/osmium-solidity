@@ -103,7 +103,7 @@
         },
         "Osmium.auto format": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Enable AUTO FORMAT"
         }
       }
