@@ -1,6 +1,6 @@
 use crate::{
     error::Error,
-    output::get_files_from_foundry_output,
+    output::{get_files_from_foundry_output, remove_previous_outputs},
     types::ProjectCompileOutput,
     utils::{check_executable_argument, find_forge_executable, find_projects_paths},
     FoundryJsonFile,
@@ -80,6 +80,8 @@ impl Compiler {
         let workspace_path = self
             .find_closest_workspace(file_path)
             .ok_or_else(|| Error::InvalidFilePath(file_path.to_string()))?;
+
+        remove_previous_outputs(&workspace_path)?;
         //info!("Workspace to compile: {}", workspace_path);
         let _ = Command::new(&self.inner.executable_path)
             .current_dir(&workspace_path)
