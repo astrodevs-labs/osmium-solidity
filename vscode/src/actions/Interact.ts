@@ -97,15 +97,6 @@ export class Interact {
       client: walletClient,
     });
 
-    await walletClient.writeContract({
-      address: contractInfos.address,
-      abi: contractInfos.abi,
-      functionName,
-      args: params,
-      gas: gasLimit,
-      value,
-    });
-
     return await viemContract.write[functionName](<any>params);
   }
 }
