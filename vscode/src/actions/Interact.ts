@@ -1,4 +1,4 @@
-import { Abi, Address, createPublicClient, createWalletClient, defineChain, getContract, http, webSocket } from 'viem';
+import { createPublicClient, createWalletClient, defineChain, getContract, http, webSocket } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { InteractContractRepository } from './InteractContractRepository';
 import { WalletRepository } from './WalletRepository';
@@ -95,15 +95,6 @@ export class Interact {
       address: contractInfos.address,
       abi: contractInfos.abi,
       client: walletClient,
-    });
-
-    await walletClient.writeContract({
-      address: contractInfos.address,
-      abi: contractInfos.abi,
-      functionName,
-      args: params,
-      gas: gasLimit,
-      value,
     });
 
     return await viemContract.write[functionName](<any>params);

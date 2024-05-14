@@ -2,9 +2,21 @@ use crate::error::Error;
 use crate::types::FoundryJsonFile;
 use osmium_libs_solidity_path_utils::join_path;
 
-use std::fs::{read_dir, DirEntry};
+use std::fs::{remove_dir_all, read_dir, DirEntry};
 use std::io;
 use std::path::PathBuf;
+
+pub fn remove_previous_outputs(base_path: &str) -> Result<(), Error> {
+    let build_info_path = format!("{}/out/build-info", base_path);
+    
+    let res = remove_dir_all(&build_info_path);   
+    if let Err(e) = res {
+        if e.kind() != io::ErrorKind::NotFound {
+            return Err(Error::FileSystemError(e));
+        }
+    }
+    Ok(())
+}
 
 pub fn get_files_from_foundry_output(base_path: &str) -> Result<Vec<FoundryJsonFile>, Error> {
     let mut files = Vec::new();

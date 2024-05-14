@@ -1,4 +1,5 @@
 import { execSync, exec } from "child_process";
+import { Disposable} from "vscode";
 import * as vscode from "vscode";
 
 type GasReport = {
@@ -37,13 +38,8 @@ async function gasReportTests(cwd: string): Promise<ReportDecorators> {
     exec(
       "forge test --gas-report",
       { cwd },
-      async (error: any, _stdout: any, _stderr: any) => {
-        if (error) {
-          console.log("error", error);
-          reject(error);
-        }
-
-        if (_stdout === "null") {
+      async (_error: any, _stdout: any, _stderr: any) => {
+        if (_stdout === "null\n") {
           resolve();
         }
 
@@ -169,7 +165,7 @@ async function getGasReport(contracts: string[], cwd: string): Promise<Report> {
               reject(error);
             }
 
-            if (_stdout === "null") {
+            if (_stdout === "null\n") {
               resolve();
             }
 
@@ -360,7 +356,7 @@ async function showReport(
   }
 }
 
-export function registerGasEstimation() {
+export function registerGasEstimation(context: vscode.ExtensionContext): {openDisposable:Disposable, SaveDisposable:Disposable, visibleTextEditorsDisposable:Disposable, activeTextEditorDisposable:Disposable, commandDisposable:Disposable} {
   const forgeInstalled = isForgeInstalled();
 
   const decorationType = vscode.window.createTextEditorDecorationType({
@@ -373,7 +369,7 @@ export function registerGasEstimation() {
   let reportsSaved: ReportDecorators = new Map();
 
   // Generate the report when the file is opened or saved
-  vscode.workspace.onDidOpenTextDocument(async (document) => {
+  const onDidOpenDisposable = vscode.workspace.onDidOpenTextDocument(async (document) => {
     // gas estimate only the main contracts
     const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.path;
     if (!workspacePath) {
@@ -396,7 +392,8 @@ export function registerGasEstimation() {
       showReport(editor, reports, reportsSaved, decorationType);
     });
   });
-  vscode.workspace.onDidSaveTextDocument(async (document) => {
+
+  const onDidSaveDisposable = vscode.workspace.onDidSaveTextDocument(async (document) => {
     // gas estimate only the main contracts
     const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.path;
     if (!workspacePath) {
@@ -421,23 +418,35 @@ export function registerGasEstimation() {
   });
 
   // Show reports when the editor is changed
-  vscode.window.onDidChangeVisibleTextEditors(async (editors) => {
+  const onDidChangeVisibleTextEditorsDisposable = vscode.window.onDidChangeVisibleTextEditors(async (editors) => {
     editors.forEach((editor) => {
       showReport(editor, reports, reportsSaved, decorationType);
     });
   });
-  vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+
+  const onDidChangeActiveTextEditorDisposable = vscode.window.onDidChangeActiveTextEditor(async (editor) => {
     if (editor) {
       showReport(editor, reports, reportsSaved, decorationType);
     }
   });
 
-  vscode.commands.registerCommand("osmium.gas-estimation", async function () {
+  const onDidcommandDisposable = vscode.commands.registerCommand("osmium.gas-estimation", async function () {
     if (vscode.workspace.workspaceFolders?.[0].uri.fsPath) {
       const report = await gasReportTests(
         vscode.workspace.workspaceFolders?.[0].uri.fsPath,
       );
       reportsSaved = report;
     }
+    vscode.window.visibleTextEditors.forEach((editor) => {
+      showReport(editor, reports, reportsSaved, decorationType);
+    });
   });
+
+  context.subscriptions.push(onDidOpenDisposable);
+  context.subscriptions.push(onDidSaveDisposable);
+  context.subscriptions.push(onDidChangeVisibleTextEditorsDisposable);
+  context.subscriptions.push(onDidChangeActiveTextEditorDisposable);
+  context.subscriptions.push(onDidcommandDisposable);
+
+  return {openDisposable:onDidOpenDisposable, SaveDisposable:onDidSaveDisposable, visibleTextEditorsDisposable:onDidChangeVisibleTextEditorsDisposable, activeTextEditorDisposable:onDidChangeActiveTextEditorDisposable, commandDisposable:onDidcommandDisposable}
 }

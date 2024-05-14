@@ -1,4 +1,4 @@
-use osmium_libs_lsp_server_wrapper::lsp_types::{request::Request, Range};
+use tower_lsp::lsp_types::{request::Request, Range};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
