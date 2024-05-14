@@ -28,4 +28,7 @@ pub enum Error {
 
     #[error("Cannot read build info file")]
     ReadBuildInfo(#[from] std::io::Error),
+
+    #[error("filesystem error: {0}")]
+    FileSystemError(std::io::Error),
 }
