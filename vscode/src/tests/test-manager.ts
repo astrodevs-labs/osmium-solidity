@@ -144,6 +144,7 @@ export class TestManager {
 
     for (const suiteResult of Object.values(result)) {
       for (const testResult of Object.values(suiteResult.test_results)) {
+        logs = logs.concat(testResult.reason ?[testResult.reason] : []);
         logs = logs.concat(testResult.decoded_logs);
       }
     }
