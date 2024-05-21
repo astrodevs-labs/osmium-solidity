@@ -52,6 +52,7 @@ async function launchFeatures() {
 		saveHandler = workspace.onDidSaveTextDocument(format);
 	} else if (!isAutoFormatEnable && saveHandler) {
 		saveHandler.dispose();
+		saveHandler = null;
 	}
 	
 	if (isFormatterEnable &&!formatterHandlers) {
