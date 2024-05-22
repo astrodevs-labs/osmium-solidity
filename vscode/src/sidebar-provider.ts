@@ -1,24 +1,25 @@
+import * as path from 'path';
 import { Address } from 'viem';
 import * as vscode from 'vscode';
 import { window } from 'vscode';
-import { InteractContractRepository } from './actions/InteractContractRepository';
+import { Deploy } from './actions/Deploy';
+import { DeployContractRepository } from './actions/DeployContractRepository';
+import { EnvironmentRepository } from './actions/EnvironmentRepository';
 import { Interact } from './actions/Interact';
+import { InteractContractRepository } from './actions/InteractContractRepository';
+import { ScriptRepository } from './actions/ScriptRepository';
 import { WalletRepository } from './actions/WalletRepository';
 import { RpcUrl } from './actions/types';
-import { EnvironmentRepository } from './actions/EnvironmentRepository';
-import { getNonce, getTomlValue } from './utils';
-import { ScriptRepository } from './actions/ScriptRepository';
-import { DeployContractRepository } from './actions/DeployContractRepository';
-import { Deploy } from './actions/Deploy';
 import { InputAction, MessageType } from './enums';
 import { Message } from './types';
-import * as path from 'path';
+import { getNonce, getTomlValue } from './utils';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'osmium.sidebar';
   private _osmiumWatcher?: vscode.FileSystemWatcher;
   private _outWatcher?: vscode.FileSystemWatcher;
   private _view?: vscode.WebviewView;
+  private _outputChannel : vscode.OutputChannel;
 
   private _interactContractRepository?: InteractContractRepository;
   private _deployContractRepository?: DeployContractRepository;
@@ -28,7 +29,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   private _interact?: Interact;
   private _deploy?: Deploy;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(private readonly _extensionUri: vscode.Uri) {
+    this._outputChannel = vscode.window.createOutputChannel("Osmium Solidity Logs");
+  }
 
   async _osmiumWatcherCallback(uri: vscode.Uri) {
     if (!this._view) return;
@@ -292,6 +295,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           environmentId: message.data.environment,
           scriptId: message.data.script,
           verify: message.data.verify,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.DEPLOY_SCRIPT_RESPONSE,
@@ -307,6 +311,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           gasLimit: message.data.gasLimit,
           params: message.data.inputs,
           verify: message.data.verify,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.DEPLOY_CONTRACT_RESPONSE,
