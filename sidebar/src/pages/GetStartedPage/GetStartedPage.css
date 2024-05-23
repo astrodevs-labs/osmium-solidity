@@ -5,38 +5,35 @@
     min-width: 200px;
     min-height: 0px;
     background-color: red;
-    align-items: center;
-}
-
-.title {
+    align-items: center; /* Center the overall container content */
+  }
+  
+  .text-container {
+    align-self: flex-start; /* Align text container to the start (left) */
+    width: 100%; /* Make sure it takes the full width available */
+  }
+  
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center buttons within the button container */
+    width: 100%; /* Make sure it takes the full width available */
+  }
+  
+  .title {
     font-size: 15px;
     font-weight: bold;
-    margin-top: 4px;
-    margin-bottom: 3px;
-    margin-left: 10px;
-    margin-right: 10px;
-    align-items: left;
-}
-
-.subtitle {
+    margin: 4px 10px 3px 10px;
+  }
+  
+  .subtitle {
     font-size: 13px;
-    margin-bottom: 15px;
-    margin-top: 0px;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
-.documentation-button {
-    max-width: 80%;
-    margin-bottom: 3px;
-    min-width: 200px;
-    max-width: 200px;
-    align-items: center;
-}
-
-.walkthrough-button {
-    max-width: 80%;
+    margin: 0 10px 15px 10px;
+  }
+  
+  .documentation-button, .walkthrough-button {
     margin-bottom: 5px;
     min-width: 200px;
     max-width: 200px;
-}
+  }
+  
