@@ -1,0 +1,42 @@
+.page-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    min-width: 200px;
+    min-height: 0px;
+    background-color: red;
+    align-items: center;
+}
+
+.title {
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 4px;
+    margin-bottom: 3px;
+    margin-left: 10px;
+    margin-right: 10px;
+    align-items: left;
+}
+
+.subtitle {
+    font-size: 13px;
+    margin-bottom: 15px;
+    margin-top: 0px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.documentation-button {
+    max-width: 80%;
+    margin-bottom: 3px;
+    min-width: 200px;
+    max-width: 200px;
+    align-items: center;
+}
+
+.walkthrough-button {
+    max-width: 80%;
+    margin-bottom: 5px;
+    min-width: 200px;
+    max-width: 200px;
+}
