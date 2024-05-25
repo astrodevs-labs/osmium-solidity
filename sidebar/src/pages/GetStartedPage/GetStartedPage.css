@@ -1,39 +1,49 @@
-.page-container {
+.getStarted-container {
     display: flex;
     flex-direction: column;
     max-width: 500px;
     min-width: 200px;
     min-height: 0px;
-    background-color: red;
-    align-items: center; /* Center the overall container content */
+    align-items: center;
+    border-left: 3px solid grey;
+    background-color: rgba(128, 128, 128, 0.1);
+    margin: 0.3rem;
   }
   
   .text-container {
-    align-self: flex-start; /* Align text container to the start (left) */
-    width: 100%; /* Make sure it takes the full width available */
-  }
+    align-self: flex-start;
+    width: 100%;
+    padding-left: 0.7rem; 
+    line-height: 0.5;
+}
   
   .button-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center buttons within the button container */
-    width: 100%; /* Make sure it takes the full width available */
+    align-items: center;
+    width: 100%;
   }
   
   .title {
     font-size: 15px;
     font-weight: bold;
-    margin: 4px 10px 3px 10px;
+    color: "rgba(255, 255, 255, 0.5)",
   }
   
   .subtitle {
     font-size: 13px;
-    margin: 0 10px 15px 10px;
+    color: "rgba(255, 255, 255, 0.5)",
+
   }
   
-  .documentation-button, .walkthrough-button {
-    margin-bottom: 5px;
-    min-width: 200px;
-    max-width: 200px;
+  .documentation-button {
+    min-width: 250px;
+    max-width: 250px;
+    margin-bottom: 0.2rem;
   }
-  
+
+  .walkthrough-button {
+    min-width: 250px;
+    max-width: 250px;
+    margin-bottom: 0.6rem;
+  }
