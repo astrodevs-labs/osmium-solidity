@@ -468,11 +468,87 @@ pub fn create_test_ast_file() -> SolidityAstFile {
             uint256 x = 1;
             number;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     }";
     let path = "test.sol";
 
     let mut function = create_test_function_definition();
     function.modifiers.push(create_test_modifier_invocation().into());
+    function.body = Some(Block {
+        documentation: None,
+        id: 30,
+        node_type: BlockNodeType::Block,
+        src: SourceLocation::from_str("1:1:1").unwrap(),
+        statements: Some([
+            Statement::ExpressionStatement(ExpressionStatement {
+                expression: create_test_function_call().into(),
+                id: 100,
+                node_type: ExpressionStatementNodeType::ExpressionStatement,
+                src: SourceLocation::from_str("1:1:1").unwrap(),
+                documentation: None,
+            }),
+            Statement::ExpressionStatement(ExpressionStatement {
+                expression: create_test_member_access().into(),
+                id: 102,
+                node_type: ExpressionStatementNodeType::ExpressionStatement,
+                src: SourceLocation::from_str("1:1:1").unwrap(),
+                documentation: None,
+            }),
+            Statement::ExpressionStatement(ExpressionStatement {
+                expression: create_test_new_expression().into(),
+                id: 103,
+                node_type: ExpressionStatementNodeType::ExpressionStatement,
+                src: SourceLocation::from_str("1:1:1").unwrap(),
+                documentation: None,
+            }),
+        ].iter().cloned().collect()),
+    });
     let mut contract = create_test_contract_definition();
     contract.nodes.push(function.into());
     contract.nodes.push(create_test_variable_declaration().into());
@@ -481,6 +557,7 @@ pub fn create_test_ast_file() -> SolidityAstFile {
     contract.nodes.push(create_test_event_definition().into());
     contract.nodes.push(create_test_using_for_directive().into());
     contract.nodes.push(create_test_error_definition().into());
+    
     contract.base_contracts.push(create_test_inheritance_specifier().into());
     SolidityAstFile {
         file: osmium_libs_solidity_ast_extractor::types::SolidityFile {
