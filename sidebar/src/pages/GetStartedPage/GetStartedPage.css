@@ -9,41 +9,52 @@
     background-color: rgba(128, 128, 128, 0.1);
     margin: 0.3rem;
   }
-  
-  .text-container {
-    align-self: flex-start;
-    width: 100%;
-    padding-left: 0.7rem; 
-    line-height: 0.5;
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  padding: 15px;
+  display: flex;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: bold;
 }
   
-  .button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
+.text-container {
+  align-self: flex-start;
+  width: 100%;
+  padding-left: 0.7rem; 
+  line-height: 0.5;
+}
   
-  .title {
-    font-size: 15px;
-    font-weight: bold;
-    color: "rgba(255, 255, 255, 0.5)",
-  }
-  
-  .subtitle {
-    font-size: 13px;
-    color: "rgba(255, 255, 255, 0.5)",
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
 
-  }
-  
-  .documentation-button {
-    min-width: 250px;
-    max-width: 250px;
-    margin-bottom: 0.2rem;
-  }
+.title {
+  font-size: 15px;
+  font-weight: bold;
+  color: "rgba(255, 255, 255, 0.5)",
+}
 
-  .walkthrough-button {
-    min-width: 250px;
-    max-width: 250px;
-    margin-bottom: 0.6rem;
-  }
+.subtitle {
+  font-size: 13px;
+  color: "rgba(255, 255, 255, 0.5)",
+
+}
+
+.documentation-button {
+  min-width: 250px;
+  max-width: 250px;
+  margin-bottom: 0.2rem;
+}
+
+.walkthrough-button {
+  min-width: 250px;
+  max-width: 250px;
+  margin-bottom: 0.6rem;
+}
