@@ -264,6 +264,7 @@ mod test {
             line: 1,
             column: 1,
         };
+        //eprintln!("{:?}", file.ast);
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_some());
@@ -325,5 +326,187 @@ mod test {
         }
     }
 
-    
+    #[test]
+    fn test_find_struct_definition() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::StructDefinition(struct_def)) = node {
+            assert_eq!(struct_def.name, "TestStruct");
+        } else {
+            panic!("Expected StructDefinition, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_user_defined_type_name() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::UserDefinedTypeName(udt)) = node {
+            assert_eq!(udt.name, Some("TestStruct".to_string()));
+        } else {
+            panic!("Expected UserDefinedTypeName, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_using_for_directive() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::UsingForDirective(_)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected UsingForDirective, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_import_directive() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 1,
+            column: 1,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::ImportDirective(id)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected ImportDirective, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_function_call() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 8,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::FunctionCall(_)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected FunctionCall, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_modifier_invocation() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 8,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::ModifierInvocation(_)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected ModifierInvocation, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_inheritance_specifier() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 8,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::InheritanceSpecifier(_)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected InheritanceSpecifier, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_identifier() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 8,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::Identifier(_)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected Identifier, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_member_access() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 8,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::MemberAccess(_)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected MemberAccess, got {:?}", node);
+        }
+    }
+
+    #[test]
+    fn test_find_new_expression() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 8,
+            column: 22,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::NewExpression(_, _)) = node {
+            assert_eq!(true, true);
+        } else {
+            panic!("Expected NewExpression, got {:?}", node);
+        }
+    }
+
+
+    #[test]
+    fn test_find_nothing() {
+        let file = create_test_ast_file();
+        let position = Position {
+            line: 100,
+            column: 100,
+        };
+        let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
 }
