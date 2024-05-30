@@ -6,6 +6,10 @@ export const GetStartedPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
+  const openDocumentation = () => {
+    // c'est comme ça qu'on ouvre la documentation :O
+  };
+
   return isVisible && (
     <div className="getStarted-container">
       <div className="text-container" onClick={() => setIsOpen(!isOpen)}>
@@ -18,7 +22,7 @@ export const GetStartedPage = () => {
       </div>
       {isOpen && (
         <div className="button-container">
-          <VSCodeButton className="documentation-button">Documentation</VSCodeButton>
+          <VSCodeButton className="documentation-button" onClick={openDocumentation}>Documentation</VSCodeButton>
           <VSCodeButton className="walkthrough-button">Walkthrough</VSCodeButton>
         </div>
       )}

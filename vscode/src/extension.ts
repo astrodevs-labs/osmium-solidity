@@ -11,6 +11,7 @@ import { createTestsPositionsClient } from "./tests-positions";
 import { registerGasEstimation } from "./gas-estimation";
 import { createCodeActionsClient } from "./code-actions";
 import {SidebarProvider} from "./sidebar-provider";
+import { registerDocumentationPanel } from "./documentation-provider";
 
 let linterClient: LanguageClient | null;
 let slitherClient: LanguageClient | null;
@@ -64,8 +65,9 @@ async function launchFeatures() {
 		formatterHandlers = null;
 	}
 	
-	if (isSidebarEnable && !interactDeployHandler ) {
+	if (isSidebarEnable && !interactDeployHandler) {
 		commands.executeCommand('setContext', 'Osmium.showsidebar', true);
+		registerDocumentationPanel(Extcontext);
 		interactDeployHandler = window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider);
 		Extcontext.subscriptions.push(interactDeployHandler);
 	} else if (!isSidebarEnable && interactDeployHandler) {
