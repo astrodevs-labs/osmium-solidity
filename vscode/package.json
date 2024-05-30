@@ -26,6 +26,11 @@
           "id": "sidebar",
           "title": "Osmium Sidebar",
           "icon": "assets/logo.png"
+        },
+        {
+          "id": "documentation",
+          "title": "Osmium Documentation",
+          "icon": "assets/logo.png"
         }
       ]
     },
@@ -36,6 +41,14 @@
           "id": "osmium.sidebar",
           "name": "Osmium: Deploy/Interact",
           "when": "Osmium.showsidebar"
+        }
+      ],
+      "documentation": [
+        {
+          "type": "webview",
+          "id": "osmium.documentation",
+          "name": "Osmium Documentation",
+          "when": "Osmium.showdocumentation"
         }
       ]
     },
@@ -124,6 +137,14 @@
       {
         "command": "osmium.show-env-panel",
         "title": "Osmium: Open environment panel"
+      },
+      {
+        "command": "osmium.documentation",
+        "title": "Osmium: Documentation"
+      },
+      {
+        "command": "osmium.walkthrough",
+        "title": "Osmium: Walkthrough"
       }
     ],
     "languages": [
