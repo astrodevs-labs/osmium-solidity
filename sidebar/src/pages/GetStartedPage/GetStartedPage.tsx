@@ -1,13 +1,15 @@
 import './GetStartedPage.css';
 import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
+import { MessageType } from '@backend/enums.ts';
 import { useState } from 'react';
+import { VSCode } from '@/types';
 
-export const GetStartedPage = () => {
+export const GetStartedPage = (props: { vscode: VSCode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
   const openDocumentation = () => {
-    // c'est comme ça qu'on ouvre la documentation :O
+    props.vscode.postMessage({ type: MessageType.OPEN_DOCUMENTATION });
   };
 
   return isVisible && (
