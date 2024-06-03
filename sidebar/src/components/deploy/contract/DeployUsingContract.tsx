@@ -1,3 +1,4 @@
+import Loader from '@/pages/DeployPage/loader.tsx';
 import { VSCode } from '@/types';
 import { DeployContracts, Environments, Wallets } from '@backend/actions/types';
 import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
@@ -16,11 +17,13 @@ export const DeployUsingContract = ({
   deployContracts,
   vscode,
   environments,
+  isPending,
 }: {
   wallets: Wallets;
   deployContracts: DeployContracts;
   vscode: VSCode;
   environments: Environments;
+  isPending: boolean;
 }) => {
   const logic = useDeployUsingContract(vscode, wallets, deployContracts, environments);
 
@@ -126,6 +129,7 @@ export const DeployUsingContract = ({
       <VSCodeButton className="submit-button" type="submit">
         Deploy with contract
       </VSCodeButton>
+      {isPending && !logic.response && <Loader />}
       {logic.response && (
         <div className={logic.response.exitCode !== 0 ? 'error-message' : ''}>
           <VSCodeDivider className="divider" />

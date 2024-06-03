@@ -1,8 +1,8 @@
 import { VSCode } from '@/types';
 import { InteractContract, Wallets } from '@backend/actions/types';
-import { useInteractContracts } from './InteractContracts.logic.ts';
 import { VSCodeButton, VSCodeDropdown, VSCodeOption, VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
 import './InteractContracts.css';
+import { useInteractContracts } from './InteractContracts.logic.ts';
 
 interface InteractContractsProps {
   wallets: Wallets;

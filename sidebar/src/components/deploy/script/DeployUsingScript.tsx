@@ -1,3 +1,4 @@
+import Loader from '@/pages/DeployPage/loader.tsx';
 import { VSCode } from '@/types';
 import { Environments, Scripts } from '@backend/actions/types';
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
@@ -8,10 +9,12 @@ export const DeployUsingScript = ({
   scripts,
   vscode,
   environments,
+  isPending,
 }: {
   scripts: Scripts;
   vscode: VSCode;
   environments: Environments;
+  isPending: boolean;
 }) => {
   const logic = useDeployUsingScript(vscode, scripts, environments);
 
@@ -64,6 +67,7 @@ export const DeployUsingScript = ({
       <VSCodeButton className="submit-button" type="submit">
         Deploy with script
       </VSCodeButton>
+      {isPending && !logic.response && <Loader />}
       <VSCodeDivider className="divider" />
       {logic.response && (
         <div className={logic.response.exitCode !== 0 ? 'error-message' : ''}>
