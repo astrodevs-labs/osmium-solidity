@@ -1,5 +1,6 @@
 import { VSCode } from '@/types';
 import { DeployContracts, Environments, Wallets } from '@backend/actions/types';
+import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
 import {
   VSCodeButton,
   VSCodeDivider,
@@ -9,7 +10,6 @@ import {
 } from '@vscode/webview-ui-toolkit/react';
 import './DeployUsingContract.css';
 import { DeployContractParams } from './params/DeployContractParams.tsx';
-import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
 
 export const DeployUsingContract = ({
   wallets,
@@ -27,7 +27,7 @@ export const DeployUsingContract = ({
   return (
     <div>
       <div>
-        <div> DEPLOY USING CONTRACT</div>
+        <h3>Deploy using contract</h3>
         <div className="dropdown-container">
           <label htmlFor="dropdown-wallets" className="label">
             Select account:

@@ -18,7 +18,7 @@ export const DeployUsingScript = ({
   return (
     <div>
       <div>
-        <div>DEPLOY USING SCRIPT</div>
+        <h3>Delpoy using script</h3>
         <div className="dropdown-container">
           <div className="dropdown-container">
             <label htmlFor="dropdown-environment" className="label">
