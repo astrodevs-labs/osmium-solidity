@@ -27,7 +27,7 @@ export const DeployUsingContract = ({
   return (
     <div>
       <div>
-        <h3>Deploy using contract</h3>
+        <div style={{ fontWeight: 'bold' }}>Deploy using contract</div>
         <div className="dropdown-container">
           <label htmlFor="dropdown-wallets" className="label">
             Select account:
