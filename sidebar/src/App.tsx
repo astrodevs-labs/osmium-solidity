@@ -9,7 +9,7 @@ export const App = () => {
 
   return (
     <>
-      <GetStartedPage />
+      <GetStartedPage vscode={logic.vscode} />
       <VSCodePanels>
         <VSCodePanelTab id="tab-interact">INTERACT</VSCodePanelTab>
         <VSCodePanelTab id="tab-deploy">DEPLOY</VSCodePanelTab>
