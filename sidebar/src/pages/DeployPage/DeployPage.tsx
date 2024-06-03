@@ -17,7 +17,8 @@ export const DeployPage = (props: { vscode: VSCode; resourceManager: ResourceMan
             scripts={logic.scripts}
             vscode={logic.vscode}
             environments={logic.environments}
-            isPending={logic.isPending}
+            isPending={logic.isPendingScript}
+            setIsPending={logic.setIsPendingScript}
           />
         </form>
       </FormProvider>
@@ -28,7 +29,8 @@ export const DeployPage = (props: { vscode: VSCode; resourceManager: ResourceMan
             deployContracts={logic.contracts}
             vscode={logic.vscode}
             environments={logic.environments}
-            isPending={logic.isPending}
+            isPending={logic.isPendingContract}
+            setIsPending={logic.setIsPendingContract}
           />
         </form>
       </FormProvider>

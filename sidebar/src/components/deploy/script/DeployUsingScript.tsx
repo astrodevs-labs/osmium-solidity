@@ -10,13 +10,15 @@ export const DeployUsingScript = ({
   vscode,
   environments,
   isPending,
+  setIsPending,
 }: {
   scripts: Scripts;
   vscode: VSCode;
   environments: Environments;
   isPending: boolean;
+  setIsPending: (isPending: boolean) => void;
 }) => {
-  const logic = useDeployUsingScript(vscode, scripts, environments);
+  const logic = useDeployUsingScript(vscode, scripts, environments, setIsPending);
 
   return (
     <div>

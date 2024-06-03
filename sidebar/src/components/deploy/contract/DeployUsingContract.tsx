@@ -18,14 +18,16 @@ export const DeployUsingContract = ({
   vscode,
   environments,
   isPending,
+  setIsPending,
 }: {
   wallets: Wallets;
   deployContracts: DeployContracts;
   vscode: VSCode;
   environments: Environments;
   isPending: boolean;
+  setIsPending: (isPending: boolean) => void;
 }) => {
-  const logic = useDeployUsingContract(vscode, wallets, deployContracts, environments);
+  const logic = useDeployUsingContract(vscode, wallets, deployContracts, environments, setIsPending);
 
   return (
     <div>
