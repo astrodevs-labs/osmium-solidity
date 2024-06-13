@@ -77,3 +77,195 @@ impl DefinitionVisitor {
         self.node.clone()
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::test_utils::{create_test_ast_file_contract_definition, create_test_ast_file_enum_definition, create_test_ast_file_enum_value, create_test_ast_file_event_definition, create_test_ast_file_function_definition, create_test_ast_file_modifier_definition, create_test_ast_file_struct_definition, create_test_ast_file_variable_declaration};
+
+    use super::*;
+
+    #[test]
+    fn test_find_contract_definition() {
+        let id = 1;
+        let file = create_test_ast_file_contract_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::ContractDefinition(contract)) = node {
+            assert_eq!(contract.id, id);
+        } else {
+            panic!("Expected ContractDefinition node");
+        }
+    }
+
+    #[test]
+    fn test_find_contract_definition_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_contract_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+    #[test]
+    fn test_find_function_definition() {
+        let id = 2;
+        let file = create_test_ast_file_function_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::FunctionDefinition(function)) = node {
+            assert_eq!(function.id, id);
+        } else {
+            panic!("Expected FunctionDefinition node");
+        }
+    }
+
+    #[test]
+    fn test_find_function_definition_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_function_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+    #[test]
+    fn test_find_modifier_definition() {
+        let id = 4;
+        let file = create_test_ast_file_modifier_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::ModifierDefinition(modifier)) = node {
+            assert_eq!(modifier.id, id);
+        } else {
+            panic!("Expected ModifierDefinition node");
+        }
+    }
+
+    #[test]
+    fn test_find_modifier_definition_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_modifier_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+    #[test]
+    fn test_find_struct_definition() {
+        let id = 5;
+        let file = create_test_ast_file_struct_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::StructDefinition(struct_def)) = node {
+            assert_eq!(struct_def.id, id);
+        } else {
+            panic!("Expected StructDefinition node");
+        }
+    }
+
+    #[test]
+    fn test_find_struct_definition_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_struct_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+    #[test]
+    fn test_find_enum_definition() {
+        let id = 6;
+        let file = create_test_ast_file_enum_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::EnumDefinition(enum_def)) = node {
+            assert_eq!(enum_def.id, id);
+        } else {
+            panic!("Expected EnumDefinition node");
+        }
+    }
+
+    #[test]
+    fn test_find_enum_definition_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_enum_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+    #[test]
+    fn test_find_variable_declaration() {
+        let id = 3;
+        let file = create_test_ast_file_variable_declaration();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::VariableDeclaration(variable)) = node {
+            assert_eq!(variable.id, id);
+        } else {
+            panic!("Expected VariableDeclaration node");
+        }
+    }
+
+    #[test]
+    fn test_find_variable_declaration_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_variable_declaration();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+    #[test]
+    fn test_find_enum_value() {
+        let id = 8;
+        let file = create_test_ast_file_enum_value();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::EnumValue(enum_def)) = node {
+            assert_eq!(enum_def.id, id);
+        } else {
+            panic!("Expected EnumDefinition node");
+        }
+    }
+
+    #[test]
+    fn test_find_enum_value_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_enum_value();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+    #[test]
+    fn test_find_event_definition() {
+        let id = 7;
+        let file = create_test_ast_file_event_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_some());
+        if let Some(InteractableNode::EventDefinition(event)) = node {
+            assert_eq!(event.id, id);
+        } else {
+            panic!("Expected EventDefinition node");
+        }
+    }
+
+    #[test]
+    fn test_find_event_definition_not_found() {
+        let id = 0;
+        let file = create_test_ast_file_event_definition();
+        let mut visitor = DefinitionVisitor::new(id);
+        let node = visitor.find(&file.ast);
+        assert!(node.is_none());
+    }
+
+}

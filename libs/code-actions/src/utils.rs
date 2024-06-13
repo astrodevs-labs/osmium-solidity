@@ -1,11 +1,9 @@
-use std::{collections::HashMap, str::FromStr};
 
 use crate::{
     types::{InteractableNode, Position, Range},
     Location,
 };
-use log::info;
-use osmium_libs_solidity_ast_extractor::{types::SolidityAstFile, Type};
+use osmium_libs_solidity_ast_extractor::types::SolidityAstFile;
 use solc_ast_rs_types::types::*;
 
 pub fn is_node_in_range(node: &SourceLocation, position: &Position, source: &str) -> bool {
@@ -23,10 +21,10 @@ pub fn log_is_node_in_range(node: &SourceLocation, position: &Position, source: 
     let range = source_location_to_range(node);
     let index = position_to_index(position, source);
 
-    info!("Node Range: {:?}", range);
-    info!("Position: {:?}", position);
-    info!("Position Index: {:?}", index);
-    info!("Source: {:?}", source);
+    eprintln!("Node Range: {:?}", range);
+    eprintln!("Position: {:?}", position);
+    eprintln!("Position Index: {:?}", index);
+    eprintln!("Source: {:?}", source);
     if range.index <= index && range.index + range.length >= index {
         return true;
     }
@@ -111,7 +109,6 @@ mod test {
         } else {
             panic!("Expected ContractDefinition");
         }
-
     }
 
     #[test]
@@ -196,6 +193,40 @@ contract Counter {
         };
         let index = position_to_index(&position, source);
         let expected_idx = 240;
+        assert_eq!(index, expected_idx);
+    }
+
+    #[test]
+    fn postion_to_index_start_of_file() {
+        let source = "pragma solidity ^0.8.0;
+
+contract Counter {
+    uint256 public number;
+    uint256 public x = 2;
+    uint256 public y = x;
+
+    function setNumber(uint256 newNumber) public 
+    {
+        tx.origin;
+        number = newNumber + y;
+        d
+    }
+
+    function increment() public {
+        setNumber(number + 1);
+    }
+
+    function notUsed() internal {
+        uint256 x = 1;
+        number;
+    }
+}";
+        let position = Position {
+            line: 0,
+            column: 1,
+        };
+        let index = position_to_index(&position, source);
+        let expected_idx = 0;
         assert_eq!(index, expected_idx);
     }
     

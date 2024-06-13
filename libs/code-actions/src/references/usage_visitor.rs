@@ -108,20 +108,73 @@ impl UsageVisitor {
 mod test {
     use super::*;
     use crate::types::InteractableNode;
-    use crate::test_utils::create_test_ast_file;
+    use crate::test_utils::{create_test_ast_file_identifier, create_test_ast_file_identifier_path, create_test_ast_file_import_directive, create_test_ast_file_member_access, create_test_ast_file_user_defined_type_name};
 
     #[test]
-    fn test_find_usages() {
-        let file = create_test_ast_file();
-        let id = 3;
+    fn test_find_usages_identifier() {
+        let file = create_test_ast_file_identifier();
+        let id = 30;
         let mut visitor = UsageVisitor::new(id);
         let usages = visitor.find(&file.ast);
-        assert_eq!(usages.len(), 1);
+        assert_eq!(usages.len(), 2);
         if let InteractableNode::Identifier(identifier) = &usages[0] {
             assert_eq!(identifier.referenced_declaration, Some(id));
             assert_eq!(identifier.name, "number");
         } else {
             panic!("Expected IdentifierPath, got: {:?}", usages[0]);
+        }
+    }
+
+    #[test]
+    fn test_find_usages_identifier_path() {
+        let file = create_test_ast_file_identifier_path();
+        let id = 15;
+        let mut visitor = UsageVisitor::new(id);
+        let usages = visitor.find(&file.ast);
+        assert_eq!(usages.len(), 1);
+        if let InteractableNode::IdentifierPath(identifier_path) = &usages[0] {
+            assert_eq!(identifier_path.referenced_declaration, id);
+            assert_eq!(identifier_path.name, "IdPath");
+        } else {
+            panic!("Expected IdentifierPath, got: {:?}", usages[0]);
+        }
+    }
+
+    #[test]
+    fn test_find_usages_with_imports() {
+        let file = create_test_ast_file_import_directive();
+        let id = -1;
+        let mut visitor = UsageVisitor::new(id);
+        let usages = visitor.find(&file.ast);
+        assert_eq!(usages.len(), 0);
+    }
+
+    #[test]
+    fn test_find_usages_user_defined_type_name() {
+        let file = create_test_ast_file_user_defined_type_name();
+        let id = 5;
+        let mut visitor = UsageVisitor::new(id);
+        let usages = visitor.find(&file.ast);
+        assert_eq!(usages.len(), 1);
+        if let InteractableNode::UserDefinedTypeName(udt) = &usages[0] {
+            assert_eq!(udt.referenced_declaration, id);
+        } else {
+            panic!("Expected UserDefinedTypeName, got: {:?}", usages[0]);
+        }
+    }
+
+    #[test]
+    fn test_find_usages_member_access() {
+        let file = create_test_ast_file_member_access();
+        let id = 3;
+        let mut visitor = UsageVisitor::new(id);
+        let usages = visitor.find(&file.ast);
+        eprintln!("{:?}", usages);
+        assert_eq!(usages.len(), 1);
+        if let InteractableNode::MemberAccess(member) = &usages[0] {
+            assert_eq!(member.referenced_declaration, Some(id));
+        } else {
+            panic!("Expected MemberAccess, got: {:?}", usages[0]);
         }
     }
 }
