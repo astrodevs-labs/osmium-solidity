@@ -1,5 +1,3 @@
-use std::{collections::HashMap, str::FromStr};
-
 use crate::utils::source_location_to_range;
 use solc_ast_rs_types::types::*;
 
@@ -475,7 +473,7 @@ mod test {
     #[test]
     fn test_get_identifier_ref_id() {
         let node = InteractableNode::Identifier(create_test_identifier());
-        assert_eq!(node.get_reference_id(), Some(3));
+        assert_eq!(node.get_reference_id(), Some(30));
     }
 
     #[test]
@@ -525,96 +523,96 @@ mod test {
     #[test]
     fn test_get_modifier_definition_range() {
         let node = InteractableNode::ModifierDefinition(create_test_modifier_definition());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 16, length: 1 });
     }
 
     #[test]
     fn test_get_struct_definition_range() {
         let node = InteractableNode::StructDefinition(create_test_struct_definition());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 25, length: 1 });
     }
 
     #[test]
     fn test_get_enum_definition_range() {
         let node = InteractableNode::EnumDefinition(create_test_enum_definition());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 28, length: 1 });
     }
 
     #[test]
     fn test_get_event_definition_range() {
         let node = InteractableNode::EventDefinition(create_test_event_definition());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 31, length: 1 });
     }
 
     #[test]
     fn test_get_enum_value_range() {
         let node = InteractableNode::EnumValue(create_test_enum_value());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 37, length: 1 });
     }
 
     #[test]
     fn test_get_using_for_directive_range() {
         let node = InteractableNode::UsingForDirective(create_test_using_for_directive());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 40, length: 1 });
     }
 
     #[test]
     fn test_get_import_directive_range() {
         let node = InteractableNode::ImportDirective(create_test_import_directive());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 43, length: 1 });
     }
 
     #[test]
     fn test_get_error_definition_range() {
         let node = InteractableNode::ErrorDefinition(create_test_error_definition());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 46, length: 1 });
     }
 
     #[test]
     fn test_get_function_call_range() {
         let node = InteractableNode::FunctionCall(create_test_function_call());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 175, length: 10 });
     }
 
     #[test]
     fn test_get_modifier_invocation_range() {
         let node = InteractableNode::ModifierInvocation(create_test_modifier_invocation());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 58, length: 1 });
     }
 
     #[test]
     fn test_get_inheritance_specifier_range() {
         let node = InteractableNode::InheritanceSpecifier(create_test_inheritance_specifier());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 64, length: 1 });
     }
 
     #[test]
     fn test_get_identifier_range() {
         let node = InteractableNode::Identifier(create_test_identifier());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 199, length: 6 });
     }
 
     #[test]
     fn test_get_member_access_range() {
         let node = InteractableNode::MemberAccess(create_test_member_access());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 73, length: 1 });
     }
 
     #[test]
     fn test_get_new_expression_range() {
         let node = InteractableNode::NewExpression(create_test_new_expression(), Box::new(InteractableNode::VariableDeclaration(create_test_variable_declaration())));
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 79, length: 1 });
     }
 
     #[test]
     fn test_get_user_defined_type_name_range() {
         let node = InteractableNode::UserDefinedTypeName(create_test_user_defined_type_name());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 85, length: 1 });
     }
 
     #[test]
     fn test_get_identifier_path_range() {
         let node = InteractableNode::IdentifierPath(create_test_identifier_path());
-        assert_eq!(node.get_range(), Range { index: 1, length: 1 });
+        assert_eq!(node.get_range(), Range { index: 88, length: 1 });
     }
 }
