@@ -12,6 +12,10 @@ export const GetStartedPage = (props: { vscode: VSCode }) => {
     props.vscode.postMessage({ type: MessageType.OPEN_DOCUMENTATION });
   };
 
+  const openWalkthrough = () => {
+    props.vscode.postMessage({ type: MessageType.OPEN_WALKTHROUGH });
+  };
+
   return isVisible && (
     <div className="getStarted-container">
       <div className="text-container" onClick={() => setIsOpen(!isOpen)}>
@@ -25,7 +29,7 @@ export const GetStartedPage = (props: { vscode: VSCode }) => {
       {isOpen && (
         <div className="button-container">
           <VSCodeButton className="documentation-button" onClick={openDocumentation}>Documentation</VSCodeButton>
-          <VSCodeButton className="walkthrough-button">Walkthrough</VSCodeButton>
+          <VSCodeButton className="walkthrough-button" onClick={openWalkthrough} >Walkthrough</VSCodeButton>
         </div>
       )}
     </div>
