@@ -204,7 +204,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         vscode.commands.executeCommand('osmium.documentation');
         break;
       case MessageType.OPEN_WALKTHROUGH:
-        // TODO
+        vscode.commands.executeCommand('workbench.action.openWalkthrough', 'OsmiumToolchains.osmium-solidity-extension#osmium.getStarted');
         break;
     }
   }

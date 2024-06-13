@@ -17,6 +17,7 @@ import { InteractContractRepository } from './actions/InteractContractRepository
 import { WalletRepository } from './actions/WalletRepository';
 import { EnvironmentRepository } from './actions/EnvironmentRepository';
 import { registerDocumentationPanel } from "./documentation-provider";
+import { registerWalkthroughPanel } from "./walkthrough-provider";
 
 let linterClient: LanguageClient | null;
 let slitherClient: LanguageClient | null;
@@ -82,6 +83,7 @@ async function launchFeatures() {
 	if (isSidebarEnable && !interactDeployHandler) {
 		commands.executeCommand('setContext', 'Osmium.showsidebar', true);
 		registerDocumentationPanel(Extcontext);
+		registerWalkthroughPanel(Extcontext);
 		interactDeployHandler = window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider);
 		Extcontext.subscriptions.push(interactDeployHandler);
 	} else if (!isSidebarEnable && interactDeployHandler) {

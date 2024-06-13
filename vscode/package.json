@@ -142,9 +142,21 @@
         "command": "osmium.documentation",
         "title": "Osmium: Documentation"
       },
-      {
+      { 
         "command": "osmium.walkthrough",
-        "title": "Osmium: Walkthrough"
+        "title": "Osmium: Open Walkthrough"
+      },
+      {
+        "command": "osmium.checkIfForgeInstalled",
+        "title": "Osmium: Check if Foundry/Forge is installed"
+      },
+      {
+        "command": "osmium.checkIfSlitherInstalled",
+        "title": "Osmium: Check if Slither is installed"
+      },
+      {
+        "command": "osmium.checkIfSolcInstalled",
+        "title": "Osmium: Check if Solc is installed"
       }
     ],
     "languages": [
@@ -172,7 +184,43 @@
           "meta.scope.case-pattern.solidity"
         ]
       }
-    ]
+    ],
+    "walkthroughs": [
+      {
+        "id": "osmium.getStarted",
+        "title": "Get Started with Osmium",
+        "description": "Let's check if you have all the dependencies required for this extension.",
+        "steps": [
+          {
+            "id": "isForge",
+            "title": "Check if foundry/forge is installed",
+            "description": "Click [here](command:osmium.checkIfForgeInstalled) to check if Foundry/Forge is installed.",
+            "media": {
+              "markdown": "[Check Foundry/Forge Installation](command:osmium.checkIfForgeInstalled)"
+            },
+            "completionEvents": ["onCommand:osmium.checkIfForgeInstalled"]
+          },
+          {
+            "id": "isSlither",
+            "title": "Check if Slither is installed",
+            "description": "Click [here](command:osmium.checkIfSlitherInstalled) to check if Slither is installed.",
+            "media": {
+              "markdown": "[Check Slither Installation](command:osmium.checkIfSlitherInstalled)"
+            },
+            "completionEvents": ["onCommand:osmium.checkIfSlitherInstalled"]
+          },
+          {
+            "id": "isSolc",
+            "title": "Check if the Solidity Compiler is installed",
+            "description": "Click [here](command:osmium.checkIfSolcInstalled) to check if Solc is installed.",
+            "media": {
+              "markdown": "[Check Solc Installation](command:osmium.checkIfSolcInstalled)"
+            },
+            "completionEvents": ["onCommand:osmium.checkIfSolcInstalled"]
+          }
+        ]
+      }
+    ]    
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

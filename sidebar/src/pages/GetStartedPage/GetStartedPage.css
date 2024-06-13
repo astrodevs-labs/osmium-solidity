@@ -8,6 +8,8 @@
     border-left: 3px solid grey;
     background-color: rgba(128, 128, 128, 0.1);
     margin: 0.3rem;
+    user-select: none;
+    cursor: pointer;
   }
 
 .close-button {
@@ -16,9 +18,9 @@
   right: 20px;
   padding: 15px;
   display: flex;
-  cursor: pointer;
   color: rgba(255, 255, 255, 0.5);
   font-weight: bold;
+  user-select: none;
 }
   
 .text-container {
@@ -26,6 +28,7 @@
   width: 100%;
   padding-left: 0.7rem; 
   line-height: 0.5;
+  user-select: none;
 }
   
 .button-container {
@@ -33,28 +36,33 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
+  user-select: none;
+
 }
 
 .title {
   font-size: 15px;
   font-weight: bold;
-  color: "rgba(255, 255, 255, 0.5)",
+  color: "rgba(255, 255, 255, 0.5)";
+  user-select: none;
 }
 
 .subtitle {
   font-size: 13px;
-  color: "rgba(255, 255, 255, 0.5)",
-
+  color: "rgba(255, 255, 255, 0.5)";
+  user-select: none;
 }
 
 .documentation-button {
   min-width: 250px;
   max-width: 250px;
   margin-bottom: 0.2rem;
+  user-select: none;
 }
 
 .walkthrough-button {
   min-width: 250px;
   max-width: 250px;
   margin-bottom: 0.6rem;
+  user-select: none;
 }
