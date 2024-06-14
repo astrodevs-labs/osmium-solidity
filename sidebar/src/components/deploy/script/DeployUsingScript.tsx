@@ -41,7 +41,7 @@ export const DeployUsingScript = ({
                   </VSCodeOption>
                 ))}
               </VSCodeDropdown>
-              <VSCodeButton className="add-wallet-button" onClick={logic.editEnvironment}>
+              <VSCodeButton appearance="secondary" onClick={logic.editEnvironment}>
                 Edit
               </VSCodeButton>
             </div>
@@ -66,7 +66,7 @@ export const DeployUsingScript = ({
         </div>
       </div>
       <VSCodeDivider className="divider" />
-      <VSCodeButton className="submit-button" type="submit">
+      <VSCodeButton appearance="primary" type="submit">
         Deploy with script
       </VSCodeButton>
       {isPending && !logic.response && <Loader />}

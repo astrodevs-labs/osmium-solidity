@@ -51,7 +51,7 @@ export const DeployUsingContract = ({
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={logic.editWallet}>
+            <VSCodeButton appearance="secondary" onClick={logic.editWallet}>
               Edit
             </VSCodeButton>
           </div>
@@ -84,7 +84,7 @@ export const DeployUsingContract = ({
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={logic.editEnvironment}>
+            <VSCodeButton appearance="secondary" onClick={logic.editEnvironment}>
               Edit
             </VSCodeButton>
           </div>
@@ -128,7 +128,7 @@ export const DeployUsingContract = ({
       </div>
       <DeployContractParams contracts={deployContracts} />
       <VSCodeDivider className="divider" />
-      <VSCodeButton className="submit-button" type="submit">
+      <VSCodeButton className="primary" type="submit">
         Deploy with contract
       </VSCodeButton>
       {isPending && !logic.response && <Loader />}
