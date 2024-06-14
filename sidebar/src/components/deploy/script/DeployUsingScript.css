@@ -1,6 +1,5 @@
 .dropdown-container {
     flex-direction: column;
-    /* margin-top: 0.5rem; */
 } 
 
 .submit-button {
@@ -19,11 +18,6 @@
 .contract-container, .wallet-container {
     display: flex;
     flex-direction: row;
-}
-
-.add-wallet-button {
-    width: 20%;
-    height: calc(var(--input-height) * 1px);;
 }
 
 .error-message {
