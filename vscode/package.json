@@ -188,35 +188,32 @@
     "walkthroughs": [
       {
         "id": "osmium.getStarted",
-        "title": "Get Started with Osmium",
+        "title": "Get Started with Osmium Solidity",
         "description": "Let's check if you have all the dependencies required for this extension.",
         "steps": [
           {
             "id": "isForge",
             "title": "Check if foundry/forge is installed",
-            "description": "Click [here](command:osmium.checkIfForgeInstalled) to check if Foundry/Forge is installed.",
+            "description": "**Foundry/Forge Overview**\n\nFoundry is a fast, portable toolkit for Ethereum development written in Rust. It includes forge, a powerful smart contract testing framework designed to streamline workflow and improve testing efficiency for developers.\n\nClick on the button below to check if Foundry/Forge is installed.\n\n[Verify forge](command:osmium.checkIfForgeInstalled)",
             "media": {
-              "markdown": "[Check Foundry/Forge Installation](command:osmium.checkIfForgeInstalled)"
-            },
-            "completionEvents": ["onCommand:osmium.checkIfForgeInstalled"]
+              "markdown": "./src/walkthroughts/welcome/foundry.md"
+            }
           },
           {
             "id": "isSlither",
             "title": "Check if Slither is installed",
-            "description": "Click [here](command:osmium.checkIfSlitherInstalled) to check if Slither is installed.",
+            "description": "**Slither Overview**\n\nSlither is a static analysis framework for smart contracts written in Solidity or Vyper. With Slither, you can run a series of vulnerability detectors on your Solidity contracts to flag potentially risky code and receive suggestions for corrections.\n\nClick on the button below to check if Slither is installed.\n\n[Verify Slither](command:osmium.checkIfSlitherInstalled)",
             "media": {
-              "markdown": "[Check Slither Installation](command:osmium.checkIfSlitherInstalled)"
-            },
-            "completionEvents": ["onCommand:osmium.checkIfSlitherInstalled"]
+              "markdown": "./src/walkthroughts/welcome/slither.md"
+            }
           },
           {
             "id": "isSolc",
             "title": "Check if the Solidity Compiler is installed",
-            "description": "Click [here](command:osmium.checkIfSolcInstalled) to check if Solc is installed.",
+            "description": "**Solidity Compiler Overview**\n\nThe Solidity Compiler is a tool that translates Solidity code into bytecode executable on the Ethereum Virtual Machine (EVM). Written in Go, it’s essential for smart contract development, transforming high-level Solidity code into a format understood by the Ethereum blockchain.\n\nClick on the button bellow to check if Solc is installed.\n\n[Verify Solidity Compiler](command:osmium.checkIfSolcInstalled)",
             "media": {
-              "markdown": "[Check Solc Installation](command:osmium.checkIfSolcInstalled)"
-            },
-            "completionEvents": ["onCommand:osmium.checkIfSolcInstalled"]
+              "markdown": "./src/walkthroughts/welcome/solc.md"
+            }
           }
         ]
       }
