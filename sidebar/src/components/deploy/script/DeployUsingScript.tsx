@@ -1,4 +1,4 @@
-import Loader from '@/pages/DeployPage/loader.tsx';
+import Loader from '@/components/Loader.tsx';
 import { VSCode } from '@/types';
 import { Environments, Scripts } from '@backend/actions/types';
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
@@ -23,7 +23,7 @@ export const DeployUsingScript = ({
   return (
     <div>
       <div>
-        <div style={{ fontWeight: 'bold' }}>Deploy using script</div>
+        <div className="title-script">Deploy using script</div>
         <div className="dropdown-container">
           <div className="dropdown-container">
             <label htmlFor="dropdown-environment" className="label">

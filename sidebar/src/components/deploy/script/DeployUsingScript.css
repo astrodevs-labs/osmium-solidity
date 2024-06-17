@@ -23,3 +23,7 @@
 .error-message {
     color: var(--vscode-errorForeground);
 }
+
+.title-script {
+    font-weight: bold;
+}

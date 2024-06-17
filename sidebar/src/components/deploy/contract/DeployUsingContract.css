@@ -49,3 +49,7 @@
 .error-message {
     color: var(--vscode-errorForeground);
 }
+
+.title-contract {
+    font-weight: bold;
+}

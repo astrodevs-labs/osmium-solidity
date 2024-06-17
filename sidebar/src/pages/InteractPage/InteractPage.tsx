@@ -5,7 +5,7 @@ import { InteractParams } from '@components/interact/contracts/params/InteractPa
 import { ResourceManager } from '@hooks/useResourceManager.ts';
 import { VSCodeButton, VSCodeDivider } from '@vscode/webview-ui-toolkit/react';
 import { FormProvider } from 'react-hook-form';
-import Loader from '../DeployPage/loader.tsx';
+import Loader from '../../components/Loader.tsx';
 import './InteractPage.css';
 import { useInteractPage } from './InteractPage.logic.ts';
 

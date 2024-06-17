@@ -1,4 +1,4 @@
-import Loader from '@/pages/DeployPage/loader.tsx';
+import Loader from '@/components/Loader.tsx';
 import { VSCode } from '@/types';
 import { DeployContracts, Environments, Wallets } from '@backend/actions/types';
 import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
@@ -32,7 +32,7 @@ export const DeployUsingContract = ({
   return (
     <div>
       <div>
-        <div style={{ fontWeight: 'bold' }}>Deploy using contract</div>
+        <div className="title-contract">Deploy using contract</div>
         <div className="dropdown-container">
           <label htmlFor="dropdown-wallets" className="label">
             Select account:
