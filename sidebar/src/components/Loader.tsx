@@ -1,5 +1,7 @@
+import 'Loader.css';
+
 const Loader = () => (
-  <div style={{ width: '30px', height: '30px' }}>
+  <div className="loader">
     <svg
       version="1.1"
       id="L9"
