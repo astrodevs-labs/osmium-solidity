@@ -50,7 +50,7 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
       'wallet',
       resourceManager.wallets && resourceManager.wallets.length ? resourceManager.wallets[0].id : '',
     );
-  }, [resourceManager.wallets]);
+  }, [resourceManager.wallets, form]);
 
   useEffect(() => {
     form.setValue(
@@ -59,7 +59,7 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
         ? resourceManager.interactContracts[0].id
         : '',
     );
-  }, [resourceManager.interactContracts]);
+  }, [resourceManager.interactContracts, form]);
 
   useEffect(() => {
     const listener = (event: WindowEventMap['message']) => {

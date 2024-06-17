@@ -28,15 +28,15 @@ export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environme
     };
     window.addEventListener('message', listener);
     return () => window.removeEventListener('message', listener);
-  }, []);
+  }, [setIsPending]);
 
   useEffect(() => {
     form.setValue('script', scripts[0]?.id || '');
-  }, [scripts]);
+  }, [scripts, form]);
 
   useEffect(() => {
     form.setValue('environment', environments[0]?.id || '');
-  }, [environments]);
+  }, [environments, form]);
 
   return { form, errors, response, editEnvironment };
 };

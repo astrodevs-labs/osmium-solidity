@@ -448,5 +448,5 @@ export function registerGasEstimation(context: vscode.ExtensionContext): {openDi
   context.subscriptions.push(onDidChangeActiveTextEditorDisposable);
   context.subscriptions.push(onDidcommandDisposable);
 
-  return {openDisposable:onDidOpenDisposable, SaveDisposable:onDidSaveDisposable, visibleTextEditorsDisposable:onDidChangeVisibleTextEditorsDisposable, activeTextEditorDisposable:onDidChangeActiveTextEditorDisposable, commandDisposable:onDidcommandDisposable}
+  return {openDisposable:onDidOpenDisposable, SaveDisposable:onDidSaveDisposable, visibleTextEditorsDisposable:onDidChangeVisibleTextEditorsDisposable, activeTextEditorDisposable:onDidChangeActiveTextEditorDisposable, commandDisposable:onDidcommandDisposable};
 }

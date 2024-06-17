@@ -37,7 +37,7 @@ impl AffectedFilesStore {
         let mut affected_files = Vec::new();
         if let Some(project_files) = self.projects_files.get_mut(project_path) {
             project_files.retain(|file| !raised_files.contains(file));
-            affected_files = project_files.clone();
+            affected_files.clone_from(project_files);
             project_files.extend(raised_files);
         } else {
             self.projects_files

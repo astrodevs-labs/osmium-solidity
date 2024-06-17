@@ -34,19 +34,19 @@ export const useDeployUsingContract = (
     };
     window.addEventListener('message', listener);
     return () => window.removeEventListener('message', listener);
-  }, []);
+  }, [setIsPending]);
 
   useEffect(() => {
     form.setValue('wallet', wallets[0]?.id || '');
-  }, [wallets]);
+  }, [wallets, form]);
 
   useEffect(() => {
     form.setValue('contract', contracts[0]?.id || '');
-  }, [contracts]);
+  }, [contracts, form]);
 
   useEffect(() => {
     form.setValue('environment', environments[0]?.id || '');
-  }, [environments]);
+  }, [environments, form]);
 
   return { form, errors, response, editEnvironment, editWallet };
 };
