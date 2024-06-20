@@ -196,7 +196,7 @@
             "title": "Check if foundry/forge is installed",
             "description": "**Foundry/Forge Overview**\n\nFoundry is a fast, portable toolkit for Ethereum development written in Rust. It includes forge, a powerful smart contract testing framework designed to streamline workflow and improve testing efficiency for developers.\n\nClick on the button below to check if Foundry/Forge is installed.\n\n[Verify forge](command:osmium.checkIfForgeInstalled)",
             "media": {
-              "markdown": "./src/walkthroughts/welcome/foundry.md"
+              "markdown": "./src/walkthroughs/welcome/foundry.md"
             }
           },
           {
@@ -204,7 +204,7 @@
             "title": "Check if Slither is installed",
             "description": "**Slither Overview**\n\nSlither is a static analysis framework for smart contracts written in Solidity or Vyper. With Slither, you can run a series of vulnerability detectors on your Solidity contracts to flag potentially risky code and receive suggestions for corrections.\n\nClick on the button below to check if Slither is installed.\n\n[Verify Slither](command:osmium.checkIfSlitherInstalled)",
             "media": {
-              "markdown": "./src/walkthroughts/welcome/slither.md"
+              "markdown": "./src/walkthroughs/welcome/slither.md"
             }
           },
           {
@@ -212,7 +212,7 @@
             "title": "Check if the Solidity Compiler is installed",
             "description": "**Solidity Compiler Overview**\n\nThe Solidity Compiler is a tool that translates Solidity code into bytecode executable on the Ethereum Virtual Machine (EVM). Written in Go, it’s essential for smart contract development, transforming high-level Solidity code into a format understood by the Ethereum blockchain.\n\nClick on the button bellow to check if Solc is installed.\n\n[Verify Solidity Compiler](command:osmium.checkIfSolcInstalled)",
             "media": {
-              "markdown": "./src/walkthroughts/welcome/solc.md"
+              "markdown": "./src/walkthroughs/welcome/solc.md"
             }
           }
         ]
