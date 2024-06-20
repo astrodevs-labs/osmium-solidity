@@ -29,7 +29,7 @@ export const GetStartedPage = (props: { vscode: VSCode }) => {
       {isOpen && (
         <div className="button-container">
           <VSCodeButton className="documentation-button" onClick={openDocumentation}>Documentation</VSCodeButton>
-          <VSCodeButton className="walkthrough-button" onClick={openWalkthrough} >Walkthrough</VSCodeButton>
+          <VSCodeButton className="walkthrough-button" onClick={openWalkthrough} >Walkthroughs</VSCodeButton>
         </div>
       )}
     </div>
