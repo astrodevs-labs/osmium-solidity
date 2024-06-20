@@ -38,10 +38,10 @@ export function registerWalkthroughPanel(context: vscode.ExtensionContext) {
     exec('solc --version', (err, stdout, stderr) => {
       if (err) {
         vscode.window.showErrorMessage('Solc is not installed. Please install it from https://docs.soliditylang.org/en/latest/installing-solidity.html');
-        vscode.commands.executeCommand('setContext', 'osmium.SolcInstalled', false);
+        vscode.commands.executeCommand('setContext', 'osmium.solcInstalled', false);
       } else {
         vscode.window.showInformationMessage(`Solc is installed: ${stdout}`);
-        vscode.commands.executeCommand('setContext', 'osmium.SolcInstalled', true);
+        vscode.commands.executeCommand('setContext', 'osmium.solcInstalled', true);
       }
     });
   }));
