@@ -26,6 +26,11 @@
           "id": "sidebar",
           "title": "Osmium Sidebar",
           "icon": "assets/logo.png"
+        },
+        {
+          "id": "documentation",
+          "title": "Osmium Documentation",
+          "icon": "assets/logo.png"
         }
       ]
     },
@@ -36,6 +41,14 @@
           "id": "osmium.sidebar",
           "name": "Osmium: Deploy/Interact",
           "when": "Osmium.showsidebar"
+        }
+      ],
+      "documentation": [
+        {
+          "type": "webview",
+          "id": "osmium.documentation",
+          "name": "Osmium Documentation",
+          "when": "Osmium.showdocumentation"
         }
       ]
     },
@@ -120,6 +133,26 @@
       {
         "command": "osmium.gas-estimation",
         "title": "Osmium: Gas Estimation"
+      },
+      {
+        "command": "osmium.documentation",
+        "title": "Osmium: Documentation"
+      },
+      { 
+        "command": "osmium.walkthrough",
+        "title": "Osmium: Open Walkthrough"
+      },
+      {
+        "command": "osmium.checkIfForgeInstalled",
+        "title": "Osmium: Check if Foundry/Forge is installed"
+      },
+      {
+        "command": "osmium.checkIfSlitherInstalled",
+        "title": "Osmium: Check if Slither is installed"
+      },
+      {
+        "command": "osmium.checkIfSolcInstalled",
+        "title": "Osmium: Check if Solc is installed"
       }
     ],
     "languages": [
@@ -147,7 +180,43 @@
           "meta.scope.case-pattern.solidity"
         ]
       }
-    ]
+    ],
+    "walkthroughs": [
+      {
+        "id": "osmium.getStarted",
+        "title": "Get Started with Osmium Solidity",
+        "description": "Let's check if you have all the dependencies required for this extension.",
+        "steps": [
+          {
+            "id": "isForge",
+            "title": "Check if foundry/forge is installed",
+            "description": "Click on the button below to check if Foundry/Forge is installed.\n\n[Verify forge](command:osmium.checkIfForgeInstalled)",
+            "media": {
+              "markdown": "./src/walkthroughs/welcome/foundry.md"
+            },
+            "completionEvents": ["onContext:osmium.forgeInstalled == true"]
+          },
+          {
+            "id": "isSlither",
+            "title": "Check if Slither is installed",
+            "description": "Click on the button below to check if Slither is installed.\n\n[Verify Slither](command:osmium.checkIfSlitherInstalled)",
+            "media": {
+              "markdown": "./src/walkthroughs/welcome/slither.md"
+            },
+            "completionEvents": ["onContext:osmium.slitherInstalled == true"]
+          },
+          {
+            "id": "isSolc",
+            "title": "Check if the Solidity Compiler is installed",
+            "description": "Click on the button below to check if Solc is installed.\n\n[Verify Solidity Compiler](command:osmium.checkIfSolcInstalled)",
+            "media": {
+              "markdown": "./src/walkthroughs/welcome/solc.md"
+            },
+            "completionEvents": ["onContext:osmium.solcInstalled == true"]
+          }
+        ]
+      }
+    ]    
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
