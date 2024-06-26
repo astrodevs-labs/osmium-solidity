@@ -125,10 +125,7 @@ mod test {
     fn test_get_references() {
         let provider = ReferenceProvider::new();
         let uri = "test.sol";
-        let position = Position {
-            line: 0,
-            column: 0,
-        };
+        let position = Position { line: 0, column: 0 };
         let files = vec![create_test_ast_file_contract_definition()];
         let references = provider.get_references(uri, position, &files);
         assert_eq!(references.len(), 0);

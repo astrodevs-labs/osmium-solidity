@@ -107,8 +107,12 @@ impl UsageVisitor {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::test_utils::{
+        create_test_ast_file_identifier, create_test_ast_file_identifier_path,
+        create_test_ast_file_import_directive, create_test_ast_file_member_access,
+        create_test_ast_file_user_defined_type_name,
+    };
     use crate::types::InteractableNode;
-    use crate::test_utils::{create_test_ast_file_identifier, create_test_ast_file_identifier_path, create_test_ast_file_import_directive, create_test_ast_file_member_access, create_test_ast_file_user_defined_type_name};
 
     #[test]
     fn test_find_usages_identifier() {

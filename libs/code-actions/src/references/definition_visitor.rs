@@ -80,7 +80,12 @@ impl DefinitionVisitor {
 
 #[cfg(test)]
 mod test {
-    use crate::test_utils::{create_test_ast_file_contract_definition, create_test_ast_file_enum_definition, create_test_ast_file_enum_value, create_test_ast_file_event_definition, create_test_ast_file_function_definition, create_test_ast_file_modifier_definition, create_test_ast_file_struct_definition, create_test_ast_file_variable_declaration};
+    use crate::test_utils::{
+        create_test_ast_file_contract_definition, create_test_ast_file_enum_definition,
+        create_test_ast_file_enum_value, create_test_ast_file_event_definition,
+        create_test_ast_file_function_definition, create_test_ast_file_modifier_definition,
+        create_test_ast_file_struct_definition, create_test_ast_file_variable_declaration,
+    };
 
     use super::*;
 
@@ -267,5 +272,4 @@ mod test {
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
     }
-
 }

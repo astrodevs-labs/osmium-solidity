@@ -3,7 +3,6 @@ use std::{collections::HashMap, str::FromStr};
 use osmium_libs_solidity_ast_extractor::{kw::create, types::SolidityAstFile};
 use solc_ast_rs_types::types::*;
 
-
 #[allow(dead_code)]
 pub fn create_test_contract_definition() -> ContractDefinition {
     ContractDefinition {
@@ -84,11 +83,11 @@ pub fn create_test_variable_declaration() -> VariableDeclaration {
             node_type: OverrideSpecifierNodeType::OverrideSpecifier,
             overrides: OverrideSpecifierOverrides::UserDefinedTypeNames(vec![
                 UserDefinedTypeName {
-                    id:1,
-                    node_type:UserDefinedTypeNameNodeType::UserDefinedTypeName,
+                    id: 1,
+                    node_type: UserDefinedTypeNameNodeType::UserDefinedTypeName,
                     referenced_declaration: 3,
-                    src:SourceLocation::from_str("10:1:1").unwrap(),
-                    type_descriptions:TypeDescriptions{
+                    src: SourceLocation::from_str("10:1:1").unwrap(),
+                    type_descriptions: TypeDescriptions {
                         type_string: Some("uint256".to_string()),
                         type_identifier: None,
                     },
@@ -150,7 +149,6 @@ pub fn create_test_modifier_definition() -> ModifierDefinition {
         overrides: None,
     }
 }
-
 
 #[allow(dead_code)]
 pub fn create_test_struct_definition() -> StructDefinition {
@@ -475,47 +473,60 @@ pub fn create_test_ast_file() -> SolidityAstFile {
 
     let mut function = create_test_function_definition();
     function.src = SourceLocation::from_str("240:86:0").unwrap();
-    function.modifiers.push(create_test_modifier_invocation().into());
+    function
+        .modifiers
+        .push(create_test_modifier_invocation().into());
     function.body = Some(Block {
         documentation: None,
         id: 30,
         node_type: BlockNodeType::Block,
         src: SourceLocation::from_str("91:1:1").unwrap(),
-        statements: Some([
-            Statement::ExpressionStatement(ExpressionStatement {
-                expression: create_test_function_call().into(),
-                id: 100,
-                node_type: ExpressionStatementNodeType::ExpressionStatement,
-                src: SourceLocation::from_str("94:1:1").unwrap(),
-                documentation: None,
-            }),
-            Statement::ExpressionStatement(ExpressionStatement {
-                expression: create_test_member_access().into(),
-                id: 102,
-                node_type: ExpressionStatementNodeType::ExpressionStatement,
-                src: SourceLocation::from_str("97:1:1").unwrap(),
-                documentation: None,
-            }),
-            Statement::ExpressionStatement(ExpressionStatement {
-                expression: create_test_new_expression().into(),
-                id: 103,
-                node_type: ExpressionStatementNodeType::ExpressionStatement,
-                src: SourceLocation::from_str("100:1:1").unwrap(),
-                documentation: None,
-            }),
-        ].iter().cloned().collect()),
+        statements: Some(
+            [
+                Statement::ExpressionStatement(ExpressionStatement {
+                    expression: create_test_function_call().into(),
+                    id: 100,
+                    node_type: ExpressionStatementNodeType::ExpressionStatement,
+                    src: SourceLocation::from_str("94:1:1").unwrap(),
+                    documentation: None,
+                }),
+                Statement::ExpressionStatement(ExpressionStatement {
+                    expression: create_test_member_access().into(),
+                    id: 102,
+                    node_type: ExpressionStatementNodeType::ExpressionStatement,
+                    src: SourceLocation::from_str("97:1:1").unwrap(),
+                    documentation: None,
+                }),
+                Statement::ExpressionStatement(ExpressionStatement {
+                    expression: create_test_new_expression().into(),
+                    id: 103,
+                    node_type: ExpressionStatementNodeType::ExpressionStatement,
+                    src: SourceLocation::from_str("100:1:1").unwrap(),
+                    documentation: None,
+                }),
+            ]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
     });
     let mut contract = create_test_contract_definition();
     contract.src = SourceLocation::from_str("121:211:0").unwrap();
     contract.nodes.push(function.into());
-    contract.nodes.push(create_test_variable_declaration().into());
+    contract
+        .nodes
+        .push(create_test_variable_declaration().into());
     contract.nodes.push(create_test_enum_definition().into());
     contract.nodes.push(create_test_struct_definition().into());
     contract.nodes.push(create_test_event_definition().into());
-    contract.nodes.push(create_test_using_for_directive().into());
+    contract
+        .nodes
+        .push(create_test_using_for_directive().into());
     contract.nodes.push(create_test_error_definition().into());
-    
-    contract.base_contracts.push(create_test_inheritance_specifier().into());
+
+    contract
+        .base_contracts
+        .push(create_test_inheritance_specifier().into());
 
     let mut multiple_import = create_test_import_directive();
     multiple_import.unit_alias = "".to_string();
@@ -575,7 +586,7 @@ pub fn create_test_ast_file_contract_definition() -> SolidityAstFile {
         ast: SourceUnit {
             id: 0,
             nodes: vec![contract.into()],
-            src: SourceLocation::from_str("0:145:0").unwrap(), 
+            src: SourceLocation::from_str("0:145:0").unwrap(),
             absolute_path: "/home/user/test.sol".to_string(),
             experimental_solidity: None,
             exported_symbols: None,
@@ -738,7 +749,6 @@ pub fn create_test_ast_file_struct_definition() -> SolidityAstFile {
     }
 }
 
-
 #[allow(dead_code)]
 pub fn create_test_ast_file_event_definition() -> SolidityAstFile {
     let source = "pragma solidity ^0.8.0;                                                                                           .
@@ -807,7 +817,6 @@ pub fn create_test_ast_file_using_for_directive() -> SolidityAstFile {
     }
 }
 
-
 #[allow(dead_code)]
 pub fn create_test_ast_file_error_definition() -> SolidityAstFile {
     let source = "pragma solidity ^0.8.0;                                                                                           .
@@ -860,15 +869,18 @@ pub fn create_test_ast_file_function_call() -> SolidityAstFile {
         id: 30,
         node_type: BlockNodeType::Block,
         src: SourceLocation::from_str("162:32:0").unwrap(),
-        statements: Some([
-            Statement::ExpressionStatement(ExpressionStatement {
+        statements: Some(
+            [Statement::ExpressionStatement(ExpressionStatement {
                 expression: create_test_function_call().into(),
                 id: 100,
                 node_type: ExpressionStatementNodeType::ExpressionStatement,
                 src: SourceLocation::from_str("175:10:0").unwrap(),
                 documentation: None,
-            }),
-        ].iter().cloned().collect()),
+            })]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
     });
     contract.nodes.push(function.into());
     SolidityAstFile {
@@ -927,7 +939,6 @@ pub fn create_test_ast_file_modifier_invocation() -> SolidityAstFile {
     }
 }
 
-
 #[allow(dead_code)]
 pub fn create_test_ast_file_inheritance_specifier() -> SolidityAstFile {
     let source = "pragma solidity ^0.8.0;                                                                                           .
@@ -985,18 +996,23 @@ pub fn create_test_ast_file_identifier() -> SolidityAstFile {
         id: 30,
         node_type: BlockNodeType::Block,
         src: SourceLocation::from_str("162:32:0").unwrap(),
-        statements: Some([
-            Statement::ExpressionStatement(ExpressionStatement {
+        statements: Some(
+            [Statement::ExpressionStatement(ExpressionStatement {
                 expression: create_test_identifier().into(),
                 id: 100,
                 node_type: ExpressionStatementNodeType::ExpressionStatement,
                 src: SourceLocation::from_str("175:10:0").unwrap(),
                 documentation: None,
-            }),
-        ].iter().cloned().collect()),
+            })]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
     });
     contract.nodes.push(function.into());
-    contract.nodes.push(create_test_variable_declaration().into());
+    contract
+        .nodes
+        .push(create_test_variable_declaration().into());
     SolidityAstFile {
         file: osmium_libs_solidity_ast_extractor::types::SolidityFile {
             path: path.to_string(),
@@ -1014,7 +1030,6 @@ pub fn create_test_ast_file_identifier() -> SolidityAstFile {
         },
     }
 }
-
 
 #[allow(dead_code)]
 pub fn create_test_ast_file_member_access() -> SolidityAstFile {
@@ -1041,19 +1056,24 @@ pub fn create_test_ast_file_member_access() -> SolidityAstFile {
         id: 30,
         node_type: BlockNodeType::Block,
         src: SourceLocation::from_str("185:38:0").unwrap(),
-        statements: Some([
-            Statement::ExpressionStatement(ExpressionStatement {
+        statements: Some(
+            [Statement::ExpressionStatement(ExpressionStatement {
                 expression: member_access.into(),
                 id: 100,
                 node_type: ExpressionStatementNodeType::ExpressionStatement,
                 src: SourceLocation::from_str("205:7:0").unwrap(),
                 documentation: None,
-            }),
-        ].iter().cloned().collect()),
+            })]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
     });
     contract.nodes.push(function.into());
-    contract.nodes.push(create_test_variable_declaration().into());
-    
+    contract
+        .nodes
+        .push(create_test_variable_declaration().into());
+
     SolidityAstFile {
         file: osmium_libs_solidity_ast_extractor::types::SolidityFile {
             path: path.to_string(),
@@ -1097,19 +1117,24 @@ pub fn create_test_ast_file_new_expression() -> SolidityAstFile {
         id: 30,
         node_type: BlockNodeType::Block,
         src: SourceLocation::from_str("185:41:0").unwrap(),
-        statements: Some([
-            Statement::ExpressionStatement(ExpressionStatement {
+        statements: Some(
+            [Statement::ExpressionStatement(ExpressionStatement {
                 expression: new_expression.into(),
                 id: 100,
                 node_type: ExpressionStatementNodeType::ExpressionStatement,
                 src: SourceLocation::from_str("175:10:0").unwrap(),
                 documentation: None,
-            }),
-        ].iter().cloned().collect()),
+            })]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
     });
     contract.nodes.push(function.into());
-    contract.nodes.push(create_test_variable_declaration().into());
-    
+    contract
+        .nodes
+        .push(create_test_variable_declaration().into());
+
     SolidityAstFile {
         file: osmium_libs_solidity_ast_extractor::types::SolidityFile {
             path: path.to_string(),
@@ -1156,19 +1181,24 @@ pub fn create_test_ast_file_user_defined_type_name() -> SolidityAstFile {
         id: 30,
         node_type: BlockNodeType::Block,
         src: SourceLocation::from_str("185:65:0").unwrap(),
-        statements: Some([
-            Statement::ExpressionStatement(ExpressionStatement {
+        statements: Some(
+            [Statement::ExpressionStatement(ExpressionStatement {
                 expression: new_expression.into(),
                 id: 100,
                 node_type: ExpressionStatementNodeType::ExpressionStatement,
                 src: SourceLocation::from_str("223:16:0").unwrap(),
                 documentation: None,
-            }),
-        ].iter().cloned().collect()),
+            })]
+            .iter()
+            .cloned()
+            .collect(),
+        ),
     });
     contract.nodes.push(function.into());
-    contract.nodes.push(create_test_variable_declaration().into());
-    
+    contract
+        .nodes
+        .push(create_test_variable_declaration().into());
+
     SolidityAstFile {
         file: osmium_libs_solidity_ast_extractor::types::SolidityFile {
             path: path.to_string(),
@@ -1203,7 +1233,7 @@ pub fn create_test_ast_file_modifier_definition() -> SolidityAstFile {
     let mut modifier = create_test_modifier_definition();
     modifier.src = SourceLocation::from_str("145:22:0").unwrap();
     contract.nodes.push(modifier.into());
-    
+
     SolidityAstFile {
         file: osmium_libs_solidity_ast_extractor::types::SolidityFile {
             path: path.to_string(),

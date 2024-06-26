@@ -63,13 +63,12 @@ impl CodeActionsProvider {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
 
     #[test]
-   fn test_set_base_path() {
+    fn test_set_base_path() {
         let provider = CodeActionsProvider::new();
         provider.set_base_path("test".to_string());
         assert_eq!(*provider.base_path.read().unwrap(), "test");
