@@ -66,8 +66,7 @@ async fn get_slither_error(uri: &str, workspace: &str) -> Result<(), SlitherErro
     output.wait().await?;
     errbuffer.read_to_string(&mut errdst).await?;
 
-    if !errdst.is_empty()
-        && errdst.contains("Error: Source file requires different compiler version")
+    if errdst.len() > 0 && errdst.contains("Error: Source file requires different compiler version")
     {
         let regex = Regex::new(r"(?m)(?:current compiler is.+\))").unwrap();
         let match_ = regex.find(&errdst).unwrap().as_str();
@@ -76,7 +75,7 @@ async fn get_slither_error(uri: &str, workspace: &str) -> Result<(), SlitherErro
             "Slither needs a different version from the one specified in file: {}",
             match_
         )));
-    } else if !errdst.is_empty() && errdst.contains("Invalid option for --evm-version:") {
+    } else if errdst.len() > 0 && errdst.contains("Invalid option for --evm-version:") {
         return Err(SlitherError::Unknown("Please explicitly specify the evm version in the foundry.toml file to a compatible version of your solc compiler version".to_string()));
     }
     Ok(())

@@ -1,4 +1,3 @@
-
 use crate::{
     types::{InteractableNode, Position, Range},
     Location,
@@ -102,7 +101,10 @@ mod test {
             let location = get_location(&node, &file);
             let expected_location = Location {
                 start: Position { line: 3, column: 5 },
-                end: Position { line: 12, column: 6 },
+                end: Position {
+                    line: 12,
+                    column: 6,
+                },
                 uri: "test.sol".to_string(),
             };
             assert_eq!(location, expected_location);
@@ -116,10 +118,7 @@ mod test {
         let file = create_test_ast_file();
         let node = file.ast.nodes[0].clone();
         if let SourceUnitNodesItem::ContractDefinition(contract) = node {
-            let position = Position {
-                line: 3,
-                column: 5,
-            };
+            let position = Position { line: 3, column: 5 };
             let source = &file.file.content;
             let is_in_range = log_is_node_in_range(&contract.src, &position, source);
             assert_eq!(is_in_range, true);
@@ -221,15 +220,12 @@ contract Counter {
         number;
     }
 }";
-        let position = Position {
-            line: 0,
-            column: 1,
-        };
+        let position = Position { line: 0, column: 1 };
         let index = position_to_index(&position, source);
         let expected_idx = 0;
         assert_eq!(index, expected_idx);
     }
-    
+
     #[test]
     fn test_index_to_position() {
         let source = "pragma solidity ^0.8.0;
@@ -345,7 +341,7 @@ contract Counter {
         let is_in_range = is_node_in_range(&src_location.unwrap(), &position, source);
         assert_eq!(is_in_range, false);
     }
-    
+
     #[test]
     fn test_is_node_in_range_when_not_in_range_with_empty_source() {
         let source = "";
@@ -419,14 +415,10 @@ contract Counter {
         number;
     }
 }";
-        let position = Position {
-            line: 0,
-            column: 0,
-        };
+        let position = Position { line: 0, column: 0 };
         let location = "240:1:1";
         let src_location = SourceLocation::from_str(location);
         let is_in_range = is_node_in_range(&src_location.unwrap(), &position, source);
         assert_eq!(is_in_range, false);
     }
-
 }

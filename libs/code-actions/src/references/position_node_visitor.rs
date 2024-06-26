@@ -187,8 +187,17 @@ impl PositionNodeVisitor {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::test_utils::{create_test_ast_file_contract_definition, create_test_ast_file_enum_definition, create_test_ast_file_enum_value, create_test_ast_file_error_definition, create_test_ast_file_event_definition, create_test_ast_file_function_call, create_test_ast_file_function_definition, create_test_ast_file_identifier, create_test_ast_file_inheritance_specifier, create_test_ast_file_member_access, create_test_ast_file_modifier_definition, create_test_ast_file_modifier_invocation, create_test_ast_file_new_expression, create_test_ast_file_struct_definition, create_test_ast_file_user_defined_type_name, create_test_ast_file_using_for_directive, create_test_ast_file_variable_declaration};
-
+    use crate::test_utils::{
+        create_test_ast_file_contract_definition, create_test_ast_file_enum_definition,
+        create_test_ast_file_enum_value, create_test_ast_file_error_definition,
+        create_test_ast_file_event_definition, create_test_ast_file_function_call,
+        create_test_ast_file_function_definition, create_test_ast_file_identifier,
+        create_test_ast_file_inheritance_specifier, create_test_ast_file_member_access,
+        create_test_ast_file_modifier_definition, create_test_ast_file_modifier_invocation,
+        create_test_ast_file_new_expression, create_test_ast_file_struct_definition,
+        create_test_ast_file_user_defined_type_name, create_test_ast_file_using_for_directive,
+        create_test_ast_file_variable_declaration,
+    };
 
     #[test]
     fn test_find_contract_definition() {
@@ -210,10 +219,7 @@ mod test {
     #[test]
     fn test_find_contract_definition_wrong_position() {
         let file = create_test_ast_file_contract_definition();
-        let position = Position {
-            line: 1,
-            column: 1,
-        };
+        let position = Position { line: 1, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -239,16 +245,11 @@ mod test {
     #[test]
     fn test_find_function_definition_wrong_position() {
         let file = create_test_ast_file_function_definition();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
     }
-    
-   
 
     #[test]
     fn test_find_variable_declaration() {
@@ -267,14 +268,10 @@ mod test {
         }
     }
 
-    
     #[test]
     fn test_find_variable_declaration_wrong_position() {
         let file = create_test_ast_file_variable_declaration();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -300,10 +297,7 @@ mod test {
     #[test]
     fn test_find_enum_definition_wrong_position() {
         let file = create_test_ast_file_enum_definition();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -329,10 +323,7 @@ mod test {
     #[test]
     fn test_find_enum_value_wrong_position() {
         let file = create_test_ast_file_enum_value();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -358,10 +349,7 @@ mod test {
     #[test]
     fn test_find_struct_definition_wrong_position() {
         let file = create_test_ast_file_struct_definition();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -387,10 +375,7 @@ mod test {
     #[test]
     fn test_find_event_definition_wrong_position() {
         let file = create_test_ast_file_event_definition();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -416,10 +401,7 @@ mod test {
     #[test]
     fn test_find_using_for_directive_wrong_position() {
         let file = create_test_ast_file_using_for_directive();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -445,10 +427,7 @@ mod test {
     #[test]
     fn test_find_error_defintion_wrong_position() {
         let file = create_test_ast_file_error_definition();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -474,15 +453,11 @@ mod test {
     #[test]
     fn test_find_function_call_wrong_position() {
         let file = create_test_ast_file_function_call();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
     }
-
 
     #[test]
     fn test_find_modifier_definition() {
@@ -504,10 +479,7 @@ mod test {
     #[test]
     fn test_find_modifier_definition_wrong_position() {
         let file = create_test_ast_file_modifier_definition();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -533,10 +505,7 @@ mod test {
     #[test]
     fn test_find_modifier_invocation_wrong_position() {
         let file = create_test_ast_file_modifier_invocation();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -562,10 +531,7 @@ mod test {
     #[test]
     fn test_find_inheritance_specifier_wrong_position() {
         let file = create_test_ast_file_inheritance_specifier();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
@@ -592,10 +558,7 @@ mod test {
     #[test]
     fn test_find_indentifier_wrong_position() {
         let file = create_test_ast_file_identifier();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
 
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
@@ -622,10 +585,7 @@ mod test {
     #[test]
     fn test_find_member_access_wrong_position() {
         let file = create_test_ast_file_member_access();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
 
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
@@ -644,7 +604,10 @@ mod test {
         let node = visitor.find(&file.ast);
         assert!(node.is_some());
         if let Some(InteractableNode::NewExpression(new_expression, _)) = node {
-            assert_eq!(new_expression.node_type, NewExpressionNodeType::NewExpression);
+            assert_eq!(
+                new_expression.node_type,
+                NewExpressionNodeType::NewExpression
+            );
         } else {
             panic!("Expected NewExpression, got {:?}", node);
         }
@@ -653,16 +616,12 @@ mod test {
     #[test]
     fn test_find_new_expression_wrong_position() {
         let file = create_test_ast_file_new_expression();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
 
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
     }
-
 
     #[test]
     fn test_find_user_defined_type_name() {
@@ -684,13 +643,9 @@ mod test {
     #[test]
     fn test_find_user_defined_type_name_wrong_position() {
         let file = create_test_ast_file_user_defined_type_name();
-        let position = Position {
-            line: 2,
-            column: 1,
-        };
+        let position = Position { line: 2, column: 1 };
         let mut visitor = PositionNodeVisitor::new(position, &file.file.content);
         let node = visitor.find(&file.ast);
         assert!(node.is_none());
     }
-
 }
