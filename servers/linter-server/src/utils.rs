@@ -8,7 +8,7 @@ pub fn get_closest_config_filepath(
     connection: &Client,
     params: InitializeParams,
 ) -> Result<Option<String>, PatternError> {
-    let root_path_url = params.root_uri.unwrap();
+    let root_path_url = &params.workspace_folders.clone().unwrap()[0].uri;
     let root_path = root_path_url.path();
     connection.log_message(MessageType::INFO, format!("root_path: {:?}", root_path));
 

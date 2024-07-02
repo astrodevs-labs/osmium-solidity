@@ -1,9 +1,12 @@
 import { IDeployContractForm, IDeployScriptForm, VSCode } from '@/types';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { ResourceManager } from '@hooks/useResourceManager.ts';
 import { MessageType } from '@backend/enums.ts';
+import { ResourceManager } from '@hooks/useResourceManager.ts';
+import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 export const useDeployPage = (vscode: VSCode, resourceManager: ResourceManager) => {
+  const [isPendingContract, setIsPendingContract] = useState(false);
+  const [isPendingScript, setIsPendingScript] = useState(false);
   const scriptForm = useForm<IDeployScriptForm>({
     defaultValues: {
       environment: '',
@@ -24,16 +27,18 @@ export const useDeployPage = (vscode: VSCode, resourceManager: ResourceManager) 
   });
 
   const onSubmitScriptForm: SubmitHandler<IDeployScriptForm> = (data) => {
+    setIsPendingScript(true);
     vscode.postMessage({
       type: MessageType.DEPLOY_SCRIPT,
       data,
     });
   };
-
+  
   const onSubmitContractForm: SubmitHandler<IDeployContractForm> = (data) => {
     if (isNaN(data.gasLimit)) contractForm.setError('gasLimit', { type: 'manual', message: 'Invalid number' });
     if (isNaN(data.value)) contractForm.setError('value', { type: 'manual', message: 'Invalid number' });
-
+    
+    setIsPendingContract(true);
     vscode.postMessage({
       type: MessageType.DEPLOY_CONTRACT,
       data,
@@ -50,5 +55,9 @@ export const useDeployPage = (vscode: VSCode, resourceManager: ResourceManager) 
     contracts: resourceManager.deployContracts,
     onSubmitContractForm,
     onSubmitScriptForm,
+    isPendingScript,
+    isPendingContract,
+    setIsPendingScript,
+    setIsPendingContract,
   };
 };

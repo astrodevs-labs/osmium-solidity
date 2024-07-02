@@ -1,8 +1,8 @@
 import { VSCode } from '@/types';
 import { InteractContract, Wallets } from '@backend/actions/types';
-import { useInteractContracts } from './InteractContracts.logic.ts';
 import { VSCodeButton, VSCodeDropdown, VSCodeOption, VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
 import './InteractContracts.css';
+import { useInteractContracts } from './InteractContracts.logic.ts';
 
 interface InteractContractsProps {
   wallets: Wallets;
@@ -33,7 +33,7 @@ export const InteractContracts = ({ wallets, contracts, vscode }: InteractContra
               </VSCodeOption>
             ))}
           </VSCodeDropdown>
-          <VSCodeButton className="add-wallet-button" onClick={logic.editWallet}>
+          <VSCodeButton appearance="secondary" onClick={logic.editWallet}>
             Edit
           </VSCodeButton>
         </div>
@@ -54,7 +54,7 @@ export const InteractContracts = ({ wallets, contracts, vscode }: InteractContra
               </VSCodeOption>
             ))}
           </VSCodeDropdown>
-          <VSCodeButton className="add-contract-button" onClick={logic.editContract}>
+          <VSCodeButton appearance="secondary" onClick={logic.editContract}>
             Edit
           </VSCodeButton>
         </div>

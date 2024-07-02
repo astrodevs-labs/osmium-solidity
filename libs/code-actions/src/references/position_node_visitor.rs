@@ -21,7 +21,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
     }
     fn visit_contract_definition(&mut self, contract: &'ast ContractDefinition) {
         if is_node_in_range(&contract.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::ContractDefinition(contract.clone()));
         }
         visit::visit_contract_definition(self, contract);
@@ -35,7 +35,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_function_definition(&mut self, function: &'ast FunctionDefinition) {
         if is_node_in_range(&function.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::FunctionDefinition(function.clone()));
         }
         visit::visit_function_definition(self, function);
@@ -43,7 +43,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_modifier_definition(&mut self, modifier: &'ast ModifierDefinition) {
         if is_node_in_range(&modifier.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::ModifierDefinition(modifier.clone()));
         }
         visit::visit_modifier_definition(self, modifier);
@@ -51,7 +51,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_struct_definition(&mut self, struct_def: &'ast StructDefinition) {
         if is_node_in_range(&struct_def.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::StructDefinition(struct_def.clone()));
         }
         visit::visit_struct_definition(self, struct_def);
@@ -59,7 +59,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_enum_definition(&mut self, enum_def: &'ast EnumDefinition) {
         if is_node_in_range(&enum_def.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::EnumDefinition(enum_def.clone()));
         }
         visit::visit_enum_definition(self, enum_def);
@@ -67,7 +67,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_variable_declaration(&mut self, variable: &'ast VariableDeclaration) {
         if is_node_in_range(&variable.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::VariableDeclaration(variable.clone()));
         }
         visit::visit_variable_declaration(self, variable);
@@ -75,7 +75,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_event_definition(&mut self, event: &'ast EventDefinition) {
         if is_node_in_range(&event.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::EventDefinition(event.clone()));
         }
         visit::visit_event_definition(self, event);
@@ -83,7 +83,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_enum_value(&mut self, enum_value: &'ast EnumValue) {
         if is_node_in_range(&enum_value.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::EnumValue(enum_value.clone()));
         }
         visit::visit_enum_value(self, enum_value);
@@ -91,7 +91,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_using_for_directive(&mut self, using_for: &'ast UsingForDirective) {
         if is_node_in_range(&using_for.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::UsingForDirective(using_for.clone()));
         }
         visit::visit_using_for_directive(self, using_for);
@@ -99,7 +99,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_import_directive(&mut self, import: &'ast ImportDirective) {
         if is_node_in_range(&import.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::ImportDirective(import.clone()));
         }
         visit::visit_import_directive(self, import);
@@ -107,7 +107,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_error_definition(&mut self, error: &'ast ErrorDefinition) {
         if is_node_in_range(&error.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::ErrorDefinition(error.clone()));
         }
         visit::visit_error_definition(self, error);
@@ -115,7 +115,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_function_call(&mut self, function_call: &'ast FunctionCall) {
         if is_node_in_range(&function_call.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::FunctionCall(function_call.clone()));
         }
         visit::visit_function_call(self, function_call);
@@ -123,7 +123,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_modifier_invocation(&mut self, modifier_invocation: &'ast ModifierInvocation) {
         if is_node_in_range(&modifier_invocation.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::ModifierInvocation(
                 modifier_invocation.clone(),
             ));
@@ -133,7 +133,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_inheritance_specifier(&mut self, inheritance_specifier: &'ast InheritanceSpecifier) {
         if is_node_in_range(&inheritance_specifier.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::InheritanceSpecifier(
                 inheritance_specifier.clone(),
             ));
@@ -144,7 +144,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
     fn visit_identifier(&mut self, identifier: &'ast Identifier) {
         if is_node_in_range(&identifier.src, &self.position, &self.source) {
             // trace!("Identifier in range: {:?}", identifier);
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::Identifier(identifier.clone()));
         }
         visit::visit_identifier(self, identifier);
@@ -152,7 +152,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_member_access(&mut self, member_access: &'ast MemberAccess) {
         if is_node_in_range(&member_access.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::MemberAccess(member_access.clone()));
         }
         visit::visit_member_access(self, member_access);
@@ -160,7 +160,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
 
     fn visit_new(&mut self, new_expression: &'ast NewExpression) {
         if is_node_in_range(&new_expression.src, &self.position, &self.source) {
-            self.above_node = self.node.clone();
+            self.above_node.clone_from(&self.node);
             self.node = Some(InteractableNode::NewExpression(
                 new_expression.clone(),
                 Box::new(self.above_node.clone().unwrap()),
