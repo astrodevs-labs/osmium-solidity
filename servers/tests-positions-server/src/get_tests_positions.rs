@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use tower_lsp::lsp_types::{request::Request, Range};
+use tower_lsp::lsp_types::Range;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GetTestsPositionsParams {
@@ -22,12 +22,4 @@ pub struct Test {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GetTestsPositionsResponse {
     pub contracts: Vec<TestContract>,
-}
-
-pub struct GetTestsPositionsRequest {}
-
-impl Request for GetTestsPositionsRequest {
-    type Params = GetTestsPositionsParams;
-    type Result = GetTestsPositionsResponse;
-    const METHOD: &'static str = "osmium/getTestsPositions";
 }
