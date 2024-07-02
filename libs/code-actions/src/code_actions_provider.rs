@@ -62,3 +62,23 @@ impl CodeActionsProvider {
         provider.get_suggestions(uri, position, &files)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_set_base_path() {
+        let provider = CodeActionsProvider::new();
+        provider.set_base_path("test".to_string());
+        assert_eq!(*provider.base_path.read().unwrap(), "test");
+    }
+
+    #[test]
+    fn test_update_file_content() {
+        let provider = CodeActionsProvider::new();
+        provider.set_base_path("tests".to_string());
+        let result = provider.update_file_content();
+        assert!(!result.is_ok());
+    }
+}
