@@ -1,25 +1,13 @@
-import * as path from "path";
-import * as os from "os";
-import { workspace, ExtensionContext, Uri } from "vscode";
-import {
-  LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
-  TransportKind,
-} from "vscode-languageclient/node";
-import { TextDecoder } from "util";
+import * as path from 'path';
+import * as os from 'os';
+import { workspace, ExtensionContext, Uri } from 'vscode';
+import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import { TextDecoder } from 'util';
 
-export async function createTestsPositionsClient(
-  context: ExtensionContext,
-): Promise<LanguageClient> {
+export async function createTestsPositionsClient(context: ExtensionContext): Promise<LanguageClient> {
   // The server is implemented in node
   const serverBinary = context.asAbsolutePath(
-    path.join(
-      "dist",
-      os.platform().startsWith("win")
-        ? "tests-positions-server.exe"
-        : "tests-positions-server",
-    ),
+    path.join('dist', os.platform().startsWith('win') ? 'tests-positions-server.exe' : 'tests-positions-server'),
   );
 
   // If the extension is launched in debug mode then the debug server options are used
@@ -44,8 +32,8 @@ export async function createTestsPositionsClient(
 
   // Create the language client and start the client.
   const client = new LanguageClient(
-    "osmium-tests-positions",
-    "Osmium Solidity Tests Positions Language Server",
+    'osmium-tests-positions',
+    'Osmium Solidity Tests Positions Language Server',
     serverOptions,
     clientOptions,
   );

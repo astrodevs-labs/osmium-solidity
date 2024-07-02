@@ -52,3 +52,54 @@ pub fn escape_path(path: &str) -> String {
 pub fn escape_path(path: &str) -> String {
     path.to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_normalize_path() {
+        let path = "/c:/Users/username/Documents";
+        assert_eq!(normalize_path(path), "c:/Users/username/Documents");
+    }
+
+    #[test]
+    fn test_normalize_path_windows() {
+        let path = "/c%3A/Users/username/Documents";
+        assert_eq!(normalize_path(path), "c:/Users/username/Documents");
+    }
+
+    #[test]
+    fn test_join_path() {
+        let base_path = "C:/Users/username/Documents";
+        let file = "file.sol";
+        assert_eq!(
+            join_path(base_path, file),
+            "C:/Users/username/Documents/file.sol"
+        );
+    }
+
+    #[test]
+    fn test_slashify_path() {
+        let path = "C:\\Users\\username\\Documents";
+        assert_eq!(slashify_path(path), "C:/Users/username/Documents");
+    }
+
+    #[test]
+    fn test_slashify_path_double_slash() {
+        let path = "C:\\Users\\\\username\\Documents";
+        assert_eq!(slashify_path(path), "C:/Users/username/Documents");
+    }
+
+    #[test]
+    fn test_escape_path() {
+        let path = "c://Users/username/Documents";
+        assert_eq!(escape_path(path), "/c%3A/Users/username/Documents");
+    }
+
+    #[test]
+    fn test_escape_path_windows() {
+        let path = "c://Users/username/Documents";
+        assert_eq!(escape_path(path), "/c%3A/Users/username/Documents");
+    }
+}

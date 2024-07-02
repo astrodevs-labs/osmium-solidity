@@ -1,6 +1,6 @@
-import * as path from "path";
-import * as os from "os";
-import { workspace, ExtensionContext, Uri } from "vscode";
+import * as path from 'path';
+import * as os from 'os';
+import { workspace, ExtensionContext, Uri } from 'vscode';
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -8,13 +8,11 @@ import {
   TransportKind,
   SocketTransport,
   StreamInfo,
-} from "vscode-languageclient/node";
-import { TextDecoder } from "util";
-import * as net from "net";
+} from 'vscode-languageclient/node';
+import { TextDecoder } from 'util';
+import * as net from 'net';
 
-export async function createCodeActionsClient(
-  context: ExtensionContext,
-): Promise<LanguageClient> {
+export async function createCodeActionsClient(context: ExtensionContext): Promise<LanguageClient> {
   /*
 	let connectionInfo = {
 		port: 9001,
@@ -39,12 +37,7 @@ export async function createCodeActionsClient(
 
   // The server is implemented in node
   const serverBinary = context.asAbsolutePath(
-    path.join(
-      "dist",
-      os.platform().startsWith("win")
-        ? "code-actions-server.exe"
-        : "code-actions-server",
-    ),
+    path.join('dist', os.platform().startsWith('win') ? 'code-actions-server.exe' : 'code-actions-server'),
   );
 
   const serverOptions: ServerOptions = {
@@ -58,17 +51,17 @@ export async function createCodeActionsClient(
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     // Register the server for plain text documents
-    documentSelector: [{ scheme: "file", language: "solidity" }],
+    documentSelector: [{ scheme: 'file', language: 'solidity' }],
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
-      fileEvents: workspace.createFileSystemWatcher("**/.solidhunter.json"),
+      fileEvents: workspace.createFileSystemWatcher('**/.solidhunter.json'),
     },
   };
 
   // Create the language client and start the client.
   const client = new LanguageClient(
-    "osmium-solidity-code-actions",
-    "Osmium Solidity Code Actions Language Server",
+    'osmium-solidity-code-actions',
+    'Osmium Solidity Code Actions Language Server',
     serverOptions,
     clientOptions,
   );
