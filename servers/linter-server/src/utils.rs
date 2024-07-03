@@ -8,10 +8,7 @@ pub fn get_closest_config_filepath(
     connection: &Client,
     params: InitializeParams,
 ) -> Result<Option<String>, PatternError> {
-    let workspace_folder = match params.workspace_folders.clone() {
-        Some(val) => val,
-        None => Vec::new(),
-    };
+    let workspace_folder = params.workspace_folders.clone().unwrap_or_default();
     if workspace_folder.is_empty() {
         return Ok(None);
     }
