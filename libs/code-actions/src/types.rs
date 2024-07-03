@@ -70,6 +70,7 @@ impl CompletionItemKind {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub enum SPINode {
     FunctionDefinition(FunctionDefinition),
@@ -99,6 +100,7 @@ pub enum InteractableNode {
     InheritanceSpecifier(InheritanceSpecifier),
     Identifier(Identifier),
     MemberAccess(MemberAccess),
+    #[allow(dead_code)]
     NewExpression(NewExpression, Box<InteractableNode>),
     UserDefinedTypeName(UserDefinedTypeName),
     IdentifierPath(IdentifierPath),
