@@ -8,8 +8,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        assetFileNames: 'index-sidebar.css',
-        entryFileNames: 'index-sidebar.js',
+        assetFileNames: 'index-env-panel.css',
+        entryFileNames: 'index-env-panel.js',
       },
     },
   },

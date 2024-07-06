@@ -5,7 +5,8 @@
     "libs/*",
     "servers/*",
     "vscode",
-    "sidebar"
+    "sidebar",
+    "env-panel"
   ],
   "devDependencies": {
     "turbo": "^1.13.3"
