@@ -72,52 +72,47 @@
         "Osmium.linter": {
           "type": "boolean",
           "default": true,
-          "description": "Enable LINTER feature"
+          "description": "The linter is a tool that will underline some issues for you. It will help you to write better code."
         },
         "Osmium.formatter": {
           "type": "boolean",
           "default": true,
-          "description": "Enable FORMATTER feature"
+          "description": "The formatter allows you to format your document with a right click and by choosing “Format Document” or by pressing Ctrl+Shift+I"
         },
         "Osmium.gas estimation": {
           "type": "boolean",
           "default": true,
-          "description": "Enable GAS ESTIMATION feature"
+          "description": "The gas estimation is shown on your contrat after you save the file. This will show you how much it will cost to execute this contrat. "
         },
         "Osmium.slither": {
           "type": "boolean",
           "default": true,
-          "description": "Enable SLITHER feature"
+          "description": "Slither is going to report you some security issues that are in your functions and contracts."
         },
         "Osmium.sidebar": {
           "type": "boolean",
           "default": true,
-          "description": "Enable INTERACT & DEPLOY feature"
-        },
-        "Osmium.debugger": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable DEBUGGER feature"
+          "description": "This feature will allow you to see the sidebar with the deploy and interact buttons. On this interface, you will be able to deploy your contract and interact with it."
         },
         "Osmium.tests": {
           "type": "boolean",
           "default": true,
-          "description": "Enable TESTS VIA FOUNDRY feature"
+          "description": "By clicking on the test button, you will be able to run your tests via foundry feature."
         },
         "Osmium.compiler": {
           "type": "boolean",
           "default": true,
-          "description": "Enable COMPILER feature"
+          "description": "When you are saving your file, the compiler will try to compile your function. If there is an issue it will be shown in the problems section."
         },
         "Osmium.references": {
           "type": "boolean",
           "default": true,
-          "description": "Enable REFERENCES feature"
+          "description": "The reference is when you ctrl click on a variable and you want to see where it is declared. This feature will show you where it is declared and where it is used."
         },
         "Osmium.auto format": {
           "type": "boolean",
           "default": false,
-          "description": "Enable AUTO FORMAT"
+          "description": "The auto format can be used only if the formatter is enable and will format you file on save instead of right click on the file and choose Format Document."
         }
       }
     },
