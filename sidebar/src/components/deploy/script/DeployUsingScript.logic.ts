@@ -1,11 +1,16 @@
-import { useFormContext } from 'react-hook-form';
 import { IDeployScriptForm, VSCode } from '@/types';
+import { Environments, Scripts } from '@backend/actions/types';
+import { MessageType } from '@backend/enums.ts';
 import { useEdit } from '@hooks/useEdit.ts';
 import { useEffect, useState } from 'react';
-import { MessageType } from '@backend/enums.ts';
-import { Environments, Scripts } from '@backend/actions/types';
+import { useFormContext } from 'react-hook-form';
 
-export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environments: Environments) => {
+export const useDeployUsingScript = (
+  vscode: VSCode,
+  scripts: Scripts,
+  environments: Environments,
+  setIsPending: (isPending: boolean) => void,
+) => {
   const { editEnvironment } = useEdit(vscode);
   const form = useFormContext<IDeployScriptForm>();
   const {
@@ -21,13 +26,14 @@ export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environme
       switch (event.data.type) {
         case MessageType.DEPLOY_SCRIPT_RESPONSE: {
           setResponse(event.data.response);
+          setIsPending(false);
           break;
         }
       }
     };
     window.addEventListener('message', listener);
     return () => window.removeEventListener('message', listener);
-  }, []);
+  }, [setIsPending]);
 
   useEffect(() => {
     form.setValue('script', scripts[0]?.id || '');
