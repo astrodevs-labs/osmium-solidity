@@ -37,7 +37,7 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
   const onSubmit: SubmitHandler<IInteractForm> = (data) => {
     if (isNaN(data.gasLimit)) form.setError('gasLimit', { type: 'manual', message: 'Invalid number' });
     if (isNaN(data.value)) form.setError('value', { type: 'manual', message: 'Invalid number' });
-    
+
     setIsPending(true);
     vscode.postMessage({
       type: getFunctionAction(data.function, data.contract, resourceManager.interactContracts),
@@ -50,7 +50,7 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
       'wallet',
       resourceManager.wallets && resourceManager.wallets.length ? resourceManager.wallets[0].id : '',
     );
-  }, [resourceManager.wallets, form]);
+  }, [resourceManager.wallets]);
 
   useEffect(() => {
     form.setValue(
@@ -59,7 +59,7 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
         ? resourceManager.interactContracts[0].id
         : '',
     );
-  }, [resourceManager.interactContracts, form]);
+  }, [resourceManager.interactContracts]);
 
   useEffect(() => {
     const listener = (event: WindowEventMap['message']) => {

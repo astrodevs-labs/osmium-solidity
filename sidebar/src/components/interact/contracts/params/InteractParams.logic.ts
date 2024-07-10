@@ -19,8 +19,8 @@ export const useInteractParams = (contracts: InteractContracts) => {
   const displayParams = inputs && inputs.length > 0;
 
   useEffect(() => {
-      form.resetField('inputs');
-  }, [selectedFunction, selectedContractAddress, form]);
+    form.resetField('inputs');
+  }, [selectedFunction, selectedContractAddress]);
 
   return {
     inputs,

@@ -38,15 +38,15 @@ export const useDeployUsingContract = (
 
   useEffect(() => {
     form.setValue('wallet', wallets[0]?.id || '');
-  }, [wallets, form]);
+  }, [wallets]);
 
   useEffect(() => {
     form.setValue('contract', contracts[0]?.id || '');
-  }, [contracts, form]);
+  }, [contracts]);
 
   useEffect(() => {
     form.setValue('environment', environments[0]?.id || '');
-  }, [environments, form]);
+  }, [environments]);
 
   return { form, errors, response, editEnvironment, editWallet };
 };

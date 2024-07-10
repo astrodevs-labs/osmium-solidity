@@ -5,7 +5,12 @@ import { useEdit } from '@hooks/useEdit.ts';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environments: Environments, setIsPending: (isPending: boolean) => void) => {
+export const useDeployUsingScript = (
+  vscode: VSCode,
+  scripts: Scripts,
+  environments: Environments,
+  setIsPending: (isPending: boolean) => void,
+) => {
   const { editEnvironment } = useEdit(vscode);
   const form = useFormContext<IDeployScriptForm>();
   const {
@@ -32,11 +37,11 @@ export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environme
 
   useEffect(() => {
     form.setValue('script', scripts[0]?.id || '');
-  }, [scripts, form]);
+  }, [scripts]);
 
   useEffect(() => {
     form.setValue('environment', environments[0]?.id || '');
-  }, [environments, form]);
+  }, [environments]);
 
   return { form, errors, response, editEnvironment };
 };

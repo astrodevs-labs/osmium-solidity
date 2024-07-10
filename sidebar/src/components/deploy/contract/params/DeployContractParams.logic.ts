@@ -29,7 +29,7 @@ export const useDeployContractsParams = (contracts: DeployContracts) => {
         form.resetField(`inputs.${idx}`);
       });
     };
-  }, [inputs, form]);
+  }, [inputs]);
 
   return {
     inputs,
