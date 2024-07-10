@@ -9,5 +9,5 @@
 </figure>
 
 <figure align="center">
-  <img src="./slither_test.png" alt="Screen of Unit tests" style="max-width: 100%;" />
+  <img src="./slither.png" alt="Screen of Unit tests" style="max-width: 100%;" />
 </figure>
