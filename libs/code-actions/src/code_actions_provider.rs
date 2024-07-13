@@ -61,4 +61,17 @@ impl CodeActionsProvider {
         let provider = AutoCompleteProvider::new();
         provider.get_suggestions(uri, position, &files)
     }
+
+    pub fn refactor(&self, uri: &str, position: Position) -> Vec<Location> {
+        let mut refactors: Vec<Location> = vec![];
+        if let Some(def) = self.get_definition(uri, position) {
+            let refs = self.get_references(def.uri.as_str(), def.clone().start);
+            refactors.push(def);
+            for reference in refs {
+                refactors.push(reference);
+            }
+
+        }
+        return refactors
+    }
 }

@@ -5,9 +5,10 @@ use crate::utils::*;
 use osmium_libs_solidity_code_actions::*;
 use osmium_libs_solidity_lsp_utils::log::{error, info, init_logging, warn};
 use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
+use std::collections::HashMap;
 use std::sync::Arc;
 use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::Location as LspLocation;
+use tower_lsp::lsp_types::{Location as LspLocation, Position};
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
@@ -56,6 +57,7 @@ impl LanguageServer for Backend {
                     trigger_characters: Some(vec![".".to_string()]),
                     ..Default::default()
                 }),
+                rename_provider: Some(OneOf::Left(true)),
                 ..ServerCapabilities::default()
             },
         })
@@ -77,11 +79,11 @@ impl LanguageServer for Backend {
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<LspLocation>>> {
-        info!("References requested");
         let uri = params.text_document_position.text_document.uri;
         let mut position = params.text_document_position.position;
         position.line += 1;
         position.character += 1;
+        info!("Reference requested at position: {:?}", position);
 
         let locations = self.code_actions_provider.get_references(
             &normalize_path(uri.path()),
@@ -105,11 +107,11 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
-        info!("Goto definition requested");
         let mut uri = params.text_document_position_params.text_document.uri;
         let mut position = params.text_document_position_params.position;
         position.line += 1;
         position.character += 1;
+        info!("Goto definition requested at position: {:?}", position);
 
         let location = self.code_actions_provider.get_definition(
             &normalize_path(uri.path()),
@@ -164,6 +166,43 @@ impl LanguageServer for Backend {
             });
         info!("Completions found: {:?}", completes.len());
         Ok(Some(CompletionResponse::Array(completes)))
+    }
+
+    async fn rename(&self, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
+        let mut position = params.text_document_position.position;
+        position.line += 1;
+        position.character += 1;
+        let edits = self.code_actions_provider.refactor(
+            &normalize_path(params.text_document_position.text_document.uri.path()), 
+            osmium_libs_solidity_code_actions::Position {
+                line: position.line,
+                column: position.character,
+            },
+        );
+        let mut workspace_edits = HashMap::<Url, Vec<TextEdit>>::new();
+        edits.iter().for_each(|edit| {
+            let new_edit = TextEdit {
+                range: Range {
+                    start: Position {
+                        line: edit.start.line - 1,
+                        character: edit.start.column - 1
+                    },
+                    end: Position {
+                        line: edit.end.line - 1,
+                        character: edit.end.column - 1
+                    }
+                },
+                new_text: params.new_name.clone()
+            };
+            let url = Url::from_file_path(&edit.uri).unwrap();
+            if let Some(arr) = workspace_edits.get_mut(&url) {
+                arr.push(new_edit)
+            }
+            else {
+                workspace_edits.insert(url, vec![new_edit]);
+            }
+        });
+        return Ok(Some(WorkspaceEdit{changes:Some(workspace_edits), document_changes: None, change_annotations: None }))
     }
 
     async fn shutdown(&self) -> Result<()> {
