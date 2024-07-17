@@ -1,0 +1,12 @@
+.delete-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.delete-cell:focus, .delete-cell:active {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    border: 0;
+}

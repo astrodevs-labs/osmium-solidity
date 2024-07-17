@@ -1,17 +1,9 @@
 import { IDeployScriptForm, VSCode } from '@/types';
-import { Environments, Scripts } from '@backend/actions/types';
-import { MessageType } from '@backend/enums.ts';
 import { useEdit } from '@hooks/useEdit.ts';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-export const useDeployUsingScript = (
-  vscode: VSCode,
-  scripts: Scripts,
-  environments: Environments,
-  setIsPending: (isPending: boolean) => void,
-) => {
-  const { editEnvironment } = useEdit(vscode);
+export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environments: Environments, setIsPending: (isPending: boolean) => void) => {
   const form = useFormContext<IDeployScriptForm>();
   const {
     formState: { errors },
@@ -20,6 +12,10 @@ export const useDeployUsingScript = (
     exitCode: number;
     output: string;
   } | null>(null);
+
+  const openPanel = () => {
+    vscode.postMessage({ type: MessageType.OPEN_PANEL });
+  };
 
   useEffect(() => {
     const listener = (event: WindowEventMap['message']) => {
@@ -43,5 +39,5 @@ export const useDeployUsingScript = (
     form.setValue('environment', environments[0]?.id || '');
   }, [environments]);
 
-  return { form, errors, response, editEnvironment };
+  return { form, errors, response, openPanel };
 };

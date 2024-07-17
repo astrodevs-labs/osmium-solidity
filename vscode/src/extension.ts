@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { workspace, ExtensionContext, window, commands, Disposable } from 'vscode';
+import * as vscode from 'vscode';
+import { commands, Disposable, ExtensionContext, window, workspace } from 'vscode';
 import { LanguageClient } from 'vscode-languageclient/node';
 import { createLinterClient } from './linter';
 import { createSlitherClient } from './slither';
@@ -12,7 +13,9 @@ import { registerGasEstimation } from './gas-estimation';
 import { createCodeActionsClient } from './code-actions';
 import { SidebarProvider } from './sidebar-provider';
 import { EnvPanelProvider } from './env-panel-provider';
-import * as vscode from 'vscode';
+import { InteractContractRepository } from './actions/InteractContractRepository';
+import { WalletRepository } from './actions/WalletRepository';
+import { EnvironmentRepository } from './actions/EnvironmentRepository';
 
 let linterClient: LanguageClient | null;
 let slitherClient: LanguageClient | null;
@@ -57,8 +60,24 @@ async function launchFeatures() {
   const isreferencesEnable = configuration.get('references');
   const isAutoFormatEnable = configuration.get('auto format');
   const isFormatterEnable = configuration.get('formatter');
-  const sidebarProvider = new SidebarProvider(Extcontext.extensionUri);
-  const envPanelProvider = new EnvPanelProvider(Extcontext.extensionUri);
+
+  const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath || '';
+  const interactContractRepository = new InteractContractRepository(fsPath);
+  const walletRepository = new WalletRepository(fsPath);
+  const environmentRepository = new EnvironmentRepository(fsPath);
+
+  const sidebarProvider = new SidebarProvider(
+    Extcontext.extensionUri,
+    interactContractRepository,
+    walletRepository,
+    environmentRepository,
+  );
+  const envPanelProvider = new EnvPanelProvider(
+    Extcontext.extensionUri,
+    interactContractRepository,
+    walletRepository,
+    environmentRepository,
+  );
 
   Extcontext.subscriptions.push(
     vscode.commands.registerCommand('osmium.show-env-panel', () => {

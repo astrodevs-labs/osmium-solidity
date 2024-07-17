@@ -1,11 +1,84 @@
 import * as vscode from 'vscode';
 import { getNonce } from './utils';
+import { InteractContractRepository } from './actions/InteractContractRepository';
+import { WalletRepository } from './actions/WalletRepository';
+import { EnvironmentRepository } from './actions/EnvironmentRepository';
+import { Message } from './types';
+import { MessageType } from './enums';
+import path from 'path';
 
 export class EnvPanelProvider {
   public static readonly viewType = 'osmium.env-panel';
   public panel: vscode.WebviewPanel | undefined = undefined;
+  private _osmiumWatcher?: vscode.FileSystemWatcher;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(
+    private readonly _extensionUri: vscode.Uri,
+    private readonly _interactContractRepository: InteractContractRepository,
+    private readonly _walletRepository: WalletRepository,
+    private readonly _environmentRepository: EnvironmentRepository,
+  ) {
+    this._osmiumWatcher = vscode.workspace.createFileSystemWatcher('**/.osmium/*.json');
+    this._osmiumWatcher.onDidChange((uri) => this._osmiumWatcherCallback(uri));
+  }
+
+  async _osmiumWatcherCallback(uri: vscode.Uri) {
+    if (!this.panel) return;
+    const basename = path.basename(uri.fsPath, '.json');
+    if (basename === 'contracts') {
+      this._interactContractRepository?.load();
+      await this.panel.webview.postMessage({
+        type: MessageType.INTERACT_CONTRACTS,
+        contracts: this._interactContractRepository?.getContracts(),
+      });
+    }
+    if (basename === 'wallets') {
+      this._walletRepository?.load();
+      await this.panel.webview.postMessage({
+        type: MessageType.WALLETS,
+        wallets: this._walletRepository?.getWallets(),
+      });
+    }
+    if (basename === 'environments') {
+      this._environmentRepository?.load();
+      await this.panel.webview.postMessage({
+        type: MessageType.ENVIRONMENTS,
+        environments: this._environmentRepository?.getEnvironments(),
+      });
+    }
+  }
+
+  async _onMessageCallback(message: Message) {
+    if (!this.panel) {
+      return;
+    }
+    switch (message.type) {
+      case MessageType.GET_WALLETS:
+        await this.panel.webview.postMessage({
+          type: MessageType.WALLETS,
+          wallets: this._walletRepository.getWallets(),
+        });
+        break;
+      case MessageType.GET_INTERACT_CONTRACTS:
+        await this.panel.webview.postMessage({
+          type: MessageType.INTERACT_CONTRACTS,
+          contracts: this._interactContractRepository.getContracts(),
+        });
+        break;
+      case MessageType.GET_ENVIRONMENTS:
+        await this.panel.webview.postMessage({
+          type: MessageType.ENVIRONMENTS,
+          environments: this._environmentRepository.getEnvironments(),
+        });
+        break;
+      case MessageType.DELETE_WALLET:
+        this._walletRepository.deleteWallet(message.data.id);
+        break;
+      case MessageType.EDIT_WALLET:
+        this._walletRepository.updateWallet(message.data.id, message.data.key, message.data.value);
+        break;
+    }
+  }
 
   public async resolveWebview(context: vscode.ExtensionContext) {
     if (this.panel) {
@@ -21,6 +94,9 @@ export class EnvPanelProvider {
         },
       );
       this.panel.webview.html = this._getHtmlForWebview(this.panel.webview);
+      this.panel.webview.onDidReceiveMessage((e) => {
+        this._onMessageCallback(e);
+      });
 
       this.panel.onDidDispose(
         () => {

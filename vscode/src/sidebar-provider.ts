@@ -20,15 +20,17 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   private _outWatcher?: vscode.FileSystemWatcher;
   private _view?: vscode.WebviewView;
 
-  private _interactContractRepository?: InteractContractRepository;
   private _deployContractRepository?: DeployContractRepository;
-  private _walletRepository?: WalletRepository;
-  private _environmentRepository?: EnvironmentRepository;
   private _scriptRepository?: ScriptRepository;
   private _interact?: Interact;
   private _deploy?: Deploy;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(
+    private readonly _extensionUri: vscode.Uri,
+    private readonly _interactContractRepository: InteractContractRepository,
+    private readonly _walletRepository: WalletRepository,
+    private readonly _environmentRepository: EnvironmentRepository,
+  ) {}
 
   async _osmiumWatcherCallback(uri: vscode.Uri) {
     if (!this._view) {return;}
@@ -87,10 +89,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   _init() {
     if (vscode.workspace.workspaceFolders?.length) {
       const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-      this._interactContractRepository = new InteractContractRepository(fsPath);
       this._deployContractRepository = new DeployContractRepository(fsPath);
-      this._walletRepository = new WalletRepository(fsPath);
-      this._environmentRepository = new EnvironmentRepository(fsPath);
       this._scriptRepository = new ScriptRepository(fsPath);
 
       this._interact = new Interact(this._interactContractRepository, this._walletRepository);
@@ -187,42 +186,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           response: readResponse.toString(),
         });
         break;
-      case MessageType.EDIT_WALLETS:
-        const walletAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-          title: 'Edit Wallets',
-          ignoreFocusOut: true,
-        });
-
-        if (walletAction === InputAction.ADD) {
-          const inputs = await this._showInputsBox({
-            walletName: 'Enter name',
-            walletAddress: 'Enter address',
-            walletPk: 'Enter private key',
-            walletRpc: 'Enter rpc',
-          });
-          if (!inputs) {return;}
-          if (!inputs.walletAddress.startsWith('0x') || !inputs.walletPk.startsWith('0x')) {return;}
-          if (!inputs.walletRpc.startsWith('http') && !inputs.walletRpc.startsWith('ws')) {return;}
-
-          this._walletRepository.createWallet(
-            inputs.walletName,
-            <Address>inputs.walletAddress,
-            <Address>inputs.walletPk,
-            <RpcUrl>inputs.walletRpc,
-          );
-        }
-
-        if (walletAction === InputAction.REMOVE) {
-          const walletName = await window.showQuickPick(
-            this._walletRepository.getWallets().map((w) => w.name),
-            {
-              title: 'Remove wallet',
-              ignoreFocusOut: true,
-            },
-          );
-          if (!walletName) {return;}
-          this._walletRepository.deleteWallet(walletName);
-        }
+      case MessageType.OPEN_PANEL:
+        await vscode.commands.executeCommand('osmium.openPanel');
         break;
       case MessageType.EDIT_CONTRACTS:
         const contractAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
@@ -238,8 +203,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             contractRpc: 'Enter rpc',
             contractChainId: 'Enter chain id',
           });
-          if (!inputs || !inputs.contractAddress.startsWith('0x')) {return;}
-          if (!inputs.contractRpc.startsWith('http') && !inputs.contractRpc.startsWith('ws')) {return;}
+          if (!inputs || !inputs.contractAddress.startsWith('0x')) return;
+          if (!inputs.contractRpc.startsWith('http') && !inputs.contractRpc.startsWith('ws')) return;
           this._interactContractRepository.createContract(
             <Address>inputs['contractAddress'],
             JSON.parse(inputs['contractAbi']),
@@ -256,7 +221,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               ignoreFocusOut: true,
             },
           );
-          if (!contractName) {return;}
+          if (!contractName) return;
           this._interactContractRepository.deleteContract(contractName);
         }
         break;
@@ -270,8 +235,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             environmentName: 'Enter name',
             environmentRpc: 'Enter rpc',
           });
-          if (!inputs) {return;}
-          if (!inputs.environmentRpc.startsWith('http') && !inputs.environmentRpc.startsWith('ws')) {return;}
+          if (!inputs) return;
+          if (!inputs.environmentRpc.startsWith('http') && !inputs.environmentRpc.startsWith('ws')) return;
 
           this._environmentRepository.createEnvironment(inputs.environmentName, <RpcUrl>inputs.environmentRpc);
         }
@@ -283,7 +248,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
               ignoreFocusOut: true,
             },
           );
-          if (!environmentName) {return;}
+          if (!environmentName) return;
           this._environmentRepository.deleteEnvironment(environmentName);
         }
         break;
