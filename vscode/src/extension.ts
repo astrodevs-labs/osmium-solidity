@@ -63,6 +63,13 @@ async function launchFeatures() {
 	const isAutoFormatEnable = configuration.get('auto format');
 	const isFormatterEnable = configuration.get('formatter');
 	const sidebarProvider = new SidebarProvider(Extcontext.extensionUri);
+	const docsPanelProvider = new DocsPanelProvider(Extcontext.extensionUri);
+
+	Extcontext.subscriptions.push(
+		commands.registerCommand('osmium.documentation', () => {
+			docsPanelProvider.resolveWebview(Extcontext);
+		}),
+	  );
 	
 	if (isAutoFormatEnable && isFormatterEnable && !saveHandler) {
 		saveHandler = workspace.onDidSaveTextDocument(format);
@@ -82,7 +89,7 @@ async function launchFeatures() {
 	
 	if (isSidebarEnable && !interactDeployHandler) {
 		commands.executeCommand('setContext', 'Osmium.showsidebar', true);
-		registerDocumentationPanel(Extcontext);
+		
 		registerWalkthroughPanel(Extcontext);
 		interactDeployHandler = window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider);
 		Extcontext.subscriptions.push(interactDeployHandler);

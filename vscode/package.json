@@ -259,6 +259,7 @@
     "bufferutil": "^4.0.8",
     "sidebar": "workspace:*",
     "env-panel": "workspace:*",
+    "docs-panel": "workspace:*",
     "vscode-languageclient": "^9.0.1"
   }
 }

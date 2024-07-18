@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const outputFolder = __dirname + '/../vscode/dist';
-const projects = ['sidebar', 'env-panel'];
+const projects = ['sidebar', 'env-panel', 'docs-panel'];
 
 for (const project of projects) {
   fs.readdir(`${project}/dist`, { withFileTypes: true }, (err, entries) => {

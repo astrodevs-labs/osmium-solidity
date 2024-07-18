@@ -4,3 +4,4 @@ packages:
   - "vscode"
   - "sidebar"
   - "env-panel"
+  - "docs-panel"
