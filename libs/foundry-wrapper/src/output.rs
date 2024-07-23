@@ -2,7 +2,7 @@ use crate::error::Error;
 use crate::types::FoundryJsonFile;
 use osmium_libs_solidity_path_utils::join_path;
 
-use std::fs::{remove_dir_all, read_dir};
+use std::fs::{read_dir, remove_dir_all};
 use std::io;
 
 pub fn remove_previous_outputs(base_path: &str) -> Result<(), Error> {
@@ -51,9 +51,10 @@ fn get_last_build_info(base_path: &str) -> Result<String, Error> {
 
     for entry in out.flatten() {
         let data: String = std::fs::read_to_string(entry.path())?;
-        if data.contains("\"ast\":") { // Made to differentiate between build-info files and other foundry output files in the same directory
+        if data.contains("\"ast\":") {
+            // Made to differentiate between build-info files and other foundry output files in the same directory
             return Ok(data);
         }
     }
-    return Err(Error::NoBuildInfo);
+    Err(Error::NoBuildInfo)
 }

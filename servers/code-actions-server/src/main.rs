@@ -8,8 +8,8 @@ use osmium_libs_solidity_path_utils::{escape_path, normalize_path};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tower_lsp::jsonrpc::Result;
-use tower_lsp::lsp_types::{Location as LspLocation, Position};
 use tower_lsp::lsp_types::*;
+use tower_lsp::lsp_types::{Location as LspLocation, Position};
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 struct Backend {
@@ -173,7 +173,7 @@ impl LanguageServer for Backend {
         position.line += 1;
         position.character += 1;
         let edits = self.code_actions_provider.refactor(
-            &normalize_path(params.text_document_position.text_document.uri.path()), 
+            &normalize_path(params.text_document_position.text_document.uri.path()),
             osmium_libs_solidity_code_actions::Position {
                 line: position.line,
                 column: position.character,
@@ -185,24 +185,27 @@ impl LanguageServer for Backend {
                 range: Range {
                     start: Position {
                         line: edit.start.line - 1,
-                        character: edit.start.column - 1
+                        character: edit.start.column - 1,
                     },
                     end: Position {
                         line: edit.end.line - 1,
-                        character: edit.end.column - 1
-                    }
+                        character: edit.end.column - 1,
+                    },
                 },
-                new_text: params.new_name.clone()
+                new_text: params.new_name.clone(),
             };
             let url = Url::from_file_path(&edit.uri).unwrap();
             if let Some(arr) = workspace_edits.get_mut(&url) {
                 arr.push(new_edit)
-            }
-            else {
+            } else {
                 workspace_edits.insert(url, vec![new_edit]);
             }
         });
-        return Ok(Some(WorkspaceEdit{changes:Some(workspace_edits), document_changes: None, change_annotations: None }))
+        return Ok(Some(WorkspaceEdit {
+            changes: Some(workspace_edits),
+            document_changes: None,
+            change_annotations: None,
+        }));
     }
 
     async fn shutdown(&self) -> Result<()> {

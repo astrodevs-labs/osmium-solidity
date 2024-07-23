@@ -162,8 +162,7 @@ impl<'ast> Visit<'ast> for PositionNodeVisitor {
     fn visit_new(&mut self, new_expression: &'ast NewExpression) {
         if is_node_in_range(&new_expression.src, &self.position, &self.source) {
             self.above_node.clone_from(&self.node);
-            self.node = Some(InteractableNode::NewExpression(
-                new_expression.clone()));
+            self.node = Some(InteractableNode::NewExpression(new_expression.clone()));
         }
         visit::visit_new(self, new_expression);
     }

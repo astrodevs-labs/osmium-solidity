@@ -246,11 +246,13 @@ impl InteractableNode {
             InteractableNode::ModifierInvocation(node) => source_location_to_range(&node.src),
             InteractableNode::InheritanceSpecifier(node) => source_location_to_range(&node.src),
             InteractableNode::Identifier(node) => source_location_to_range(&node.src),
-            InteractableNode::MemberAccess(node) => if let Some(location) = &node.member_location {
-                source_location_to_range(&location)
-            } else {
-                source_location_to_range(&node.src)
-            },
+            InteractableNode::MemberAccess(node) => {
+                if let Some(location) = &node.member_location {
+                    source_location_to_range(location)
+                } else {
+                    source_location_to_range(&node.src)
+                }
+            }
             InteractableNode::NewExpression(node) => source_location_to_range(&node.src),
             InteractableNode::UserDefinedTypeName(udt) => source_location_to_range(&udt.src),
             InteractableNode::IdentifierPath(ip) => source_location_to_range(&ip.src),

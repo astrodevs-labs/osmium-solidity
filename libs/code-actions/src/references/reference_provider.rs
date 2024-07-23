@@ -51,7 +51,6 @@ impl ReferenceProvider {
             None => return None,
         };
 
-
         let ref_id = match found_node.get_reference_id() {
             Some(id) => id,
             None => match found_node {

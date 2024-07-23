@@ -70,8 +70,7 @@ impl CodeActionsProvider {
             for reference in refs {
                 refactors.push(reference);
             }
-
         }
-        return refactors
+        refactors
     }
 }
