@@ -154,9 +154,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
 
     forgeFmt(args)
       .then((result) => {
-        if (result.exitCode === 0) {
-          vscode.window.showInformationMessage('Forge fmt ran successfully.');
-        } else {
+        if (result.exitCode !== 0) {
           vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
 
           console.log(result.output);
