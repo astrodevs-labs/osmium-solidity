@@ -67,7 +67,7 @@
       ]
     },
     "configuration": {
-      "title": "Osmium",
+      "title": "Osmium-solidity",
       "properties": {
         "Osmium.linter": {
           "type": "boolean",
