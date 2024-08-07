@@ -13,7 +13,7 @@ use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct SolidFile {
-    pub data: osmium_libs_solidity_ast_extractor::File,
+    pub data: osmium_libs_solidity_ast_extractor::Output,
     pub path: String,
     pub content: String,
 }
@@ -108,7 +108,7 @@ impl SolidLinter {
     fn _add_file(
         &mut self,
         path: &str,
-        ast: osmium_libs_solidity_ast_extractor::File,
+        ast: osmium_libs_solidity_ast_extractor::Output,
         content: &str,
     ) {
         if self._file_exists(path) {

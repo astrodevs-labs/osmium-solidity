@@ -3,10 +3,10 @@
  * Function to retrieve contract nodes from AST
  * author: 0xMemoryGrinder
 */
-use syn_solidity::{ItemContract, Visit};
+use slang_solidity::cst::Node;
 
 struct ContractVisitor {
-    contracts: Vec<ItemContract>,
+    contracts: Vec<>,
 }
 
 impl ContractVisitor {
@@ -17,12 +17,6 @@ impl ContractVisitor {
     }
 }
 
-impl<'ast> Visit<'ast> for ContractVisitor {
-    fn visit_item_contract(&mut self, i: &ItemContract) {
-        self.contracts.push(i.clone());
-        syn_solidity::visit::visit_item_contract(self, i);
-    }
-}
 
 pub fn retrieve_contract_nodes(ast: &syn_solidity::File) -> Vec<ItemContract> {
     let mut visitor = ContractVisitor::new();
