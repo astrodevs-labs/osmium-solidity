@@ -42,14 +42,6 @@
           "name": "Osmium: Deploy/Interact",
           "when": "Osmium.showsidebar"
         }
-      ],
-      "documentation": [
-        {
-          "type": "webview",
-          "id": "osmium.documentation",
-          "name": "Osmium Documentation",
-          "when": "Osmium.showdocumentation"
-        }
       ]
     },
     "menus": {

@@ -13,7 +13,7 @@ export class DocsPanelProvider {
     } else {
       this.panel = vscode.window.createWebviewPanel(
         DocsPanelProvider.viewType,
-        'Environment Panel',
+        'Osmium Documentation',
         vscode.ViewColumn.One,
         {
           enableScripts: true,
