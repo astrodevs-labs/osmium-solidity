@@ -50,7 +50,7 @@ export async function activate(context: ExtensionContext) {
 }
 
 async function launchFeatures() {
-	const configuration = workspace.getConfiguration('Osmium-solidity');
+	const configuration = workspace.getConfiguration('osmium-solidity');
 
 	const isLinterEnable = configuration.get('linter');
 	const isSlitherEnable = configuration.get('slither');

@@ -59,49 +59,49 @@
       ]
     },
     "configuration": {
-      "title": "Osmium-solidity",
+      "title": "osmium-solidity",
       "properties": {
-        "Osmium.linter": {
+        "osmium-solidity.linter": {
           "type": "boolean",
           "default": true,
           "description": "The linter is a tool that will underline some issues for you. It will help you to write better code."
         },
-        "Osmium.formatter": {
+        "osmium-solidity.formatter": {
           "type": "boolean",
           "default": true,
           "description": "The formatter allows you to format your document with a right click and by choosing “Format Document” or by pressing Ctrl+Shift+I"
         },
-        "Osmium.gas estimation": {
+        "osmium-solidity.gas estimation": {
           "type": "boolean",
           "default": true,
           "description": "The gas estimation is shown on your contrat after you save the file. This will show you how much it will cost to execute this contrat. "
         },
-        "Osmium.slither": {
+        "osmium-solidity.slither": {
           "type": "boolean",
           "default": true,
           "description": "Slither is going to report you some security issues that are in your functions and contracts."
         },
-        "Osmium.sidebar": {
+        "osmium-solidity.sidebar": {
           "type": "boolean",
           "default": true,
           "description": "This feature will allow you to see the sidebar with the deploy and interact buttons. On this interface, you will be able to deploy your contract and interact with it."
         },
-        "Osmium.tests": {
+        "osmium-solidity.tests": {
           "type": "boolean",
           "default": true,
           "description": "By clicking on the test button, you will be able to run your tests via foundry feature."
         },
-        "Osmium.compiler": {
+        "osmium-solidity.compiler": {
           "type": "boolean",
           "default": true,
           "description": "When you are saving your file, the compiler will try to compile your function. If there is an issue it will be shown in the problems section."
         },
-        "Osmium.references": {
+        "osmium-solidity.references": {
           "type": "boolean",
           "default": true,
           "description": "The reference is when you ctrl click on a variable and you want to see where it is declared. This feature will show you where it is declared and where it is used."
         },
-        "Osmium.auto format": {
+        "osmium-solidity.auto format": {
           "type": "boolean",
           "default": false,
           "description": "The auto format can be used only if the formatter is enable and will format you file on save instead of right click on the file and choose Format Document."
