@@ -10,7 +10,7 @@ import { getNonce, getTomlValue } from './utils';
 import { ScriptRepository } from './actions/ScriptRepository';
 import { DeployContractRepository } from './actions/DeployContractRepository';
 import { Deploy } from './actions/Deploy';
-import { InputAction, MessageType } from './enums';
+import { MessageType } from './enums';
 import { Message } from './types';
 import * as path from 'path';
 
@@ -33,7 +33,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   ) {}
 
   async _osmiumWatcherCallback(uri: vscode.Uri) {
-    if (!this._view) {return;}
+    if (!this._view) {
+      return;
+    }
     const basename = path.basename(uri.fsPath, '.json');
     if (basename === 'contracts') {
       this._interactContractRepository?.load();
@@ -67,23 +69,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       type: MessageType.DEPLOY_CONTRACTS,
       contracts: this._deployContractRepository?.getContracts(),
     });
-  }
-
-  async _showInputsBox(inputsBox: any) {
-    const tmp = inputsBox;
-
-    for (const input of Object.keys(inputsBox)) {
-      const value = await window.showInputBox({
-        prompt: inputsBox[input],
-        ignoreFocusOut: true,
-      });
-      if (!value) {
-        return undefined;
-      }
-      tmp[input] = value;
-    }
-
-    return tmp;
   }
 
   _init() {
@@ -188,69 +173,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         break;
       case MessageType.OPEN_PANEL:
         await vscode.commands.executeCommand('osmium.show-env-panel');
-        break;
-      case MessageType.EDIT_CONTRACTS:
-        const contractAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-          title: 'Edit Wallets',
-          ignoreFocusOut: true,
-        });
-
-        if (contractAction === InputAction.ADD) {
-          const inputs = await this._showInputsBox({
-            contractName: 'Enter name',
-            contractAddress: 'Enter address',
-            contractAbi: 'Enter abi',
-            contractRpc: 'Enter rpc',
-            contractChainId: 'Enter chain id',
-          });
-          if (!inputs || !inputs.contractAddress.startsWith('0x')) return;
-          if (!inputs.contractRpc.startsWith('http') && !inputs.contractRpc.startsWith('ws')) return;
-          this._interactContractRepository.createContract(
-            <Address>inputs['contractAddress'],
-            JSON.parse(inputs['contractAbi']),
-            parseInt(inputs['contractChainId']),
-            inputs['contractName'],
-            <RpcUrl>inputs['contractRpc'],
-          );
-        }
-        if (contractAction === InputAction.REMOVE) {
-          const contractName = await window.showQuickPick(
-            this._interactContractRepository.getContracts().map((c) => c.name),
-            {
-              title: 'Remove contract',
-              ignoreFocusOut: true,
-            },
-          );
-          if (!contractName) return;
-          this._interactContractRepository.deleteContract(contractName);
-        }
-        break;
-      case MessageType.EDIT_ENVIRONMENT:
-        const environmentAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-          title: 'Edit environment',
-          ignoreFocusOut: true,
-        });
-        if (environmentAction === InputAction.ADD) {
-          const inputs = await this._showInputsBox({
-            environmentName: 'Enter name',
-            environmentRpc: 'Enter rpc',
-          });
-          if (!inputs) return;
-          if (!inputs.environmentRpc.startsWith('http') && !inputs.environmentRpc.startsWith('ws')) return;
-
-          this._environmentRepository.createEnvironment(inputs.environmentName, <RpcUrl>inputs.environmentRpc);
-        }
-        if (environmentAction === InputAction.REMOVE) {
-          const environmentName = await window.showQuickPick(
-            this._environmentRepository.getEnvironments().map((e) => e.name),
-            {
-              title: 'Remove environment',
-              ignoreFocusOut: true,
-            },
-          );
-          if (!environmentName) return;
-          this._environmentRepository.deleteEnvironment(environmentName);
-        }
         break;
       case MessageType.DEPLOY_SCRIPT:
         const deployScriptResponse = await this._deploy.deployScript({

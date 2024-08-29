@@ -6,7 +6,6 @@ import { EnvironmentRepository } from './actions/EnvironmentRepository';
 import { Message } from './types';
 import { MessageType } from './enums';
 import path from 'path';
-import { parseAbi } from 'viem';
 
 export class EnvPanelProvider {
   public static readonly viewType = 'osmium.env-panel';

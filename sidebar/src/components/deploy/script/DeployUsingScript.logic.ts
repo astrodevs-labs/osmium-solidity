@@ -1,9 +1,15 @@
 import { IDeployScriptForm, VSCode } from '@/types';
-import { useEdit } from '@hooks/useEdit.ts';
+import { Scripts, Environments } from '@backend/actions/types';
+import { MessageType } from '@backend/enums';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environments: Environments, setIsPending: (isPending: boolean) => void) => {
+export const useDeployUsingScript = (
+  vscode: VSCode,
+  scripts: Scripts,
+  environments: Environments,
+  setIsPending: (isPending: boolean) => void,
+) => {
   const form = useFormContext<IDeployScriptForm>();
   const {
     formState: { errors },
