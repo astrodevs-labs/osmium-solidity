@@ -6,6 +6,7 @@ import { EnvironmentRepository } from './actions/EnvironmentRepository';
 import { Message } from './types';
 import { MessageType } from './enums';
 import path from 'path';
+import { parseAbi } from 'viem';
 
 export class EnvPanelProvider {
   public static readonly viewType = 'osmium.env-panel';
@@ -76,6 +77,33 @@ export class EnvPanelProvider {
         break;
       case MessageType.EDIT_WALLET:
         this._walletRepository.updateWallet(message.data.id, message.data.key, message.data.value);
+        break;
+      case MessageType.ADD_WALLET:
+        this._walletRepository.createWallet(message.data.name, message.data.address, message.data.privateKey);
+        break;
+      case MessageType.DELETE_ENVIRONMENT:
+        this._environmentRepository.deleteEnvironment(message.data.id);
+        break;
+      case MessageType.EDIT_ENVIRONMENT:
+        this._environmentRepository.updateEnvironment(message.data.id, message.data.key, message.data.value);
+        break;
+      case MessageType.ADD_ENVIRONMENT:
+        this._environmentRepository.createEnvironment(message.data.name, message.data.rpc);
+        break;
+      case MessageType.DELETE_CONTRACT:
+        this._interactContractRepository.deleteContract(message.data.id);
+        break;
+      case MessageType.EDIT_CONTRACT:
+        this._interactContractRepository.updateContract(message.data.id, message.data.key, message.data.value);
+        break;
+      case MessageType.ADD_CONTRACT:
+        this._interactContractRepository.createContract(
+          message.data.address,
+          JSON.parse(message.data.abi),
+          message.data.chainId,
+          message.data.name,
+          message.data.rpc,
+        );
         break;
     }
   }

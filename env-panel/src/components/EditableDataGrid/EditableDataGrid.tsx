@@ -8,13 +8,14 @@ interface EditableDataGridProps {
   data: any[];
   deleteCallback: (id: string) => void;
   editCallback: (id: string, key: string, value: string) => void;
+  gridId: string;
 }
 
 export const EditableDataGrid = (props: EditableDataGridProps) => {
-  const logic = useEditableDataGridLogic(props.deleteCallback, props.editCallback);
+  const logic = useEditableDataGridLogic(props.deleteCallback, props.editCallback, props.gridId);
 
   return (
-    <VSCodeDataGrid id="data-grid">
+    <VSCodeDataGrid id={props.gridId}>
       <VSCodeDataGridRow>
         {props.headers.map((header, index) => (
           <VSCodeDataGridCell cellType="columnheader" grid-column={index + 1}>
@@ -26,8 +27,8 @@ export const EditableDataGrid = (props: EditableDataGridProps) => {
       {props.data.map((line) => {
         const keys = Object.keys(line).filter((key) => key !== 'id');
         const cells = keys.map((key, index) => (
-          <VSCodeDataGridCell className={`${line.id} ${key}`} id="editable-cell" grid-column={index + 1}>
-            {line[key]}
+          <VSCodeDataGridCell className={`${line.id} ${key}`} id={'editable-cell'} grid-column={index + 1}>
+            {key === 'abi' ? JSON.stringify(line[key]) : line[key]}
           </VSCodeDataGridCell>
         ));
         cells.push(

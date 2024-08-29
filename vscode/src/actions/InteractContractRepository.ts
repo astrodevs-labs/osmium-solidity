@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { Abi, Address } from 'viem';
-import { InteractContract, InteractContracts, RpcUrl } from './types';
+import { Environment, InteractContract, InteractContracts, RpcUrl } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 export class InteractContractRepository {
@@ -56,6 +56,19 @@ export class InteractContractRepository {
       this._contracts.push(contract);
     }
     this._save();
+  }
+
+  public updateContract(
+    id: InteractContract['id'],
+    key: 'name' | 'address' | 'abi' | 'chainId' | 'rpc',
+    value: string,
+  ): void {
+    const environment = this._contracts.find((e) => e.id === id);
+    if (environment) {
+      // @ts-ignore to change
+      environment[key] = value;
+      this._save();
+    }
   }
 
   public deleteContract(id: InteractContract['id']): void {

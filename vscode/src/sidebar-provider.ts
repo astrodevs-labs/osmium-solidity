@@ -187,7 +187,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         });
         break;
       case MessageType.OPEN_PANEL:
-        await vscode.commands.executeCommand('osmium.openPanel');
+        await vscode.commands.executeCommand('osmium.show-env-panel');
         break;
       case MessageType.EDIT_CONTRACTS:
         const contractAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {

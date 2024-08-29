@@ -4,8 +4,9 @@ import { useEffect } from 'react';
 export const useEditableDataGridLogic = (
   deleteCallback: (id: string) => void,
   editCallback: (id: string, key: string, value: string) => void,
+  gridId: string,
 ) => {
-  const dataGrid = document.getElementById('data-grid');
+  const dataGrid = document.getElementById(gridId);
 
   useEffect(() => {
     if (dataGrid) {
