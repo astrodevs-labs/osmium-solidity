@@ -1,10 +1,9 @@
 use crate::{error::SlitherError, types::SlitherResult};
 use osmium_libs_solidity_lsp_utils::log::{error, trace};
+use regex::Regex;
 use std::process::Stdio;
 use tokio::{io::AsyncReadExt, process::Command};
 use tower_lsp::lsp_types::Diagnostic;
-use regex::Regex;
-
 
 pub async fn parse_slither_out(
     uri: &str,
@@ -24,7 +23,6 @@ pub async fn parse_slither_out(
 
     let mut buffer = tokio::io::BufReader::new(out);
     let mut dst = String::new();
-
 
     output.wait().await?;
     buffer.read_to_string(&mut dst).await?;
@@ -50,8 +48,7 @@ pub async fn parse_slither_out(
     Ok(results)
 }
 
-async fn get_slither_error( uri: &str, workspace: &str ) ->Result<(), SlitherError> {
-
+async fn get_slither_error(uri: &str, workspace: &str) -> Result<(), SlitherError> {
     let mut output = exec_slither_err(uri, workspace)?;
 
     let errout = match output.stderr.take() {
@@ -69,13 +66,16 @@ async fn get_slither_error( uri: &str, workspace: &str ) ->Result<(), SlitherErr
     output.wait().await?;
     errbuffer.read_to_string(&mut errdst).await?;
 
-    if errdst.len() > 0 && errdst.contains("Error: Source file requires different compiler version") {
+    if errdst.len() > 0 && errdst.contains("Error: Source file requires different compiler version")
+    {
         let regex = Regex::new(r"(?m)(?:current compiler is.+\))").unwrap();
         let match_ = regex.find(&errdst).unwrap().as_str();
-        let match_ = &match_[..match_.len()-1];
-        return Err(SlitherError::Unknown(format!("Slither needs a different version from the one specified in file: {}", match_)));
-    } 
-    else if errdst.len() > 0 && errdst.contains("Invalid option for --evm-version:") {
+        let match_ = &match_[..match_.len() - 1];
+        return Err(SlitherError::Unknown(format!(
+            "Slither needs a different version from the one specified in file: {}",
+            match_
+        )));
+    } else if errdst.len() > 0 && errdst.contains("Invalid option for --evm-version:") {
         return Err(SlitherError::Unknown("Please explicitly specify the evm version in the foundry.toml file to a compatible version of your solc compiler version".to_string()));
     }
     Ok(())

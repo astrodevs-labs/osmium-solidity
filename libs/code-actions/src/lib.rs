@@ -2,6 +2,7 @@ mod code_actions_provider;
 mod completions;
 mod error;
 mod references;
+mod test_utils;
 mod types;
 mod utils;
 
