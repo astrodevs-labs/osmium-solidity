@@ -1,16 +1,18 @@
 import { IInteractForm, VSCode } from '@/types';
 import { InteractContract } from '@backend/actions/types';
 import { useFormContext } from 'react-hook-form';
-import { useEdit } from '@hooks/useEdit.ts';
 
 export const useInteractContracts = (contracts: InteractContract[], vscode: VSCode) => {
-  const { editWallet, editContract } = useEdit(vscode);
   const {
     register,
     watch,
     formState: { errors },
   } = useFormContext<IInteractForm>();
   const selectedContract = watch('contract');
+
+  const openPanel = () => {
+    vscode.postMessage({ type: 'OPEN_PANEL' });
+  };
 
   const functions =
     contracts
@@ -21,5 +23,5 @@ export const useInteractContracts = (contracts: InteractContract[], vscode: VSCo
         }
       }) || [];
 
-  return { register, functions, errors, editWallet, editContract };
+  return { register, functions, errors, openPanel };
 };

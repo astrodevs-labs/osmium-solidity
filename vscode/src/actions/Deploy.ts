@@ -1,15 +1,12 @@
-import { InteractContractRepository } from './InteractContractRepository';
 import { WalletRepository } from './WalletRepository';
 import { ScriptRepository } from './ScriptRepository';
-import { Address } from 'viem';
-import { ContractParams, Script } from './types';
+import { ContractParams } from './types';
 import { EnvironmentRepository } from './EnvironmentRepository';
 import { exec } from 'child_process';
 import { DeployContractRepository } from './DeployContractRepository';
 import fs from 'fs';
 import { getTomlValue } from '../utils';
 import path from 'path';
-import { array } from 'vscode-languageclient/lib/common/utils/is';
 
 export interface DeployScriptOptions {
   environmentId: string;

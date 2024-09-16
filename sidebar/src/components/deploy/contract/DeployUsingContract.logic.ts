@@ -1,7 +1,6 @@
 import { IDeployContractForm, VSCode } from '@/types';
 import { DeployContracts, Environments, Wallets } from '@backend/actions/types';
-import { MessageType } from '@backend/enums.ts';
-import { useEdit } from '@hooks/useEdit.ts';
+import { MessageType } from '@backend/enums';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
@@ -12,7 +11,6 @@ export const useDeployUsingContract = (
   environments: Environments,
   setIsPending: (isPending: boolean) => void,
 ) => {
-  const { editEnvironment, editWallet } = useEdit(vscode);
   const form = useFormContext<IDeployContractForm>();
   const {
     formState: { errors },
@@ -36,6 +34,10 @@ export const useDeployUsingContract = (
     return () => window.removeEventListener('message', listener);
   }, [setIsPending]);
 
+  const openPanel = () => {
+    vscode.postMessage({ type: MessageType.OPEN_PANEL });
+  };
+
   useEffect(() => {
     form.setValue('wallet', wallets[0]?.id || '');
   }, [wallets]);
@@ -48,5 +50,5 @@ export const useDeployUsingContract = (
     form.setValue('environment', environments[0]?.id || '');
   }, [environments]);
 
-  return { form, errors, response, editEnvironment, editWallet };
+  return { form, errors, response, openPanel };
 };

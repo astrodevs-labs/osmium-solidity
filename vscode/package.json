@@ -120,6 +120,10 @@
       {
         "command": "osmium.gas-estimation",
         "title": "Osmium: Gas Estimation"
+      },
+      {
+        "command": "osmium.show-env-panel",
+        "title": "Osmium: Open environment panel"
       }
     ],
     "languages": [
@@ -190,6 +194,7 @@
   "dependencies": {
     "bufferutil": "^4.0.8",
     "sidebar": "workspace:*",
+    "env-panel": "workspace:*",
     "vscode-languageclient": "^9.0.1"
   }
 }
