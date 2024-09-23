@@ -1,0 +1,68 @@
+.getStarted-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    min-width: 200px;
+    min-height: 0px;
+    align-items: center;
+    border-left: 3px solid grey;
+    background-color: rgba(128, 128, 128, 0.1);
+    margin: 0.3rem;
+    user-select: none;
+    cursor: pointer;
+  }
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  padding: 15px;
+  display: flex;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: bold;
+  user-select: none;
+}
+  
+.text-container {
+  align-self: flex-start;
+  width: 100%;
+  padding-left: 0.7rem; 
+  line-height: 0.5;
+  user-select: none;
+}
+  
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  user-select: none;
+
+}
+
+.title {
+  font-size: 15px;
+  font-weight: bold;
+  color: "rgba(255, 255, 255, 0.5)";
+  user-select: none;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: "rgba(255, 255, 255, 0.5)";
+  user-select: none;
+}
+
+.documentation-button {
+  min-width: 250px;
+  max-width: 250px;
+  margin-bottom: 0.2rem;
+  user-select: none;
+}
+
+.walkthrough-button {
+  min-width: 250px;
+  max-width: 250px;
+  margin-bottom: 0.6rem;
+  user-select: none;
+}
