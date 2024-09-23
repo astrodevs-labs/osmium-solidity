@@ -100,8 +100,7 @@ pub enum InteractableNode {
     InheritanceSpecifier(InheritanceSpecifier),
     Identifier(Identifier),
     MemberAccess(MemberAccess),
-    #[allow(dead_code)]
-    NewExpression(NewExpression, Box<InteractableNode>),
+    NewExpression(NewExpression),
     UserDefinedTypeName(UserDefinedTypeName),
     IdentifierPath(IdentifierPath),
 }
@@ -125,7 +124,7 @@ impl InteractableNode {
             InteractableNode::InheritanceSpecifier(node) => node.id,
             InteractableNode::Identifier(node) => node.id,
             InteractableNode::MemberAccess(node) => node.id,
-            InteractableNode::NewExpression(node, _) => node.id,
+            InteractableNode::NewExpression(node) => node.id,
             InteractableNode::UserDefinedTypeName(udt) => udt.id,
             InteractableNode::IdentifierPath(ip) => ip.id,
         }
@@ -247,8 +246,14 @@ impl InteractableNode {
             InteractableNode::ModifierInvocation(node) => source_location_to_range(&node.src),
             InteractableNode::InheritanceSpecifier(node) => source_location_to_range(&node.src),
             InteractableNode::Identifier(node) => source_location_to_range(&node.src),
-            InteractableNode::MemberAccess(node) => source_location_to_range(&node.src),
-            InteractableNode::NewExpression(node, _) => source_location_to_range(&node.src),
+            InteractableNode::MemberAccess(node) => {
+                if let Some(location) = &node.member_location {
+                    source_location_to_range(location)
+                } else {
+                    source_location_to_range(&node.src)
+                }
+            }
+            InteractableNode::NewExpression(node) => source_location_to_range(&node.src),
             InteractableNode::UserDefinedTypeName(udt) => source_location_to_range(&udt.src),
             InteractableNode::IdentifierPath(ip) => source_location_to_range(&ip.src),
         }
