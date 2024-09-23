@@ -16,7 +16,7 @@ import { EnvPanelProvider } from './env-panel-provider';
 import { InteractContractRepository } from './actions/InteractContractRepository';
 import { WalletRepository } from './actions/WalletRepository';
 import { EnvironmentRepository } from './actions/EnvironmentRepository';
-import { registerDocumentationPanel } from "./documentation-provider";
+import { DocsPanelProvider } from "./docs-panel-provider";
 import { registerWalkthroughPanel } from "./walkthrough-provider";
 
 let linterClient: LanguageClient | null;
@@ -62,7 +62,6 @@ async function launchFeatures() {
 	const isreferencesEnable = configuration.get('references');
 	const isAutoFormatEnable = configuration.get('auto format');
 	const isFormatterEnable = configuration.get('formatter');
-	const sidebarProvider = new SidebarProvider(Extcontext.extensionUri);
 	const docsPanelProvider = new DocsPanelProvider(Extcontext.extensionUri);
 
 	Extcontext.subscriptions.push(
@@ -89,6 +88,30 @@ async function launchFeatures() {
 	
 	if (isSidebarEnable && !interactDeployHandler) {
 		commands.executeCommand('setContext', 'Osmium.showsidebar', true);
+
+    const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath || '';
+    const interactContractRepository = new InteractContractRepository(fsPath);
+    const walletRepository = new WalletRepository(fsPath);
+    const environmentRepository = new EnvironmentRepository(fsPath);
+
+    const sidebarProvider = new SidebarProvider(
+      Extcontext.extensionUri,
+      interactContractRepository,
+      walletRepository,
+      environmentRepository,
+    );
+    const envPanelProvider = new EnvPanelProvider(
+      Extcontext.extensionUri,
+      interactContractRepository,
+      walletRepository,
+      environmentRepository,
+    );
+
+    Extcontext.subscriptions.push(
+      vscode.commands.registerCommand('osmium.show-env-panel', () => {
+        envPanelProvider.resolveWebview(Extcontext);
+      }),
+    );
 		
 		registerWalkthroughPanel(Extcontext);
 		interactDeployHandler = window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider);
@@ -154,30 +177,6 @@ async function launchFeatures() {
 		testsPositionsClient = null;
 	}
 
-  const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath || '';
-  const interactContractRepository = new InteractContractRepository(fsPath);
-  const walletRepository = new WalletRepository(fsPath);
-  const environmentRepository = new EnvironmentRepository(fsPath);
-
-  const sidebarProvider = new SidebarProvider(
-    Extcontext.extensionUri,
-    interactContractRepository,
-    walletRepository,
-    environmentRepository,
-  );
-  const envPanelProvider = new EnvPanelProvider(
-    Extcontext.extensionUri,
-    interactContractRepository,
-    walletRepository,
-    environmentRepository,
-  );
-
-  Extcontext.subscriptions.push(
-    vscode.commands.registerCommand('osmium.show-env-panel', () => {
-      envPanelProvider.resolveWebview(Extcontext);
-    }),
-  );
-
   if (isAutoFormatEnable && isFormatterEnable && !saveHandler) {
     saveHandler = workspace.onDidSaveTextDocument(format);
   } else if (!isAutoFormatEnable && saveHandler) {
@@ -191,16 +190,6 @@ async function launchFeatures() {
     formatterHandlers?.workspaceDisposable.dispose();
     formatterHandlers?.formatterDisposable.dispose();
     formatterHandlers = null;
-  }
-
-  if (isSidebarEnable && !interactDeployHandler) {
-    commands.executeCommand('setContext', 'Osmium.showsidebar', true);
-    interactDeployHandler = window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider);
-    Extcontext.subscriptions.push(interactDeployHandler);
-  } else if (!isSidebarEnable && interactDeployHandler) {
-    commands.executeCommand('setContext', 'Osmium.showsidebar', false);
-    interactDeployHandler.dispose();
-    interactDeployHandler = null;
   }
 
   if (isGasEstimationEnable && !gasEstimationHandler) {
