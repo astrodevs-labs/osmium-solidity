@@ -171,7 +171,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         break;
       case MessageType.OPEN_PANEL:
         await vscode.commands.executeCommand('osmium.show-env-panel');
-      case MessageType.EDIT_WALLETS:
+      /*case MessageType.EDIT_WALLETS:
         const walletAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
           title: 'Edit Wallets',
           ignoreFocusOut: true,
@@ -270,7 +270,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           if (!environmentName) {return;}
           this._environmentRepository.deleteEnvironment(environmentName);
         }
-        break;
+        break;*/
       case MessageType.DEPLOY_SCRIPT:
         const deployScriptResponse = await this._deploy.deployScript({
           environmentId: message.data.environment,
