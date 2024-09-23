@@ -104,3 +104,26 @@ impl AutoCompleteProvider {
         vec![]
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::test_utils::{create_test_ast_file, create_test_ast_file_struct_definition};
+
+    use super::*;
+
+    #[test]
+    fn test_get_suggestions() {
+        let provider = AutoCompleteProvider::new();
+        let uri = "test.sol";
+        let position = Position {
+            line: 10,
+            column: 15,
+        };
+        let files = vec![
+            create_test_ast_file(),
+            create_test_ast_file_struct_definition(),
+        ];
+        let completes = provider.get_suggestions(uri, position, &files);
+        assert_eq!(completes.len(), 4);
+    }
+}

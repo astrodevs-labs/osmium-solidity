@@ -33,9 +33,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   ) {}
 
   async _osmiumWatcherCallback(uri: vscode.Uri) {
-    if (!this._view) {
-      return;
-    }
+    if (!this._view) {return;}
     const basename = path.basename(uri.fsPath, '.json');
     if (basename === 'contracts') {
       this._interactContractRepository?.load();
@@ -173,7 +171,106 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         break;
       case MessageType.OPEN_PANEL:
         await vscode.commands.executeCommand('osmium.show-env-panel');
+      /*case MessageType.EDIT_WALLETS:
+        const walletAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
+          title: 'Edit Wallets',
+          ignoreFocusOut: true,
+        });
+
+        if (walletAction === InputAction.ADD) {
+          const inputs = await this._showInputsBox({
+            walletName: 'Enter name',
+            walletAddress: 'Enter address',
+            walletPk: 'Enter private key',
+            walletRpc: 'Enter rpc',
+          });
+          if (!inputs) {return;}
+          if (!inputs.walletAddress.startsWith('0x') || !inputs.walletPk.startsWith('0x')) {return;}
+          if (!inputs.walletRpc.startsWith('http') && !inputs.walletRpc.startsWith('ws')) {return;}
+
+          this._walletRepository.createWallet(
+            inputs.walletName,
+            <Address>inputs.walletAddress,
+            <Address>inputs.walletPk,
+            <RpcUrl>inputs.walletRpc,
+          );
+        }
+
+        if (walletAction === InputAction.REMOVE) {
+          const walletName = await window.showQuickPick(
+            this._walletRepository.getWallets().map((w) => w.name),
+            {
+              title: 'Remove wallet',
+              ignoreFocusOut: true,
+            },
+          );
+          if (!walletName) {return;}
+          this._walletRepository.deleteWallet(walletName);
+        }
         break;
+      case MessageType.EDIT_CONTRACTS:
+        const contractAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
+          title: 'Edit Wallets',
+          ignoreFocusOut: true,
+        });
+
+        if (contractAction === InputAction.ADD) {
+          const inputs = await this._showInputsBox({
+            contractName: 'Enter name',
+            contractAddress: 'Enter address',
+            contractAbi: 'Enter abi',
+            contractRpc: 'Enter rpc',
+            contractChainId: 'Enter chain id',
+          });
+          if (!inputs || !inputs.contractAddress.startsWith('0x')) {return;}
+          if (!inputs.contractRpc.startsWith('http') && !inputs.contractRpc.startsWith('ws')) {return;}
+          this._interactContractRepository.createContract(
+            <Address>inputs['contractAddress'],
+            JSON.parse(inputs['contractAbi']),
+            parseInt(inputs['contractChainId']),
+            inputs['contractName'],
+            <RpcUrl>inputs['contractRpc'],
+          );
+        }
+        if (contractAction === InputAction.REMOVE) {
+          const contractName = await window.showQuickPick(
+            this._interactContractRepository.getContracts().map((c) => c.name),
+            {
+              title: 'Remove contract',
+              ignoreFocusOut: true,
+            },
+          );
+          if (!contractName) {return;}
+          this._interactContractRepository.deleteContract(contractName);
+        }
+        break;
+      case MessageType.EDIT_ENVIRONMENT:
+        const environmentAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
+          title: 'Edit environment',
+          ignoreFocusOut: true,
+        });
+        if (environmentAction === InputAction.ADD) {
+          const inputs = await this._showInputsBox({
+            environmentName: 'Enter name',
+            environmentRpc: 'Enter rpc',
+          });
+          if (!inputs) {return;}
+          if (!inputs.environmentRpc.startsWith('http') && !inputs.environmentRpc.startsWith('ws')) {return;}
+
+          this._environmentRepository.createEnvironment(inputs.environmentName, <RpcUrl>inputs.environmentRpc);
+        }
+        if (environmentAction === InputAction.REMOVE) {
+          const environmentName = await window.showQuickPick(
+            this._environmentRepository.getEnvironments().map((e) => e.name),
+            {
+              title: 'Remove environment',
+              ignoreFocusOut: true,
+            },
+          );
+          if (!environmentName) {return;}
+          this._environmentRepository.deleteEnvironment(environmentName);
+        }
+        break;*/
       case MessageType.DEPLOY_SCRIPT:
         const deployScriptResponse = await this._deploy.deployScript({
           environmentId: message.data.environment,

@@ -154,7 +154,9 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
 
     forgeFmt(args)
       .then((result) => {
-        if (result.exitCode !== 0) {
+        if (result.exitCode === 0) {
+          vscode.window.showInformationMessage('Forge fmt ran successfully.');
+        } else {
           vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
 
           console.log(result.output);
@@ -167,10 +169,10 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
   });
 
   const formatter = vscode.languages.registerDocumentFormattingEditProvider('solidity', {
-    provideDocumentFormattingEdits: async (document) => {
+    provideDocumentFormattingEdits: (document) => {
       if (!isFmtInstalled()) {
         vscode.window.showErrorMessage('Forge fmt is not installed. Please install it and try again.');
-        return [];
+        return;
       }
 
       const options: ForgeFmtOptions = {
@@ -184,20 +186,17 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
         files: [document.fileName],
       };
 
-      try {
-        await forgeFmt(args);
+      return forgeFmt(args).then((result) => {
+        if (result.exitCode === 0) {
+          vscode.window.showInformationMessage('Forge fmt ran successfully.');
+        } else {
+          vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
 
-        // Read the formatted file
-        const formattedText = await vscode.workspace.fs.readFile(vscode.Uri.file(document.fileName));
-        const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
+          console.log(result.output);
+        }
 
-        return [vscode.TextEdit.replace(fullRange, Buffer.from(formattedText).toString('utf8'))];
-      } catch (error) {
-        vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
-        console.error(error);
-      }
-
-      return [];
+        return [];
+      });
     },
   });
 

@@ -106,3 +106,35 @@ impl ReferenceProvider {
         references
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::test_utils::create_test_ast_file_contract_definition;
+
+    #[test]
+    fn test_get_definition() {
+        let provider = ReferenceProvider::new();
+        let uri = "test.sol";
+        let position = Position {
+            line: 3,
+            column: 10,
+        };
+        let files = vec![create_test_ast_file_contract_definition()];
+        let base_path = "/home/user/project";
+        let location = provider.get_definition(uri, position, &files, base_path);
+        assert!(location.is_some());
+        let location = location.unwrap();
+        assert_eq!(location.uri, uri);
+    }
+
+    #[test]
+    fn test_get_references() {
+        let provider = ReferenceProvider::new();
+        let uri = "test.sol";
+        let position = Position { line: 0, column: 0 };
+        let files = vec![create_test_ast_file_contract_definition()];
+        let references = provider.get_references(uri, position, &files);
+        assert_eq!(references.len(), 0);
+    }
+}
