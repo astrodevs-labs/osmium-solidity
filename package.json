@@ -6,7 +6,7 @@
     "servers/*",
     "vscode",
     "sidebar",
-    "env-panel"
+    "env-panel",
     "docs-panel"
   ],
   "devDependencies": {
