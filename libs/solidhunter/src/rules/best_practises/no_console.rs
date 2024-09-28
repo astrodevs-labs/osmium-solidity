@@ -50,18 +50,12 @@ impl RuleType for NoConsole {
         for expr_member in retriever::retrieve_expr_member_nodes(&file.data) {
             if let Expr::Ident(expr_ident) = *expr_member.expr {
                 if expr_ident == "console" {
-                    if let Expr::Call(expr_call) = *expr_member.member {
-                        if let Expr::Ident(expr_ident) = *expr_call.expr {
-                            if expr_ident.as_string().starts_with("log") {
-                                let diag = self.create_diag(
-                                    file,
-                                    (expr_ident.span().start(), expr_ident.span().end()),
-                                    "Unexpected console statement".to_string(),
-                                );
-                                res.push(diag);
-                            }
-                        }
-                    }
+                    let diag = self.create_diag(
+                        file,
+                        (expr_ident.span().start(), expr_ident.span().end()),
+                        "Unexpected console statement".to_string(),
+                    );
+                    res.push(diag);
                 }
             }
         }
