@@ -27,7 +27,7 @@ type ForgeFmtResult = {
 
 function isFmtInstalled(): boolean {
   try {
-    exec('forge fmt --version', (error, _stdout, _stderr) => {
+    exec('forge --version', (error, _stdout, _stderr) => {
       if (error) {
         throw error;
       }
