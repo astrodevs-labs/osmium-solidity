@@ -24,7 +24,7 @@
       "activitybar": [
         {
           "id": "sidebar",
-          "title": "Osmium Sidebar",
+          "title": "Osmium",
           "icon": "assets/logo.png"
         },
         {
@@ -39,7 +39,7 @@
         {
           "type": "webview",
           "id": "osmium.sidebar",
-          "name": "Osmium: Deploy/Interact",
+          "name": "Deploy/Interact",
           "when": "Osmium.showsidebar"
         }
       ]
