@@ -264,9 +264,15 @@ function getFunctionsInsideContract(
       }
     }
     if (start) {
-      bracketsCount +=
-        line.split("{").length - 1 - (line.split("}").length - 1);
-      if (bracketsCount === -1) {
+      const splittedStart = line.split("{");
+      if (splittedStart.length > 1) {
+        bracketsCount += splittedStart.length - 1;
+      }
+      const splittedEnd = line.split("}");
+      if (splittedEnd.length > 1) {
+        bracketsCount -= splittedEnd.length - 1;
+      }
+      if (bracketsCount === 0) {
         return functions;
       }
       if (firstWord === "function") {
@@ -327,6 +333,7 @@ async function gasReport(
       decorationsArray.push(decoration);
     }
   }
+
   return decorationsArray;
 }
 
@@ -380,13 +387,13 @@ export function registerGasEstimation(context: vscode.ExtensionContext): {openDi
       cleanPath.includes("lib") ||
       cleanPath.includes("test") ||
       cleanPath.includes("script") ||
-      cleanPath.includes(".git") ||
       !forgeInstalled
     ) {
       return;
     }
-    const report = await gasReport(document.getText(), document.uri.path);
-    reports.set(document.uri.path, report);
+    const pathWithoutGit = document.uri.path.replace(".git", "");
+    const report = await gasReport(document.getText(), pathWithoutGit);
+    reports.set(pathWithoutGit, report);
 
     vscode.window.visibleTextEditors.forEach((editor) => {
       showReport(editor, reports, reportsSaved, decorationType);
