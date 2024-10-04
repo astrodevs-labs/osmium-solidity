@@ -9,7 +9,7 @@ export function registerWalkthroughPanel(context: vscode.ExtensionContext) {
 
   // Command to check if forge is installed
   context.subscriptions.push(vscode.commands.registerCommand('osmium.checkIfForgeInstalled', () => {
-    exec('forge --version', (err, stdout, stderr) => {
+    exec('forge --version', (err, stdout) => {
       if (err) {
         vscode.window.showErrorMessage('Foundry/Forge is not installed. Please install it.');
         vscode.commands.executeCommand('setContext', 'osmium.forgeInstalled', false);
