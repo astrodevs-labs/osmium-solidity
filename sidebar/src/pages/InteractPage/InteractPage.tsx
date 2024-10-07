@@ -29,7 +29,7 @@ export const InteractPage = (props: { vscode: VSCode; resourceManager: ResourceM
           <InteractContracts wallets={logic.wallets} contracts={logic.contracts} vscode={props.vscode} />
           <VSCodeDivider className="divider" />
           <InteractParams contracts={logic.contracts} />
-          <VSCodeButton appearance="primary" type="submit">
+          <VSCodeButton className="submit-button" appearance="primary" type="submit">
             Send transaction
           </VSCodeButton>
           {logic.isPending && !logic.response && <Loader />}

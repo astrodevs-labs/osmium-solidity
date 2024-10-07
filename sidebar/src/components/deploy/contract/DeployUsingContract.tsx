@@ -128,7 +128,7 @@ export const DeployUsingContract = ({
       </div>
       <DeployContractParams contracts={deployContracts} />
       <VSCodeDivider className="divider" />
-      <VSCodeButton className="primary" type="submit">
+      <VSCodeButton className="submit-button" appearance="primary" type="submit">
         Deploy with contract
       </VSCodeButton>
       {isPending && !logic.response && <Loader />}

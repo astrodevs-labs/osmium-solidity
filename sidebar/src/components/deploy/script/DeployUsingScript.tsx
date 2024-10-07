@@ -66,7 +66,7 @@ export const DeployUsingScript = ({
         </div>
       </div>
       <VSCodeDivider className="divider" />
-      <VSCodeButton appearance="primary" type="submit">
+      <VSCodeButton className="submit-button" appearance="primary" type="submit">
         Deploy with script
       </VSCodeButton>
       {isPending && !logic.response && <Loader />}
