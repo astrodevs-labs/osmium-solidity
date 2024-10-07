@@ -3,6 +3,7 @@ use osmium_libs_lsp_server_wrapper::{
     lsp_types::{InitializeParams, MessageType, WorkspaceFolder},
     Client,
 };
+use osmium_libs_solidity_path_utils::normalize_path;
 
 pub fn get_closest_config_filepath(
     connection: &Client,
@@ -31,7 +32,7 @@ pub fn get_closest_config_filepath(
     if all_configs.is_empty() {
         return Ok(None);
     }
-    Ok(Some(all_configs[0].clone()))
+    Ok(Some(normalize_path(&all_configs[0].clone())))
 }
 
 fn get_closest_workspace_config_filepath(
@@ -43,7 +44,7 @@ fn get_closest_workspace_config_filepath(
         let workspace_path = folder.uri.path();
 
         let file_content =
-            match std::fs::read_to_string(format!("{}/.solidhunter.json", workspace_path)) {
+            match std::fs::read_to_string(normalize_path(&format!("{}/.solidhunter.json", workspace_path))) {
                 Ok(content) => content,
                 Err(err) => {
                     connection.log_message(
@@ -62,9 +63,9 @@ fn get_closest_workspace_config_filepath(
             format!("file_content: {:?}", file_content),
         );
 
-        let pattern = format!("{}/**/.solidhunter.json", workspace_path);
+        let pattern = normalize_path(&format!("{}/**/.solidhunter.json", workspace_path));
         connection.log_message(MessageType::INFO, format!("pattern: {:?}", pattern));
-        let workspaces_paths = glob(&pattern).map_err(|err| {
+         let workspaces_paths = glob(&pattern).map_err(|err| {
             connection.log_message(MessageType::ERROR, format!("error: {:?}", err));
             err
         })?;
@@ -73,7 +74,7 @@ fn get_closest_workspace_config_filepath(
             match path {
                 Ok(path) => {
                     connection.log_message(MessageType::INFO, format!("pushing path: {:?}", path));
-                    all_configs.push(path.to_str().unwrap().to_string());
+                    all_configs.push(normalize_path(path.to_str().unwrap()));
                 }
                 Err(err) => {
                     connection.log_message(MessageType::ERROR, format!("error: {:?}", err));
@@ -96,5 +97,5 @@ fn get_closest_workspace_config_filepath(
     if paths.is_empty() {
         return Ok(None);
     }
-    Ok(Some(paths[0].clone()))
+    Ok(Some(normalize_path(&paths[0].clone())))
 }
