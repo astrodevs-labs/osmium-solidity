@@ -8,6 +8,7 @@ edition = "2021"
 
 [dependencies]
 osmium-libs-lsp-server-wrapper = { path = "../../libs/lsp-server-wrapper", version = "0.2.0" }
+osmium-libs-solidity-path-utils = { path = "../../libs/path-utils", version = "0.1.0" }
 solidhunter = { path = "../../libs/solidhunter", version = "0.3.0" }
 glob = "0.3.0"
 serde = { version = "1.0.149", features = ["derive"] }

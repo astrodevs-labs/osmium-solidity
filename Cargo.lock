@@ -479,6 +479,7 @@ version = "0.2.3"
 dependencies = [
  "glob",
  "osmium-libs-lsp-server-wrapper",
+ "osmium-libs-solidity-path-utils",
  "serde",
  "serde_json",
  "solidhunter",
