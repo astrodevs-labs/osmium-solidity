@@ -118,8 +118,6 @@ function format() {
         vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
         console.error(error);
       });
-  } else {
-    vscode.window.showErrorMessage('Forge fmt is only available for solidity files.');
   }
 }
 
