@@ -1,68 +1,57 @@
 .getStarted-container {
-    display: flex;
-    flex-direction: column;
-    max-width: 500px;
-    min-width: 200px;
-    min-height: 0px;
-    align-items: center;
-    border-left: 3px solid grey;
-    background-color: rgba(128, 128, 128, 0.1);
-    margin: 0.3rem;
-    user-select: none;
-    cursor: pointer;
-  }
-
-.close-button {
-  position: absolute;
-  top: 0;
-  right: 20px;
-  padding: 15px;
-  display: flex;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: bold;
-  user-select: none;
-}
-  
-.text-container {
-  align-self: flex-start;
-  width: 100%;
-  padding-left: 0.7rem; 
-  line-height: 0.5;
-  user-select: none;
-}
-  
-.button-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-left: 2px solid grey;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.2rem;
+  border-radius: 0.2rem;
   width: 100%;
-  user-select: none;
+}
 
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.close-button {
+  align-self: flex-end;
+  cursor: pointer;
+  margin-top: 0.2rem;
+  margin-right: 0.2rem;
 }
 
 .title {
-  font-size: 15px;
+  font-size: 1.1rem;
   font-weight: bold;
-  color: "rgba(255, 255, 255, 0.5)";
-  user-select: none;
+  margin-top: 0.2rem;
 }
 
 .subtitle {
-  font-size: 13px;
-  color: "rgba(255, 255, 255, 0.5)";
-  user-select: none;
+  font-size: 1rem;
+  margin-top: 0.1rem;
 }
 
+.button-container {
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.3rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  > * {
+    margin: 0.2rem;
+  }
+ }
+
 .documentation-button {
-  min-width: 250px;
-  max-width: 250px;
-  margin-bottom: 0.2rem;
-  user-select: none;
+  padding: 0.2rem 0.2rem;
+  border-radius: 0.1rem;
 }
 
 .walkthrough-button {
-  min-width: 250px;
-  max-width: 250px;
-  margin-bottom: 0.6rem;
-  user-select: none;
+  padding: 0.2rem 0.2rem;
+  border-radius: 0.1rem;
 }
