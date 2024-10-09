@@ -142,7 +142,7 @@ export const DocsPage = () => {
 
   return (
     <div className="flex">
-      <div className="h-screen overflow-y-scroll w-full md:w-3/4">
+      <div className="h-screen overflow-y-scroll w-full"> {/* w-3/4 */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12 space-y-8">
           <h1 className="text-3xl font-extrabold">Osmium Extension Documentation</h1>
           {/* Settings explanation */}
@@ -217,7 +217,7 @@ export const DocsPage = () => {
         </div>
       </div>
 
-      <div className="hidden md:block bg-white-200 w-1/4">
+      {/* <div className="hidden md:block bg-white-200 w-1/4">
         <div className="space-y-4 p-4">
           <h2 className="text-xl font-semibold text-white-900">Table of Contents</h2>
           <nav className="space-y-1">
@@ -232,7 +232,7 @@ export const DocsPage = () => {
             ))}
           </nav>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
