@@ -21,7 +21,7 @@ export const GetStartedPage = (props: { vscode: VSCode }) => {
       <div className="text-container" onClick={() => setIsOpen(!isOpen)}>
         <div className="close-button" onClick={() => setIsVisible(false)}>X</div>
         <h1 className="title">
-          <span style={{ cursor: 'pointer' }}>{isOpen ? '▼' : '►'}</span>
+          <span style={{ cursor: 'pointer' }}>{isOpen ? '▼ ' : '► '}</span>
           Get Started with Osmium 🚀
         </h1>
         <p className="subtitle">Unfold to discover Osmium Solidity's features</p>
