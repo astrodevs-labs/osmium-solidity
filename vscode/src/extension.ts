@@ -62,14 +62,8 @@ async function launchFeatures() {
 	const isreferencesEnable = configuration.get('references');
 	const isAutoFormatEnable = configuration.get('auto format');
 	const isFormatterEnable = configuration.get('formatter');
-	const docsPanelProvider = new DocsPanelProvider(Extcontext.extensionUri);
-
-	Extcontext.subscriptions.push(
-		commands.registerCommand('osmium.documentation', () => {
-			docsPanelProvider.resolveWebview(Extcontext);
-		}),
-	  );
-	
+	const docsPanelProvider = new DocsPanelProvider(Extcontext.extensionUri);	
+    
 	if (isAutoFormatEnable && isFormatterEnable && !saveHandler) {
 		saveHandler = workspace.onDidSaveTextDocument(format);
 	} else if (!isAutoFormatEnable && saveHandler) {
@@ -113,6 +107,12 @@ async function launchFeatures() {
       }),
     );
 		
+    Extcontext.subscriptions.push(
+      commands.registerCommand('osmium.documentation', () => {
+        docsPanelProvider.resolveWebview(Extcontext);
+      }),
+    );
+    
 		registerWalkthroughPanel(Extcontext);
 		interactDeployHandler = window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider);
 		Extcontext.subscriptions.push(interactDeployHandler);
@@ -177,64 +177,6 @@ async function launchFeatures() {
 		testsPositionsClient = null;
 	}
 
-  if (isAutoFormatEnable && isFormatterEnable && !saveHandler) {
-    saveHandler = workspace.onDidSaveTextDocument(format);
-  } else if (!isAutoFormatEnable && saveHandler) {
-    saveHandler.dispose();
-  }
-
-  if (isFormatterEnable && !formatterHandlers) {
-    formatterHandlers = registerForgeFmtLinter(Extcontext);
-  } else if (!isFormatterEnable && formatterHandlers) {
-    formatterHandlers?.fileDisposable.dispose();
-    formatterHandlers?.workspaceDisposable.dispose();
-    formatterHandlers?.formatterDisposable.dispose();
-    formatterHandlers = null;
-  }
-
-  if (isGasEstimationEnable && !gasEstimationHandler) {
-    gasEstimationHandler = registerGasEstimation(Extcontext);
-  } else if (!isGasEstimationEnable && gasEstimationHandler) {
-    gasEstimationHandler.SaveDisposable.dispose();
-    gasEstimationHandler.openDisposable.dispose();
-    gasEstimationHandler.visibleTextEditorsDisposable.dispose();
-    gasEstimationHandler.activeTextEditorDisposable.dispose();
-    gasEstimationHandler.commandDisposable.dispose();
-    gasEstimationHandler = null;
-  }
-
-  if (isCompilerEnable && !foundryCompilerClient) {
-    foundryCompilerClient = createFoundryCompilerClient(Extcontext);
-    Extcontext.subscriptions.push(foundryCompilerClient);
-  } else if (!isCompilerEnable && foundryCompilerClient) {
-    foundryCompilerClient.stop();
-    foundryCompilerClient = null;
-  }
-
-  if (isLinterEnable && !linterClient) {
-    linterClient = await createLinterClient(Extcontext);
-    Extcontext.subscriptions.push(linterClient);
-  } else if (!isLinterEnable && linterClient) {
-    linterClient.stop();
-    linterClient = null;
-  }
-
-  if (isreferencesEnable && !codeActionsClient) {
-    codeActionsClient = await createCodeActionsClient(Extcontext);
-    Extcontext.subscriptions.push(codeActionsClient);
-  } else if (!isreferencesEnable && codeActionsClient) {
-    codeActionsClient.stop();
-    codeActionsClient = null;
-  }
-
-  if (isSlitherEnable && !slitherClient) {
-    slitherClient = await createSlitherClient(Extcontext);
-    Extcontext.subscriptions.push(slitherClient);
-  } else if (!isSlitherEnable && slitherClient) {
-    slitherClient.stop();
-    slitherClient = null;
-  }
-
   if (isDebuggerEnable) {
   }
 
@@ -256,6 +198,7 @@ async function launchFeatures() {
       }
     });
   }
+
 }
 
 // This method is called when your extension is deactivated
