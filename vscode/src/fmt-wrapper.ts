@@ -175,8 +175,8 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
 
       const options: ForgeFmtOptions = {
         root: vscode.workspace.workspaceFolders?.[0].uri.fsPath,
-        check: false,
-        raw: false,
+        check: true,
+        raw: true,
       };
 
       const args: ForgeFmtArgs = {
@@ -185,13 +185,10 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
       };
 
       try {
-        await forgeFmt(args);
-
-        // Read the formatted file
-        const formattedText = await vscode.workspace.fs.readFile(vscode.Uri.file(document.fileName));
+        const res = await forgeFmt(args);
         const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length));
 
-        return [vscode.TextEdit.replace(fullRange, Buffer.from(formattedText).toString('utf8'))];
+        return [vscode.TextEdit.replace(fullRange, res.output)];
       } catch (error) {
         vscode.window.showErrorMessage('Forge fmt failed. Please check the output for details.');
         console.error(error);
