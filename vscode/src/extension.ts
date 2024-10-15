@@ -33,6 +33,7 @@ let formatterHandlers: {
 } | null;
 let interactDeployHandler: Disposable | null;
 let gasEstimationHandler: {
+  clearAllDecorations(): void;
   openDisposable: Disposable;
   SaveDisposable: Disposable;
   visibleTextEditorsDisposable: Disposable;
@@ -130,6 +131,7 @@ async function launchFeatures() {
 		gasEstimationHandler.visibleTextEditorsDisposable.dispose();
 		gasEstimationHandler.activeTextEditorDisposable.dispose();
 		gasEstimationHandler.commandDisposable.dispose();
+		gasEstimationHandler.clearAllDecorations();
 		gasEstimationHandler = null;
 	}
 	

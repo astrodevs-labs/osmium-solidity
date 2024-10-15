@@ -363,7 +363,14 @@ async function showReport(
   }
 }
 
-export function registerGasEstimation(context: vscode.ExtensionContext): {openDisposable:Disposable, SaveDisposable:Disposable, visibleTextEditorsDisposable:Disposable, activeTextEditorDisposable:Disposable, commandDisposable:Disposable} {
+function clearAllDecorations(decorationType: vscode.TextEditorDecorationType) {
+	vscode.window.visibleTextEditors.forEach((editor) => {
+	  editor.setDecorations(decorationType, []);
+	});
+}
+
+
+export function registerGasEstimation(context: vscode.ExtensionContext): {openDisposable:Disposable, SaveDisposable:Disposable, visibleTextEditorsDisposable:Disposable, activeTextEditorDisposable:Disposable, commandDisposable:Disposable, clearAllDecorations: () => void} {
   const forgeInstalled = isForgeInstalled();
 
   const decorationType = vscode.window.createTextEditorDecorationType({
@@ -455,5 +462,5 @@ export function registerGasEstimation(context: vscode.ExtensionContext): {openDi
   context.subscriptions.push(onDidChangeActiveTextEditorDisposable);
   context.subscriptions.push(onDidcommandDisposable);
 
-  return {openDisposable:onDidOpenDisposable, SaveDisposable:onDidSaveDisposable, visibleTextEditorsDisposable:onDidChangeVisibleTextEditorsDisposable, activeTextEditorDisposable:onDidChangeActiveTextEditorDisposable, commandDisposable:onDidcommandDisposable};
+  return {openDisposable:onDidOpenDisposable, SaveDisposable:onDidSaveDisposable, visibleTextEditorsDisposable:onDidChangeVisibleTextEditorsDisposable, activeTextEditorDisposable:onDidChangeActiveTextEditorDisposable, commandDisposable:onDidcommandDisposable, clearAllDecorations: () => clearAllDecorations(decorationType),};
 }
