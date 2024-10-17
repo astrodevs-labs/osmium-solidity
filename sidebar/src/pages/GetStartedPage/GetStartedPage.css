@@ -4,7 +4,6 @@
   align-items: center;
   border-left: 2px solid grey;
   background: rgba(0, 0, 0, 0.15);
-  padding: 0.2rem;
   border-radius: 0.2rem;
   width: 100%;
 }
@@ -24,13 +23,13 @@
 }
 
 .title {
-  font-size: 1.1rem;
+  font-size: 1.0rem;
   font-weight: bold;
   margin-top: 0.2rem;
 }
 
 .subtitle {
-  font-size: 1rem;
+  font-size: 0.8rem;
   margin-top: 0.1rem;
 }
 
@@ -43,6 +42,12 @@
   justify-content: space-between;
   > * {
     margin: 0.2rem;
+  }
+  @media (max-width: 300px) {
+    flex-direction: column;
+    > * {
+      width: 100%;
+    }
   }
  }
 
