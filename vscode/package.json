@@ -16,7 +16,7 @@
     "Other"
   ],
   "activationEvents": [
-    "workspaceContains:solidity"
+    "workspaceContains:**/*.sol"
   ],
   "main": "./dist/extension.js",
   "contributes": {
