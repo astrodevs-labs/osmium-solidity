@@ -1,23 +1,13 @@
-import * as path from "path";
-import * as os from "os";
-import { workspace, ExtensionContext, Uri } from "vscode";
-import {
-  LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
-  TransportKind,
-} from "vscode-languageclient/node";
-import { TextDecoder } from "util";
+import * as path from 'path';
+import * as os from 'os';
+import { workspace, ExtensionContext, Uri } from 'vscode';
+import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import { TextDecoder } from 'util';
 
-export async function createLinterClient(
-  context: ExtensionContext,
-): Promise<LanguageClient> {
+export async function createLinterClient(context: ExtensionContext): Promise<LanguageClient> {
   // The server is implemented in node
   const serverBinary = context.asAbsolutePath(
-    path.join(
-      "dist",
-      os.platform().startsWith("win") ? "linter-server.exe" : "linter-server",
-    ),
+    path.join('dist', os.platform().startsWith('win') ? 'linter-server.exe' : 'linter-server'),
   );
 
   // If the extension is launched in debug mode then the debug server options are used
@@ -33,22 +23,22 @@ export async function createLinterClient(
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     // Register the server for plain text documents
-    documentSelector: [{ scheme: "file", language: "solidity" }],
+    documentSelector: [{ scheme: 'file', language: 'solidity' }],
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
-      fileEvents: workspace.createFileSystemWatcher("**/.solidhunter.json"),
+      fileEvents: workspace.createFileSystemWatcher('**/.solidhunter.json'),
     },
   };
 
   // Create the language client and start the client.
   const client = new LanguageClient(
-    "osmium-solidity-linter",
-    "Osmium Solidity Linter Language Server",
+    'osmium-solidity-linter',
+    'Osmium Solidity Linter Language Server',
     serverOptions,
     clientOptions,
   );
 
-  client.onRequest("osmium/getContent", async (params: { uri: string }) => {
+  client.onRequest('osmium/getContent', async (params: { uri: string }) => {
     const contentUint8 = await workspace.fs.readFile(Uri.parse(params.uri));
     const content = new TextDecoder().decode(contentUint8);
     return {

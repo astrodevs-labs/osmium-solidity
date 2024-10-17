@@ -11,6 +11,7 @@ use get_content::{ContentRequest, ContentRequestParams, ContentResponse};
 struct Backend {
     connection: Rc<RefCell<Client>>,
     linter: RefCell<Option<SolidLinter>>,
+    opened_files: RefCell<Vec<(Url, String)>>,
 }
 
 impl LanguageServer for Backend {
@@ -76,12 +77,23 @@ impl LanguageServer for Backend {
     }
 
     fn did_open(&self, params: DidOpenTextDocumentParams) {
+        let mut opened_files = self.opened_files.borrow_mut();
+        opened_files.push((
+            params.text_document.uri.clone(),
+            params.text_document.text.clone(),
+        ));
+
         self.connection.borrow_mut().log_message(
             MessageType::INFO,
             format!("file opened!: {:}", params.text_document.uri),
         );
 
         self.lint(params.text_document.uri, params.text_document.text);
+    }
+
+    fn did_close(&self, params: DidCloseTextDocumentParams) {
+        let mut opened_files = self.opened_files.borrow_mut();
+        opened_files.retain(|x| x.0 != params.text_document.uri);
     }
 
     fn did_save(&self, params: DidSaveTextDocumentParams) {
@@ -157,6 +169,10 @@ impl LanguageServer for Backend {
                 .borrow_mut()
                 .log_message(MessageType::INFO, "configuration file loaded!");
             self.linter.replace(Some(linter));
+            let opened_files = self.opened_files.borrow_mut();
+            for file in opened_files.iter().cloned() {
+                self.lint(file.0, file.1)
+            }
         } else {
             self.connection
                 .borrow_mut()
@@ -170,6 +186,7 @@ impl Backend {
         Self {
             connection,
             linter: RefCell::new(None),
+            opened_files: RefCell::new(vec![]),
         }
     }
 

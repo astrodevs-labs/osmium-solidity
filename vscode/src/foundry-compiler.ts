@@ -1,24 +1,12 @@
-import * as path from "path";
-import { workspace, ExtensionContext } from "vscode";
-import {
-  LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
-  TransportKind,
-} from "vscode-languageclient/node";
-import * as os from "os";
+import * as path from 'path';
+import { workspace, ExtensionContext } from 'vscode';
+import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import * as os from 'os';
 
-export function createFoundryCompilerClient(
-  context: ExtensionContext,
-): LanguageClient {
+export function createFoundryCompilerClient(context: ExtensionContext): LanguageClient {
   // The server is implemented in node
   const serverBinary = context.asAbsolutePath(
-    path.join(
-      "dist",
-      os.platform().startsWith("win")
-        ? "foundry-compiler-server.exe"
-        : "foundry-compiler-server",
-    ),
+    path.join('dist', os.platform().startsWith('win') ? 'foundry-compiler-server.exe' : 'foundry-compiler-server'),
   );
 
   // If the extension is launched in debug mode then the debug server options are used
@@ -34,17 +22,17 @@ export function createFoundryCompilerClient(
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     // Register the server for plain text documents
-    documentSelector: [{ scheme: "file", language: "solidity" }],
+    documentSelector: [{ scheme: 'file', language: 'solidity' }],
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
-      fileEvents: workspace.createFileSystemWatcher("**/.solidhunter.json"),
+      fileEvents: workspace.createFileSystemWatcher('**/.solidhunter.json'),
     },
   };
 
   // Create the language client and start the client.
   const client = new LanguageClient(
-    "osmium-solidity-foundry-compiler",
-    "Osmium Solidity Foundry Compiler Language Server",
+    'osmium-solidity-foundry-compiler',
+    'Osmium Solidity Foundry Compiler Language Server',
     serverOptions,
     clientOptions,
   );
