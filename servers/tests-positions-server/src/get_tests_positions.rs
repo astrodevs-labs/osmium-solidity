@@ -1,5 +1,5 @@
-use tower_lsp::lsp_types::{request::Request, Range};
 use serde::{Deserialize, Serialize};
+use tower_lsp::lsp_types::{request::Request, Range};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GetTestsPositionsParams {

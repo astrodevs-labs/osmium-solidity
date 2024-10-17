@@ -9,7 +9,7 @@ use std::path::PathBuf;
 pub fn remove_previous_outputs(base_path: &str) -> Result<(), Error> {
     let build_info_path = format!("{}/out/build-info", base_path);
 
-    let res = remove_dir_all(&build_info_path);
+    let res = remove_dir_all(build_info_path);
     if let Err(e) = res {
         if e.kind() != io::ErrorKind::NotFound {
             return Err(Error::FileSystemError(e));
