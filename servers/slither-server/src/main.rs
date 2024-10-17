@@ -14,9 +14,7 @@ use tokio_util::sync::CancellationToken;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
-use utils::{
-    find_foundry_toml_config, is_slither_installed, parse_foundry_toml,
-};
+use utils::{find_foundry_toml_config, is_slither_installed, parse_foundry_toml};
 
 #[derive(Debug)]
 struct Backend {
