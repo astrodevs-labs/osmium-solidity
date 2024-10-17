@@ -15,7 +15,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 use utils::{
-    find_foundry_toml_config, is_slither_installed, is_solc_installed, parse_foundry_toml,
+    find_foundry_toml_config, is_slither_installed, parse_foundry_toml,
 };
 
 #[derive(Debug)]
@@ -36,16 +36,6 @@ impl LanguageServer for Backend {
                 )
                 .await;
             error!("Slither is not installed!");
-            self.data.lock().await.has_to_shutdown = true;
-        }
-        if !is_solc_installed() {
-            self.client
-                .show_message(
-                    MessageType::ERROR,
-                    "Solc is not installed! Please install it and restart the extension",
-                )
-                .await;
-            error!("Solc is not installed!");
             self.data.lock().await.has_to_shutdown = true;
         }
 
