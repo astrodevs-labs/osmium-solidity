@@ -43,21 +43,23 @@ fn get_closest_workspace_config_filepath(
     for folder in folders {
         let workspace_path = folder.uri.path();
 
-        let file_content =
-            match std::fs::read_to_string(normalize_path(&format!("{}/.solidhunter.json", workspace_path))) {
-                Ok(content) => content,
-                Err(err) => {
-                    connection.log_message(
-                        MessageType::ERROR,
-                        format!(
-                            "error, cannot read file: {:?}, error: {:?}",
-                            format!("{}/.solidhunter.json", workspace_path),
-                            err
-                        ),
-                    );
-                    continue;
-                }
-            };
+        let file_content = match std::fs::read_to_string(normalize_path(&format!(
+            "{}/.solidhunter.json",
+            workspace_path
+        ))) {
+            Ok(content) => content,
+            Err(err) => {
+                connection.log_message(
+                    MessageType::ERROR,
+                    format!(
+                        "error, cannot read file: {:?}, error: {:?}",
+                        format!("{}/.solidhunter.json", workspace_path),
+                        err
+                    ),
+                );
+                continue;
+            }
+        };
         connection.log_message(
             MessageType::INFO,
             format!("file_content: {:?}", file_content),
@@ -65,7 +67,7 @@ fn get_closest_workspace_config_filepath(
 
         let pattern = normalize_path(&format!("{}/**/.solidhunter.json", workspace_path));
         connection.log_message(MessageType::INFO, format!("pattern: {:?}", pattern));
-         let workspaces_paths = glob(&pattern).map_err(|err| {
+        let workspaces_paths = glob(&pattern).map_err(|err| {
             connection.log_message(MessageType::ERROR, format!("error: {:?}", err));
             err
         })?;
