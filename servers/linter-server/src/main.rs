@@ -2,7 +2,7 @@ use osmium_libs_lsp_server_wrapper::{
     lsp_types::*, Client, LanguageServer, LspStdioServer, RequestId, Result,
 };
 use solidhunter::{linter::SolidLinter, types::LintDiag};
-use std::{cell::RefCell, iter::Map, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 mod utils;
 use utils::get_closest_config_filepath;
 mod get_content;
@@ -78,7 +78,10 @@ impl LanguageServer for Backend {
 
     fn did_open(&self, params: DidOpenTextDocumentParams) {
         let mut opened_files = self.opened_files.borrow_mut();
-        opened_files.push((params.text_document.uri.clone(), params.text_document.text.clone()));
+        opened_files.push((
+            params.text_document.uri.clone(),
+            params.text_document.text.clone(),
+        ));
 
         self.connection.borrow_mut().log_message(
             MessageType::INFO,
@@ -167,7 +170,7 @@ impl LanguageServer for Backend {
                 .log_message(MessageType::INFO, "configuration file loaded!");
             self.linter.replace(Some(linter));
             let opened_files = self.opened_files.borrow_mut();
-            for file in opened_files.to_owned() {
+            for file in opened_files.iter().cloned() {
                 self.lint(file.0, file.1)
             }
         } else {
@@ -183,7 +186,7 @@ impl Backend {
         Self {
             connection,
             linter: RefCell::new(None),
-            opened_files: RefCell::new(vec![])
+            opened_files: RefCell::new(vec![]),
         }
     }
 
