@@ -5,7 +5,7 @@ import { commands, Disposable, ExtensionContext, window, workspace } from 'vscod
 import { LanguageClient } from 'vscode-languageclient/node';
 import { createLinterClient } from './linter';
 import { createSlitherClient } from './slither';
-import registerForgeFmtLinter, { format } from './fmt-wrapper';
+import registerForgeFmtLinter from './fmt-wrapper';
 import { TestManager } from './tests/test-manager';
 import { createFoundryCompilerClient } from './foundry-compiler';
 import { createTestsPositionsClient } from './tests-positions';
@@ -25,7 +25,6 @@ let foundryCompilerClient: LanguageClient | null;
 let testsPositionsClient: LanguageClient | null;
 let codeActionsClient: LanguageClient | null;
 let testManager: TestManager | null;
-let saveHandler: Disposable | null;
 let formatterHandlers: {
   fileDisposable: Disposable;
   workspaceDisposable: Disposable;
@@ -61,16 +60,8 @@ async function launchFeatures() {
 	const isTestsEnable = configuration.get('tests');
 	const isCompilerEnable = configuration.get('compiler');
 	const isreferencesEnable = configuration.get('references');
-	const isAutoFormatEnable = configuration.get('auto format');
 	const isFormatterEnable = configuration.get('formatter');
 	const docsPanelProvider = new DocsPanelProvider(Extcontext.extensionUri);	
-    
-	if (isAutoFormatEnable && isFormatterEnable && !saveHandler) {
-		saveHandler = workspace.onDidSaveTextDocument(format);
-	} else if (!isAutoFormatEnable && saveHandler) {
-		saveHandler.dispose();
-		saveHandler = null;
-	}
 	
 	if (isFormatterEnable &&!formatterHandlers) {
 		formatterHandlers = registerForgeFmtLinter(Extcontext);

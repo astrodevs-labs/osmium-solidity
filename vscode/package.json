@@ -100,11 +100,6 @@
           "type": "boolean",
           "default": true,
           "description": "The reference is when you ctrl click on a variable and you want to see where it is declared. This feature will show you where it is declared and where it is used."
-        },
-        "osmium-solidity.auto format": {
-          "type": "boolean",
-          "default": false,
-          "description": "The auto format can be used only if the formatter is enable and will format you file on save instead of right click on the file and choose Format Document."
         }
       }
     },
@@ -129,7 +124,7 @@
         "command": "osmium.documentation",
         "title": "Osmium: Documentation"
       },
-      { 
+      {
         "command": "osmium.walkthrough",
         "title": "Osmium: Open Walkthrough"
       },
@@ -185,7 +180,9 @@
             "media": {
               "markdown": "./src/walkthroughs/welcome/foundry.md"
             },
-            "completionEvents": ["onContext:osmium.forgeInstalled == true"]
+            "completionEvents": [
+              "onContext:osmium.forgeInstalled == true"
+            ]
           },
           {
             "id": "isSlither",
@@ -194,7 +191,9 @@
             "media": {
               "markdown": "./src/walkthroughs/welcome/slither.md"
             },
-            "completionEvents": ["onContext:osmium.slitherInstalled == true"]
+            "completionEvents": [
+              "onContext:osmium.slitherInstalled == true"
+            ]
           },
           {
             "id": "isSolc",
@@ -203,11 +202,13 @@
             "media": {
               "markdown": "./src/walkthroughs/welcome/solc.md"
             },
-            "completionEvents": ["onContext:osmium.solcInstalled == true"]
+            "completionEvents": [
+              "onContext:osmium.solcInstalled == true"
+            ]
           }
         ]
       }
-    ]    
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

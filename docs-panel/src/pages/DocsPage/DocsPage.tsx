@@ -128,12 +128,7 @@ export const DocsPage = () => {
       name: 'References',
       description:
         'Navigate to usages of variables. For example, if you search for "test" and it is not used anywhere else, it will say "No references found for "test". If you search for "message", it will show where it is used.',
-    },
-    {
-      name: 'Auto format',
-      description:
-        'Enable the formatter and auto format in the Osmium settings. Every time you save your file, the formatter will be automatically used. If auto save interferes, disable it and use the "Format Document" feature manually.',
-    },
+    }
   ];
 
   function classNames(...classes: string[]) {
