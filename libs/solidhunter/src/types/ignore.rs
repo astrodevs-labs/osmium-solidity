@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 macro_rules! define_ignore_enum {
     ($name:ident, $($variant:ident => $str:expr),* $(,)?) => {
@@ -7,12 +8,12 @@ macro_rules! define_ignore_enum {
             $($variant),*
         }
 
-        impl ToString for $name {
-            fn to_string(&self) -> String {
-                match self {
+        impl fmt::Display for $name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                let s = match self {
                     $(Self::$variant => $str),*
-                }
-                .to_string()
+                };
+                write!(f, "{}", s)
             }
         }
 

@@ -10,11 +10,6 @@ pub fn is_slither_installed() -> bool {
     output.is_ok()
 }
 
-pub fn is_solc_installed() -> bool {
-    let output = StdCommand::new("solc").arg("--version").output();
-    output.is_ok()
-}
-
 fn extract_foundry_src(foundry: FoundryToml) -> Option<FoundryArrOrStr> {
     foundry.profiles?.default?.src
 }

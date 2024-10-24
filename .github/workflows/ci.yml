@@ -20,10 +20,10 @@ jobs:
           - os: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
             code-target: linux-x64
-          - os: macos-11
+          - os: macos-13
             target: x86_64-apple-darwin
             code-target: darwin-x64
-          - os: macos-11
+          - os: macos-13
             target: aarch64-apple-darwin
             code-target: darwin-arm64
     runs-on: ${{ matrix.os }}
@@ -72,10 +72,10 @@ jobs:
           - os: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
             code-target: linux-x64
-          - os: macos-11
+          - os: macos-13
             target: x86_64-apple-darwin
             code-target: darwin-x64
-          - os: macos-11
+          - os: macos-13
             target: aarch64-apple-darwin
             code-target: darwin-arm64
     runs-on: ${{ matrix.os }}
