@@ -147,13 +147,6 @@ export const DocsPage = () => {
               At any time during the reading of this documentation, if you feel that you won't be using certain
               features, you can deactivate them in the settings.
             </p>
-            {/*
-            To display extention settings : Settings > Extension > Osmium
-
-            // Note:
-            but every step ">" is inside a Badges
-            ex: <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Default</span>
-            */}
             <p className="text-lg">
               To display extension settings navigate to{' '}
               <span className="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
@@ -175,9 +168,9 @@ export const DocsPage = () => {
           </div>
 
           {/* Features descriptions */}
-          <div className="space-y-8 md:space-y-16">
+          <div className="space-y-2 md:space-y-2">
             {features.map((feature) => (
-              <Disclosure as="div" key={feature.name}>
+              <Disclosure as="div" key={feature.name} defaultOpen={true}>
                 {({ open }) => (
                   <>
                     <dt className="text-lg py-6">
@@ -189,13 +182,14 @@ export const DocsPage = () => {
                       >
                         <span className="font-medium">{feature.name}</span>
                         <span className="ml-6 flex items-center">
-                          <ChevronDownIcon
-                            className={classNames(
-                              open ? 'text-white-600' : 'text-white-400',
-                              'h-5 w-5 group-hover:text-white-500',
-                            )}
-                            aria-hidden="true"
-                          />
+                        <ChevronDownIcon
+                          className={classNames(
+                            open ? 'rotate-0' : 'rotate-90', // Rotates the icon based on open state
+                            'transform transition-transform duration-300', // Smooth transition for rotation
+                            'h-5 w-5 group-hover:text-white-500',
+                          )}
+                          aria-hidden="true"
+                        />
                         </span>
                       </DisclosureButton>
                     </dt>
