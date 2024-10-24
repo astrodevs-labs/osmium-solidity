@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { Environment, Environments, RpcUrl } from './types';
+import { Environment, Environments, InteractContract, RpcUrl } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 export class EnvironmentRepository {
@@ -57,8 +57,16 @@ export class EnvironmentRepository {
     this._save();
   }
 
-  public deleteEnvironment(name: string): void {
-    this._environments = this._environments.filter((e) => e.name !== name);
+  public updateEnvironment(id: Environment['id'], key: 'name' | 'rpc', value: string): void {
+    const environment = this._environments.find((e) => e.id === id);
+    if (environment) {
+      environment[key] = value;
+      this._save();
+    }
+  }
+
+  public deleteEnvironment(id: InteractContract['id']): void {
+    this._environments = this._environments.filter((e) => e.id !== id);
     this._save();
   }
 }

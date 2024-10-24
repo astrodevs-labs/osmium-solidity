@@ -1,9 +1,9 @@
 import { IInteractForm, VSCode } from '@/types';
 import { InteractContract } from '@backend/actions/types';
+import { MessageType } from '@backend/enums.ts';
+import { ResourceManager } from '@hooks/useResourceManager.ts';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { ResourceManager } from '@hooks/useResourceManager.ts';
-import { MessageType } from '@backend/enums.ts';
 
 const getFunctionAction = (func: string, contract: string, contracts: InteractContract[]): MessageType => {
   const selectedContract = contracts?.find((c) => c.id === contract);
@@ -21,6 +21,7 @@ const getFunctionAction = (func: string, contract: string, contracts: InteractCo
 };
 
 export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager) => {
+  const [isPending, setIsPending] = useState(false);
   const form = useForm<IInteractForm>({
     defaultValues: {
       wallet: '',
@@ -37,6 +38,7 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
     if (isNaN(data.gasLimit)) form.setError('gasLimit', { type: 'manual', message: 'Invalid number' });
     if (isNaN(data.value)) form.setError('value', { type: 'manual', message: 'Invalid number' });
 
+    setIsPending(true);
     vscode.postMessage({
       type: getFunctionAction(data.function, data.contract, resourceManager.interactContracts),
       data,
@@ -81,5 +83,6 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
     contracts: resourceManager.interactContracts,
     onSubmit,
     response,
+    isPending,
   };
 };

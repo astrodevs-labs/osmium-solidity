@@ -1,7 +1,7 @@
-import { useFormContext } from 'react-hook-form';
 import { IInteractForm } from '@/types';
-import { useEffect } from 'react';
 import { InteractContracts } from '@backend/actions/types';
+import { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export const useInteractParams = (contracts: InteractContracts) => {
   const form = useFormContext<IInteractForm>();
