@@ -1,5 +1,6 @@
 import { createPublicClient, createWalletClient, defineChain, getContract, http, webSocket } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import * as vscode from 'vscode';
 import { InteractContractRepository } from './InteractContractRepository';
 import { WalletRepository } from './WalletRepository';
 import { ContractParams } from './types';
@@ -8,6 +9,7 @@ export interface ReadContractOptions {
   contractId: string;
   method: string;
   params?: ContractParams;
+  outputChannel: vscode.OutputChannel;
 }
 
 export interface WriteContractOptions {
@@ -17,6 +19,7 @@ export interface WriteContractOptions {
   params?: ContractParams;
   gasLimit?: bigint;
   value?: bigint;
+  outputChannel: vscode.OutputChannel;
 }
 
 export class Interact {
@@ -28,7 +31,7 @@ export class Interact {
     this._walletRepository = walletRepository;
   }
 
-  public async readContract({ contractId, method, params }: ReadContractOptions): Promise<any> {
+  public async readContract({ contractId, method, params, outputChannel }: ReadContractOptions): Promise<any> {
     const contractInfos = this._contractRepository.getContract(contractId);
 
     if (!contractInfos) {
@@ -43,7 +46,9 @@ export class Interact {
       }),
     });
 
-    return await viemContract.read[method](<any>params);
+    const res = await viemContract.read[method](<any>params);
+    outputChannel.append('Output :' + res + '\n');
+    return res;
   }
 
   public async writeContract({
@@ -53,6 +58,7 @@ export class Interact {
     params,
     gasLimit,
     value,
+    outputChannel,
   }: WriteContractOptions): Promise<any> {
     const walletInfos = this._walletRepository.getWallet(walletId);
     const contractInfos = this._contractRepository.getContract(contractId);
@@ -97,6 +103,8 @@ export class Interact {
       client: walletClient,
     });
 
-    return await viemContract.write[functionName](<any>params);
+    const res = await viemContract.write[functionName](<any>params);
+    outputChannel.append('Transaction hash :' + res + '\n');
+    return res;
   }
 }

@@ -1,24 +1,23 @@
-import { Address } from 'viem';
 import * as vscode from 'vscode';
-import { window } from 'vscode';
-import { InteractContractRepository } from './actions/InteractContractRepository';
-import { Interact } from './actions/Interact';
-import { WalletRepository } from './actions/WalletRepository';
-import { RpcUrl } from './actions/types';
-import { EnvironmentRepository } from './actions/EnvironmentRepository';
-import { getNonce, getTomlValue } from './utils';
-import { ScriptRepository } from './actions/ScriptRepository';
-import { DeployContractRepository } from './actions/DeployContractRepository';
+
+import * as path from 'path';
 import { Deploy } from './actions/Deploy';
+import { DeployContractRepository } from './actions/DeployContractRepository';
+import { EnvironmentRepository } from './actions/EnvironmentRepository';
+import { Interact } from './actions/Interact';
+import { InteractContractRepository } from './actions/InteractContractRepository';
+import { ScriptRepository } from './actions/ScriptRepository';
+import { WalletRepository } from './actions/WalletRepository';
 import { MessageType } from './enums';
 import { Message } from './types';
-import * as path from 'path';
+import { getNonce, getTomlValue } from './utils';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'osmium.sidebar';
   private _osmiumWatcher?: vscode.FileSystemWatcher;
   private _outWatcher?: vscode.FileSystemWatcher;
   private _view?: vscode.WebviewView;
+  private _outputChannel: vscode.OutputChannel;
 
   private _deployContractRepository?: DeployContractRepository;
   private _scriptRepository?: ScriptRepository;
@@ -30,7 +29,9 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private readonly _interactContractRepository: InteractContractRepository,
     private readonly _walletRepository: WalletRepository,
     private readonly _environmentRepository: EnvironmentRepository,
-  ) {}
+  ) {
+    this._outputChannel = vscode.window.createOutputChannel('Osmium Solidity Logs');
+  }
 
   async _osmiumWatcherCallback(uri: vscode.Uri) {
     if (!this._view) {
@@ -154,6 +155,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           params: message.data.inputs,
           gasLimit: message.data.gasLimit > 0 ? message.data.gasLimit : undefined,
           value: value > 0 ? value : undefined,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.WRITE_RESPONSE,
@@ -165,6 +167,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           contractId: message.data.contract,
           method: message.data.function,
           params: message.data.inputs,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.READ_RESPONSE,
@@ -179,6 +182,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           environmentId: message.data.environment,
           scriptId: message.data.script,
           verify: message.data.verify,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.DEPLOY_SCRIPT_RESPONSE,
@@ -194,6 +198,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           gasLimit: message.data.gasLimit,
           params: message.data.inputs,
           verify: message.data.verify,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.DEPLOY_CONTRACT_RESPONSE,
@@ -204,7 +209,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         vscode.commands.executeCommand('osmium.documentation');
         break;
       case MessageType.OPEN_WALKTHROUGH:
-        vscode.commands.executeCommand('workbench.action.openWalkthrough', 'OsmiumToolchains.osmium-solidity-extension#osmium.getStarted');
+        vscode.commands.executeCommand(
+          'workbench.action.openWalkthrough',
+          'OsmiumToolchains.osmium-solidity-extension#osmium.getStarted',
+        );
         break;
     }
   }
