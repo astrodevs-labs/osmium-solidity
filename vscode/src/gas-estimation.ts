@@ -331,6 +331,7 @@ export function registerGasEstimation(context: vscode.ExtensionContext): {
   visibleTextEditorsDisposable: Disposable;
   activeTextEditorDisposable: Disposable;
   commandDisposable: Disposable;
+  clearAllDecorations: () => void;
 } {
   const forgeInstalled = isForgeInstalled();
 
@@ -415,12 +416,12 @@ export function registerGasEstimation(context: vscode.ExtensionContext): {
   context.subscriptions.push(onDidChangeVisibleTextEditorsDisposable);
   context.subscriptions.push(onDidChangeActiveTextEditorDisposable);
   context.subscriptions.push(onDidcommandDisposable);
-
   return {
     openDisposable: onDidOpenDisposable,
     SaveDisposable: onDidSaveDisposable,
     visibleTextEditorsDisposable: onDidChangeVisibleTextEditorsDisposable,
     activeTextEditorDisposable: onDidChangeActiveTextEditorDisposable,
     commandDisposable: onDidcommandDisposable,
+    clearAllDecorations: () => clearAllDecorations(decorationType)
   };
 }
