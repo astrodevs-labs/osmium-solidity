@@ -4,9 +4,7 @@
     {
       "id": "max-states-count",
       "severity": "WARNING",
-      "data": [
-        15
-      ]
+      "data": 15
     }
   ]
 }
