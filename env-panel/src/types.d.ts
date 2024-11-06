@@ -3,7 +3,6 @@ export type VSCode = any;
 
 export type WalletForm = {
   name: string;
-  address: string;
   privateKey: string;
 };
 
