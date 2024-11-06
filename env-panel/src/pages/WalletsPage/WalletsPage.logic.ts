@@ -7,14 +7,12 @@ export const useWalletsPageLogic = (vscode: VSCode) => {
   const form = useForm<WalletForm>({
     defaultValues: {
       name: '',
-      address: '',
       privateKey: '',
     },
   });
 
   const onSubmit: SubmitHandler<WalletForm> = (data) => {
     if (!data.name.length) form.setError('name', { type: 'manual', message: 'Invalid string' });
-    if (!data.address.length) form.setError('address', { type: 'manual', message: 'Invalid string' });
     if (!data.privateKey.length) form.setError('privateKey', { type: 'manual', message: 'Invalid string' });
 
     vscode.postMessage({

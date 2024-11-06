@@ -78,7 +78,7 @@ export class EnvPanelProvider {
         this._walletRepository.updateWallet(message.data.id, message.data.key, message.data.value);
         break;
       case MessageType.ADD_WALLET:
-        this._walletRepository.createWallet(message.data.name, message.data.address, message.data.privateKey);
+        this._walletRepository.createWallet(message.data.name, message.data.privateKey);
         break;
       case MessageType.DELETE_ENVIRONMENT:
         this._environmentRepository.deleteEnvironment(message.data.id);

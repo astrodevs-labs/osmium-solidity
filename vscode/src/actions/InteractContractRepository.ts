@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { Abi, Address } from 'viem';
-import { Environment, InteractContract, InteractContracts, RpcUrl } from './types';
+import { InteractContract, InteractContracts, RpcUrl } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 export class InteractContractRepository {

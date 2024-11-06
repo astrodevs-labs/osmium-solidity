@@ -27,18 +27,6 @@ export const WalletsPage = (props: { vscode: VSCode; resourceManager: ResourceMa
           </div>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <VSCodeTextField
-              {...logic.form.register(`address`, {
-                required: true,
-              })}
-            >
-              Address
-            </VSCodeTextField>
-            {logic.form.formState.errors.address && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Address is required</span>
-            )}
-          </div>
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-            <VSCodeTextField
               {...logic.form.register(`privateKey`, {
                 required: true,
               })}
