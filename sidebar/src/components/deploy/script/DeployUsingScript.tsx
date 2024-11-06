@@ -41,7 +41,7 @@ export const DeployUsingScript = ({
                   </VSCodeOption>
                 ))}
               </VSCodeDropdown>
-              <VSCodeButton className="add-wallet-button" onClick={logic.openPanel}>
+              <VSCodeButton className="add-wallet-button" onClick={() => logic.openPanel('tab-environments')}>
                 Edit
               </VSCodeButton>
             </div>

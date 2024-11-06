@@ -10,8 +10,8 @@ export const useInteractContracts = (contracts: InteractContract[], vscode: VSCo
   } = useFormContext<IInteractForm>();
   const selectedContract = watch('contract');
 
-  const openPanel = () => {
-    vscode.postMessage({ type: 'OPEN_PANEL' });
+  const openPanel = (id: string) => {
+    vscode.postMessage({ type: 'OPEN_PANEL', data: { id } });
   };
 
   const functions =

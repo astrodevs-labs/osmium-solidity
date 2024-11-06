@@ -33,7 +33,7 @@ export const InteractContracts = ({ wallets, contracts, vscode }: InteractContra
               </VSCodeOption>
             ))}
           </VSCodeDropdown>
-          <VSCodeButton className="add-wallet-button" onClick={logic.openPanel}>
+          <VSCodeButton className="add-wallet-button" onClick={() => logic.openPanel('tab-wallets')}>
             Edit
           </VSCodeButton>
         </div>
@@ -54,7 +54,7 @@ export const InteractContracts = ({ wallets, contracts, vscode }: InteractContra
               </VSCodeOption>
             ))}
           </VSCodeDropdown>
-          <VSCodeButton className="add-contract-button" onClick={logic.openPanel}>
+          <VSCodeButton className="add-contract-button" onClick={() => logic.openPanel('tab-contracts')}>
             Edit
           </VSCodeButton>
         </div>

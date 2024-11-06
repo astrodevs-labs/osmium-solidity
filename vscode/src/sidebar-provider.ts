@@ -11,6 +11,7 @@ import { WalletRepository } from './actions/WalletRepository';
 import { MessageType } from './enums';
 import { Message } from './types';
 import { getNonce, getTomlValue } from './utils';
+import { EnvPanelProvider } from './env-panel-provider';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'osmium.sidebar';
@@ -29,6 +30,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private readonly _interactContractRepository: InteractContractRepository,
     private readonly _walletRepository: WalletRepository,
     private readonly _environmentRepository: EnvironmentRepository,
+    private readonly _envPanelProvider: EnvPanelProvider,
   ) {
     this._outputChannel = vscode.window.createOutputChannel('Osmium Solidity Logs');
   }
@@ -174,9 +176,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           response: readResponse.toString(),
         });
         break;
-      case MessageType.OPEN_PANEL:
-        await vscode.commands.executeCommand('osmium.show-env-panel');
-        break;
       case MessageType.DEPLOY_SCRIPT:
         const deployScriptResponse = await this._deploy.deployScript({
           environmentId: message.data.environment,
@@ -204,6 +203,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           type: MessageType.DEPLOY_CONTRACT_RESPONSE,
           response: deployContractResponse,
         });
+        break;
+      case MessageType.OPEN_PANEL:
+        await vscode.commands.executeCommand('osmium.show-env-panel');
+
+        if (this._envPanelProvider.panel) {
+          await this._envPanelProvider.panel.webview.postMessage({
+            type: MessageType.OPEN_PANEL_RESPONSE,
+            id: message.data.id,
+          });
+        }
         break;
       case MessageType.OPEN_DOCUMENTATION:
         vscode.commands.executeCommand('osmium.documentation');
