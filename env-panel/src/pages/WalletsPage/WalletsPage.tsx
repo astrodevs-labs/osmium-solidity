@@ -22,7 +22,7 @@ export const WalletsPage = (props: { vscode: VSCode; resourceManager: ResourceMa
               Name
             </VSCodeTextField>
             {logic.form.formState.errors.name && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Name is required</span>
+              <span style={{ color: 'var(--vscode-errorForeground)' }}>{logic.form.formState.errors.name.message}</span>
             )}
           </div>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -34,7 +34,9 @@ export const WalletsPage = (props: { vscode: VSCode; resourceManager: ResourceMa
               Private Key
             </VSCodeTextField>
             {logic.form.formState.errors.privateKey && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Private Key is required</span>
+              <span style={{ color: 'var(--vscode-errorForeground)' }}>
+                {logic.form.formState.errors.privateKey.message}
+              </span>
             )}
           </div>
         </div>

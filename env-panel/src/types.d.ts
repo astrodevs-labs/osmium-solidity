@@ -14,7 +14,7 @@ export type EnvironmentForm = {
 export type ContractForm = {
   name: string;
   address: string;
-  chainId: string;
+  chainId: number;
   rpc: string;
   abi: string;
 };

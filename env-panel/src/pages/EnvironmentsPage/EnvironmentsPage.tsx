@@ -22,7 +22,7 @@ export const EnvironmentsPage = (props: { vscode: VSCode; resourceManager: Resou
               Name
             </VSCodeTextField>
             {logic.form.formState.errors.name && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Name is required</span>
+              <span style={{ color: 'var(--vscode-errorForeground)' }}>{logic.form.formState.errors.name.message}</span>
             )}
           </div>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -34,7 +34,7 @@ export const EnvironmentsPage = (props: { vscode: VSCode; resourceManager: Resou
               Rpc
             </VSCodeTextField>
             {logic.form.formState.errors.rpc && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Rpc is required</span>
+              <span style={{ color: 'var(--vscode-errorForeground)' }}>{logic.form.formState.errors.rpc.message}</span>
             )}
           </div>
         </div>
