@@ -43,8 +43,8 @@ impl RuleType for NoInlineAssembly {
 
         for contract in retriever::retrieve_contract_nodes(&file.data) {
             for stmt in retriever::retrieve_stmts_nodes(&contract) {
-                if let Stmt::Assembly(_) = stmt {
-                    let location = (stmt.span().start(), stmt.span().end());
+                if let Stmt::Assembly(assembly) = stmt {
+                    let location = (assembly.assembly_token.span().start(), assembly.assembly_token.span().end());
                     res.push(self.create_diag(file, location));
                 }
             }

@@ -10,6 +10,7 @@ pub const RULE_ID: &str = "private-vars-leading-underscore";
 
 // specific
 const MESSAGE_PRIVATE: &str = "Private and internal variables must start with a single underscore";
+const FUNCTION_MESSAGE_PRIVATE: &str = "Private and internal function names must start with a single underscore";
 const MESSAGE_PUBLIC: &str =
     "Only private and internal variables must start with a single underscore";
 const DEFAULT_STRICT: bool = false;
@@ -106,7 +107,7 @@ impl RuleType for PrivateVarsLeadingUnderscore {
                         res.push(self.create_diag(
                             (span.start(), span.end()),
                             file,
-                            MESSAGE_PRIVATE.to_string(),
+                            FUNCTION_MESSAGE_PRIVATE.to_string(),
                         ));
                     }
                     if leading_underscore && !is_private {
@@ -114,7 +115,7 @@ impl RuleType for PrivateVarsLeadingUnderscore {
                         res.push(self.create_diag(
                             (span.start(), span.end()),
                             file,
-                            MESSAGE_PUBLIC.to_string(),
+                            FUNCTION_MESSAGE_PRIVATE.to_string(),
                         ));
                     }
                 }

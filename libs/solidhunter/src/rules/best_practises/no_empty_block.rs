@@ -85,12 +85,12 @@ fn check_empty_block(file: &SolidFile) -> Vec<Option<Range>> {
         if contract.body.is_empty() {
             res.push(Some(Range {
                 start: Position {
-                    line: contract.span().start().line,
-                    character: contract.span().start().column + 1,
+                    line: contract.brace_token.span().start().line,
+                    character: contract.brace_token.span().start().column,
                 },
                 end: Position {
-                    line: contract.span().end().line,
-                    character: contract.span().end().column,
+                    line: contract.brace_token.span().end().line,
+                    character: contract.brace_token.span().end().column,
                 },
             }));
         }
@@ -102,7 +102,7 @@ fn check_empty_block(file: &SolidFile) -> Vec<Option<Range>> {
             res.push(Some(Range {
                 start: Position {
                     line: block.span().start().line,
-                    character: block.span().start().column + 1,
+                    character: block.span().start().column,
                 },
                 end: Position {
                     line: block.span().end().line,
