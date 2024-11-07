@@ -1,6 +1,7 @@
 use super::{Range, Severity};
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use colored::Colorize;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct LintDiag {
@@ -31,9 +32,10 @@ impl fmt::Display for LintDiag {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "\n{}: {}\n  --> {}:{}:{}",
+            "\n{}: {}\n  {} {}:{}:{}",
             self.severity,
-            self.message,
+            self.id,
+            "-->".to_string().cyan(),
             self.uri,
             self.range.start.line,
             self.range.start.character,
