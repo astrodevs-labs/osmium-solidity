@@ -126,6 +126,7 @@ async function gasReportTests(cwd: string): Promise<ReportDecorators> {
     }
     decorations.set(path, decorationsArray);
   }
+  vscode.window.showInformationMessage('osmium: gas estimation is finished.');
 
   return decorations;
 }
