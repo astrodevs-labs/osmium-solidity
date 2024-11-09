@@ -1,6 +1,7 @@
 use super::LintDiag;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use colored::Colorize;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FileDiags {
@@ -18,7 +19,7 @@ impl FileDiags {
     }
 
     fn format_highlighted_lines(&self, idx: usize) -> String {
-        let mut formatted = "   |\n".to_string();
+        let mut formatted = format!("   {}\n", "|".to_string().cyan());
         let diag = &self.diags[idx];
         let first_line = self
             .source_file_content
@@ -42,17 +43,19 @@ impl FileDiags {
             }
 
             formatted = format!(
-                "{}{}{}|    {}\n   |    {}{}\n",
+                "{}{}{}{}    {}\n   {}    {}{}\n",
                 formatted,
-                line_nb,
+                line_nb.to_string().cyan(),
                 compute_format_line_padding(line_nb),
+                "|".to_string().cyan(),
                 trimmed_line,
+                "|".to_string().cyan(),
                 " ".repeat(if line_nb == diag.range.start.line {
                     diag.range.start.character - offset
                 } else {
                     0
                 }),
-                "^".repeat(higlight_length)
+                "^".repeat(higlight_length).to_string().color(diag.severity.to_color())
             );
         }
         formatted
@@ -63,6 +66,7 @@ impl fmt::Display for FileDiags {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (idx, diag) in self.diags.iter().enumerate() {
             write!(f, "{}\n{}", diag, self.format_highlighted_lines(idx))?;
+            write!(f, "   {} {}\n", "=".to_string().cyan(), diag.message.to_string().color(diag.severity.to_color()))?;
         }
         Ok(())
     }

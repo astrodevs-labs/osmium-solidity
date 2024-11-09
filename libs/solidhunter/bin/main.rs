@@ -54,11 +54,11 @@ struct Args {
     documentation: bool,
 }
 
-fn print_result(results: Vec<LintResult>) {
+fn print_result(results: &Vec<LintResult>) {
     for result in results {
         match result {
             Ok(diags) => {
-                println!("{}", &diags);
+                print!("{}", &diags);
             }
             Err(e) => {
                 println!("{}", e);
@@ -141,9 +141,12 @@ fn main() -> Result<(), SolidHunterError> {
         let result = linter.parse_path(".");
         results.push(result);
     }
-    for path_result in results {
+    for (index, path_result) in results.iter().enumerate() {
         if !args.to_json {
             print_result(path_result);
+            if index == results.len() - 1 {
+                println!();
+            }
         } else {
             for res in path_result {
                 match res {
