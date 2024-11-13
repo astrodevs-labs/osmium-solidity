@@ -1,9 +1,9 @@
 use clap::{arg, Parser};
+use solidhunter::aggregate::aggregate_diags;
 use solidhunter::errors::SolidHunterError;
 use solidhunter::linter::SolidLinter;
 use solidhunter::rules::rule_impl::create_rules_file;
 use solidhunter::types::{FileDiags, LintResult};
-use solidhunter::aggregate::aggregate_diags;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]

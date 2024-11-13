@@ -60,9 +60,9 @@ impl FileDiags {
 
             // Add highlights for all ranges on this line
             formatted.push_str(&format!("   {}    ", "|".to_string().cyan()));
-            
+
             let mut highlight_line = vec![' '; trimmed_line.len()];
-            
+
             for range in &ranges_to_highlight {
                 if line_nb >= range.start.line && line_nb <= range.end.line {
                     let start_char = if line_nb == range.start.line {
@@ -70,7 +70,7 @@ impl FileDiags {
                     } else {
                         0
                     };
-                    
+
                     let end_char = if line_nb == range.end.line {
                         range.end.character - offset
                     } else {
@@ -85,7 +85,13 @@ impl FileDiags {
                 }
             }
 
-            formatted.push_str(&highlight_line.iter().collect::<String>().color(diag.severity.to_color()).to_string());
+            formatted.push_str(
+                &highlight_line
+                    .iter()
+                    .collect::<String>()
+                    .color(diag.severity.to_color())
+                    .to_string(),
+            );
             formatted.push('\n');
         }
         formatted
