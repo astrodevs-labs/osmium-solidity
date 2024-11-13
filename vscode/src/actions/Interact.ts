@@ -76,7 +76,7 @@ export class Interact {
       },
     };
 
-    const res = await fetch(contractInfos.rpc, {
+    const rpcResponse = await fetch(contractInfos.rpc, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ export class Interact {
         params: [],
       }),
     });
-    const chainIdEncoded = ((await res.json()) as any).result;
+    const chainIdEncoded = ((await rpcResponse.json()) as any).result;
     const chainId = parseInt(chainIdEncoded, 16);
 
     const walletClient = createWalletClient({
