@@ -90,11 +90,6 @@ export class Interact {
     });
     const chainIdEncoded = ((await res.json()) as any).result;
     const chainId = parseInt(chainIdEncoded, 16);
-    
-
-    console.log('chainId', chainId);
-    console.log('res', res);
-    
 
     const walletClient = createWalletClient({
       chain: defineChain({
