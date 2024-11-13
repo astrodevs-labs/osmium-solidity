@@ -32,11 +32,18 @@ pub struct LintDiag {
 
 impl fmt::Display for LintDiag {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut locations = format!("{}:{}", self.range.start.line, self.range.start.character);
-
+        let mut locations = format!(
+            "{}:{}",
+            self.range.start.line,
+            self.range.start.character
+        );
+        
         if let Some(ranges) = &self.same_line_ranges {
             for range in ranges {
-                locations.push_str(&format!(",{}", range.start.character));
+                locations.push_str(&format!(
+                    ",{}",
+                    range.start.character
+                ));
             }
         }
 
