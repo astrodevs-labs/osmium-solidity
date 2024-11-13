@@ -71,9 +71,6 @@ async function launchFeatures() {
 		formatterHandlers?.formatterDisposable.dispose();
 		formatterHandlers = null;
 	}
-	
-	if (isSidebarEnable && !interactDeployHandler) {
-		commands.executeCommand('setContext', 'Osmium.showsidebar', true);
 
   if (isFormatterEnable && !formatterHandlers) {
     formatterHandlers = registerForgeFmtLinter(Extcontext);
