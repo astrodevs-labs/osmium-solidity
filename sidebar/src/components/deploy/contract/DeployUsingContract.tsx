@@ -51,7 +51,7 @@ export const DeployUsingContract = ({
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={logic.openPanel}>
+            <VSCodeButton className="add-wallet-button" onClick={() => logic.openPanel('tab-wallets')}>
               Edit
             </VSCodeButton>
           </div>
@@ -84,7 +84,7 @@ export const DeployUsingContract = ({
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={logic.openPanel}>
+            <VSCodeButton className="add-wallet-button" onClick={() => logic.openPanel('tab-environments')}>
               Edit
             </VSCodeButton>
           </div>

@@ -19,8 +19,8 @@ export const useDeployUsingScript = (
     output: string;
   } | null>(null);
 
-  const openPanel = () => {
-    vscode.postMessage({ type: MessageType.OPEN_PANEL });
+  const openPanel = (id: string) => {
+    vscode.postMessage({ type: MessageType.OPEN_PANEL, data: { id } });
   };
 
   useEffect(() => {

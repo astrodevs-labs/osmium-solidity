@@ -7,12 +7,14 @@ export type ResourceManager = {
   wallets: Wallets;
   environments: Environments;
   interactContracts: InteractContracts;
+  openingPanelId: string;
 };
 
 export const useResourceManager = (vscode: VSCode): ResourceManager => {
   const [wallets, setWallets] = useState<Wallets>([]);
   const [environments, setEnvironments] = useState<Environments>([]);
   const [interactContracts, setInteractContracts] = useState<InteractContracts>([]);
+  const [openingPanelId, setOpeningPanelId] = useState<string>('');
 
   useEffect(() => {
     if (!vscode) {
@@ -38,6 +40,10 @@ export const useResourceManager = (vscode: VSCode): ResourceManager => {
           setInteractContracts(event.data.contracts);
           break;
         }
+        case MessageType.OPEN_PANEL_RESPONSE: {
+          setOpeningPanelId(event.data.id);
+          break;
+        }
       }
     };
     window.addEventListener('message', listener);
@@ -48,5 +54,6 @@ export const useResourceManager = (vscode: VSCode): ResourceManager => {
     wallets,
     environments,
     interactContracts,
+    openingPanelId,
   };
 };
