@@ -41,19 +41,6 @@ export const ContractsPage = (props: { vscode: VSCode; resourceManager: Resource
         <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem', marginBottom: '1rem' }}>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <VSCodeTextField
-              {...logic.form.register(`chainId`, {
-                required: true,
-                valueAsNumber: true,
-              })}
-            >
-              Chain ID
-            </VSCodeTextField>
-            {logic.form.formState.errors.chainId && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Invalid chain ID</span>
-            )}
-          </div>
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-            <VSCodeTextField
               {...logic.form.register(`rpc`, {
                 required: true,
               })}

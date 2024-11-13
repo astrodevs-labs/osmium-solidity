@@ -70,22 +70,31 @@ export class Interact {
       throw new Error(`contract id ${contractId} not found`);
     }
 
-    const rpc = contractInfos.rpc.startsWith('ws')
-      ? {
-          default: {
-            webSocket: [contractInfos.rpc],
-          },
-        }
-      : {
-          default: {
-            http: [contractInfos.rpc],
-          },
-        };
+    const rpc = {
+      default: {
+        http: [contractInfos.rpc],
+      },
+    };
+
+    const res = await fetch(contractInfos.rpc, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'eth_chainId',
+        params: [],
+      }),
+    });
+    const chainIdEncoded = ((await res.json()) as any).result;
+    const chainId = parseInt(chainIdEncoded, 16);
 
     const walletClient = createWalletClient({
       chain: defineChain({
         name: 'custom',
-        id: contractInfos.chainId,
+        id: chainId,
         nativeCurrency: {
           name: 'Ethereum',
           symbol: 'ETH',
