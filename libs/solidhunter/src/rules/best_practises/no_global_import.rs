@@ -84,12 +84,12 @@ fn check_global_import(file: &SolidFile) -> Vec<Option<Range>> {
                 if plain.alias.is_none() {
                     reports.push(Some(Range {
                         start: Position {
-                            line: plain.span().start().line,
-                            character: plain.span().start().column,
+                            line: import.span().start().line,
+                            character: import.span().start().column,
                         },
                         end: Position {
-                            line: plain.span().end().line,
-                            character: plain.span().end().column,
+                            line: import.span().end().line,
+                            character: import.span().end().column,
                         },
                     }));
                 }
@@ -98,12 +98,12 @@ fn check_global_import(file: &SolidFile) -> Vec<Option<Range>> {
                 if glob.alias.is_none() {
                     reports.push(Some(Range {
                         start: Position {
-                            line: glob.span().start().line,
-                            character: glob.span().start().column,
+                            line: import.span().start().line,
+                            character: import.span().start().column,
                         },
                         end: Position {
-                            line: glob.span().end().line,
-                            character: glob.span().end().column,
+                            line: import.span().end().line,
+                            character: import.span().end().column,
                         },
                     }));
                 }

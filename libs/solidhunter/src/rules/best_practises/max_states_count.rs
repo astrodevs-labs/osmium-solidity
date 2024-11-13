@@ -61,7 +61,7 @@ impl RuleType for MaxStatesCount {
                 };
                 count += 1;
                 if count > self.max_states {
-                    let location = (var.span().start(), var.span().end());
+                    let location = (var.span().start(), var.name.span().end());
                     res.push(self.create_diag(file, location, count));
                 }
             }

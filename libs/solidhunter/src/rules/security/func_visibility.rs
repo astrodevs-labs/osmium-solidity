@@ -65,7 +65,7 @@ impl RuleType for FuncVisibility {
                 if function.kind.is_function() {
                     res.push(
                         self.create_diag(
-                            (function.kind.span().start(), function.span().end()),
+                            (function.kind.span().start(), function.kind.span().end()),
                             file,
                         ),
                     );

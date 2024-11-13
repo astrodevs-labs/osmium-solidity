@@ -99,7 +99,7 @@ fn create_report(function: ItemFunction) -> Option<Range> {
     Some(Range {
         start: Position {
             line: function.attributes.span().start().line,
-            character: function.attributes.span().start().column + 1,
+            character: function.attributes.span().start().column,
         },
         end: Position {
             line: function.attributes.span().end().line,
