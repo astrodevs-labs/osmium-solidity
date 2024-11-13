@@ -2,8 +2,7 @@ use crate::types::LintDiag;
 
 pub fn aggregate_diags(diags: Vec<LintDiag>) -> Vec<LintDiag> {
     let mut res = Vec::new();
-    let mut diags_by_line: std::collections::HashMap<(String, usize), Vec<LintDiag>> =
-        std::collections::HashMap::new();
+    let mut diags_by_line: std::collections::HashMap<(String, usize), Vec<LintDiag>> = std::collections::HashMap::new();
 
     // Group diagnostics by id and line number
     for diag in diags {
@@ -20,12 +19,12 @@ pub fn aggregate_diags(diags: Vec<LintDiag>) -> Vec<LintDiag> {
             // Multiple diagnostics - combine them
             let mut base_diag = line_diags.remove(0);
             let mut same_line_ranges = Vec::new();
-
+            
             // Collect ranges from other diagnostics
             for other_diag in line_diags {
                 same_line_ranges.push(other_diag.range);
             }
-
+            
             base_diag.same_line_ranges = Some(same_line_ranges);
             res.push(base_diag);
         }
@@ -35,12 +34,12 @@ pub fn aggregate_diags(diags: Vec<LintDiag>) -> Vec<LintDiag> {
 
 pub fn unaggregate_diags(diags: Vec<LintDiag>) -> Vec<LintDiag> {
     let mut res = Vec::new();
-
+    
     for mut diag in diags {
         // Add the original diagnostic
         if let Some(same_line_ranges) = diag.same_line_ranges.take() {
             res.push(diag.clone());
-
+            
             // Create new diagnostics for each range
             for range in same_line_ranges {
                 let mut new_diag = diag.clone();
@@ -52,6 +51,6 @@ pub fn unaggregate_diags(diags: Vec<LintDiag>) -> Vec<LintDiag> {
             res.push(diag);
         }
     }
-
+    
     res
 }
