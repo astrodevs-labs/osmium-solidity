@@ -75,13 +75,6 @@ async function launchFeatures() {
 	if (isSidebarEnable && !interactDeployHandler) {
 		commands.executeCommand('setContext', 'Osmium.showsidebar', true);
 
-  if (isAutoFormatEnable && isFormatterEnable && !saveHandler) {
-    saveHandler = workspace.onDidSaveTextDocument(format);
-  } else if (!isAutoFormatEnable && saveHandler) {
-    saveHandler.dispose();
-    saveHandler = null;
-  }
-
   if (isFormatterEnable && !formatterHandlers) {
     formatterHandlers = registerForgeFmtLinter(Extcontext);
   } else if (!isFormatterEnable && formatterHandlers) {
