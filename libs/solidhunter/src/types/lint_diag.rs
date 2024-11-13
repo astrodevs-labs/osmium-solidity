@@ -8,6 +8,8 @@ pub struct LintDiag {
     /// The range at which the message applies.
     pub range: Range,
 
+    pub same_line_ranges: Option<Vec<Range>>,
+
     /// The diagnostic's severity.
     pub severity: Severity,
 
