@@ -22,7 +22,7 @@ export const ContractsPage = (props: { vscode: VSCode; resourceManager: Resource
               Name
             </VSCodeTextField>
             {logic.form.formState.errors.name && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Invalid name</span>
+              <span style={{ color: 'var(--vscode-errorForeground)' }}>{logic.form.formState.errors.name.message}</span>
             )}
           </div>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -34,7 +34,9 @@ export const ContractsPage = (props: { vscode: VSCode; resourceManager: Resource
               Address
             </VSCodeTextField>
             {logic.form.formState.errors.address && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Invalid address</span>
+              <span style={{ color: 'var(--vscode-errorForeground)' }}>
+                {logic.form.formState.errors.address.message}
+              </span>
             )}
           </div>
         </div>
@@ -48,7 +50,7 @@ export const ContractsPage = (props: { vscode: VSCode; resourceManager: Resource
               Rpc
             </VSCodeTextField>
             {logic.form.formState.errors.rpc && (
-              <span style={{ color: 'var(--vscode-errorForeground)' }}>Invalid rpc</span>
+              <span style={{ color: 'var(--vscode-errorForeground)' }}>{logic.form.formState.errors.rpc.message}</span>
             )}
           </div>
         </div>
@@ -61,7 +63,7 @@ export const ContractsPage = (props: { vscode: VSCode; resourceManager: Resource
             Abi
           </VSCodeTextField>
           {logic.form.formState.errors.abi && (
-            <span style={{ color: 'var(--vscode-errorForeground)' }}>Invalid RPC</span>
+            <span style={{ color: 'var(--vscode-errorForeground)' }}>{logic.form.formState.errors.abi.message}</span>
           )}
         </div>
         <VSCodeButton style={{ width: '100%', marginBottom: '1rem' }} type="submit">

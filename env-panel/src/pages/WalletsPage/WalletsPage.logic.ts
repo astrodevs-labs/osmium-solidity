@@ -1,20 +1,17 @@
+import { WalletSchema } from '@/schemas/Wallet.schema';
 import './WalletsPage.css';
 import { VSCode, WalletForm } from '@/types';
 import { MessageType } from '@backend/enums.ts';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 export const useWalletsPageLogic = (vscode: VSCode) => {
   const form = useForm<WalletForm>({
-    defaultValues: {
-      name: '',
-      privateKey: '',
-    },
+    mode: 'onChange',
+    resolver: zodResolver(WalletSchema),
   });
 
   const onSubmit: SubmitHandler<WalletForm> = (data) => {
-    if (!data.name.length) form.setError('name', { type: 'manual', message: 'Invalid string' });
-    if (!data.privateKey.length) form.setError('privateKey', { type: 'manual', message: 'Invalid string' });
-
     vscode.postMessage({
       type: MessageType.ADD_WALLET,
       data,

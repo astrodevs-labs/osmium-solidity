@@ -1,13 +1,13 @@
+import { EnvironmentSchema } from '@/schemas/Environment.schema';
 import { EnvironmentForm, VSCode } from '@/types';
 import { MessageType } from '@backend/enums.ts';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 export const useEnvironmentsPageLogic = (vscode: VSCode) => {
   const form = useForm<EnvironmentForm>({
-    defaultValues: {
-      name: '',
-      rpc: '',
-    },
+    mode: 'onChange',
+    resolver: zodResolver(EnvironmentSchema),
   });
 
   const onSubmit: SubmitHandler<EnvironmentForm> = (data) => {

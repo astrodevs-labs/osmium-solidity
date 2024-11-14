@@ -1,31 +1,19 @@
+import { ContractSchema } from '@/schemas/Contract.schema';
 import { ContractForm, VSCode } from '@/types';
 import { MessageType } from '@backend/enums.ts';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 export const useContractsPageLogic = (vscode: VSCode) => {
   const form = useForm<ContractForm>({
-    defaultValues: {
-      name: '',
-      address: '',
-      chainId: '',
-      rpc: '',
-      abi: '',
-    },
+    mode: 'onChange',
+    resolver: zodResolver(ContractSchema),
   });
 
   const onSubmit: SubmitHandler<ContractForm> = (data) => {
-    if (!data.name.length) form.setError('name', { type: 'manual', message: 'Invalid string' });
-    if (!data.address.length) form.setError('address', { type: 'manual', message: 'Invalid string' });
-    if (isNaN(Number(data.chainId))) form.setError('chainId', { type: 'manual', message: 'Invalid number' });
-    if (!data.rpc.length) form.setError('rpc', { type: 'manual', message: 'Invalid string' });
-    if (!data.abi.length) form.setError('abi', { type: 'manual', message: 'Invalid string' });
-
     vscode.postMessage({
       type: MessageType.ADD_CONTRACT,
-      data: {
-        ...data,
-        chainId: Number(data.chainId),
-      },
+      data,
     });
   };
 
