@@ -10,7 +10,8 @@ pub const RULE_ID: &str = "private-vars-leading-underscore";
 
 // specific
 const MESSAGE_PRIVATE: &str = "Private and internal variables must start with a single underscore";
-const FUNCTION_MESSAGE_PRIVATE: &str = "Private and internal function names must start with a single underscore";
+const FUNCTION_MESSAGE_PRIVATE: &str =
+    "Private and internal function names must start with a single underscore";
 const MESSAGE_PUBLIC: &str =
     "Only private and internal variables must start with a single underscore";
 const DEFAULT_STRICT: bool = false;

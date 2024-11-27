@@ -72,15 +72,6 @@ async function launchFeatures() {
 		formatterHandlers = null;
 	}
 
-  if (isFormatterEnable && !formatterHandlers) {
-    formatterHandlers = registerForgeFmtLinter(Extcontext);
-  } else if (!isFormatterEnable && formatterHandlers) {
-    formatterHandlers?.fileDisposable.dispose();
-    formatterHandlers?.workspaceDisposable.dispose();
-    formatterHandlers?.formatterDisposable.dispose();
-    formatterHandlers = null;
-  }
-
   if (isSidebarEnable && !interactDeployHandler) {
     commands.executeCommand('setContext', 'Osmium.showsidebar', true);
 
@@ -167,18 +158,6 @@ async function launchFeatures() {
   } else if (!isSlitherEnable && slitherClient) {
     slitherClient.stop();
     slitherClient = null;
-  }
-
-  if (isDebuggerEnable) {
-  }
-
-  if (workspace.workspaceFolders?.length && isTestsEnable && !testsPositionsClient) {
-    testsPositionsClient = await createTestsPositionsClient(Extcontext);
-    testManager = new TestManager(testsPositionsClient, workspace.workspaceFolders[0].uri.fsPath);
-    Extcontext.subscriptions.push(testManager.testController, testsPositionsClient);
-  } else if (!isTestsEnable && testsPositionsClient) {
-    testsPositionsClient.stop();
-    testsPositionsClient = null;
   }
 
   if (isDebuggerEnable) {

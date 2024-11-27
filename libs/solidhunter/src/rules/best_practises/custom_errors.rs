@@ -49,7 +49,10 @@ impl RuleType for CustomErrors {
             for stmt in retriever::retrieve_stmts_nodes(&contract) {
                 if let Stmt::Revert(revert) = &stmt {
                     if let Expr::Tuple(_) = &revert.expr {
-                        let location = (revert.revert_token.span().start(), revert.revert_token.span().end());
+                        let location = (
+                            revert.revert_token.span().start(),
+                            revert.revert_token.span().end(),
+                        );
                         res.push(self.create_diag(file, location, "revert".to_string()));
                     }
                 }

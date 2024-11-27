@@ -1,7 +1,7 @@
 use super::LintDiag;
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use colored::Colorize;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FileDiags {
@@ -55,7 +55,9 @@ impl FileDiags {
                 } else {
                     0
                 }),
-                "^".repeat(higlight_length).to_string().color(diag.severity.to_color())
+                "^".repeat(higlight_length)
+                    .to_string()
+                    .color(diag.severity.to_color())
             );
         }
         formatted
@@ -66,7 +68,12 @@ impl fmt::Display for FileDiags {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (idx, diag) in self.diags.iter().enumerate() {
             write!(f, "{}\n{}", diag, self.format_highlighted_lines(idx))?;
-            write!(f, "   {} {}\n", "=".to_string().cyan(), diag.message.to_string().color(diag.severity.to_color()))?;
+            write!(
+                f,
+                "   {} {}\n",
+                "=".to_string().cyan(),
+                diag.message.to_string().color(diag.severity.to_color())
+            )?;
         }
         Ok(())
     }

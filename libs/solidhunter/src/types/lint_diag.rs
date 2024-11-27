@@ -1,7 +1,7 @@
 use super::{Range, Severity};
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use colored::Colorize;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct LintDiag {
