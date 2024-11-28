@@ -10,17 +10,12 @@ export const DocsPage = () => {
         <div>
           <p className="text-lg font-semibold text-white mb-4">Automatically checks your code for common issues:</p>
           <ul className="text-gray-300 list-disc ml-8 space-y-2">
-            <li>Constant name must be in capitalized SNAKE_CASE</li>
-            <li>Contract name must be in CamelCase</li>
-            <li>Event name must be in CamelCase</li>
-            <li>Function {}() must match Foundry test naming convention (for the foundry test function)</li>
-            <li>Function name must be in mixedCase</li>
-            <li>Function param name must be in mixedCase</li>
-            <li>Modifier name must be in mixedCase</li>
-            <li>{} parameter is not named (for the named parameters mapping)</li>
-            <li>Only private and internal variables must start with a single underscore</li>
-            <li>Avoid using letters 'I', 'l', 'O' as identifiers</li>
-            <li>Variable should be in mixedCase</li>
+            <li>
+              Ensures proper naming conventions for constants, contracts, events, functions, parameters, variables, etc.
+            </li>
+            <li>Checks for adherence to Foundry test naming conventions</li>
+            <li>Enforces specific rules for private and internal variables</li>
+            <li>Discourages the use of certain letters as identifiers</li>
           </ul>
         </div>
       ),
@@ -48,9 +43,13 @@ export const DocsPage = () => {
     },
     {
       name: 'Slither',
+      description:
+        'Slither is a static analysis tool for Solidity contracts. It runs a suite of vulnerability detectors, prints visual information about the contract.',
+    },
+    {
+      name: 'Deploy & Interact sidebar',
       description: (
         <div>
-          <p>Slither is going to report you some security issues that are in your functions and contracts:</p>
           <div className="inline-flex items-center space-x-2 mt-2">
             <HandRaisedIcon className="h-6 w-6 text-white-900" />
             <p className="text-lg font-semibold text-white">Interact</p>
@@ -90,11 +89,6 @@ export const DocsPage = () => {
         </div>
       ),
     },
-    {
-      name: 'Deploy & Interact sidebar',
-      description:
-        'First of all, click on the testing extension which is by default on VSCode. Then, in this interface, you will be able to test your files via foundry.',
-    },
     // { name: 'Debugger', description: 'Debug your smart contracts.' },
     {
       name: 'Unit tests',
@@ -127,8 +121,13 @@ export const DocsPage = () => {
     {
       name: 'References',
       description:
-        'Navigate to usages of variables. For example, if you search for "test" and it is not used anywhere else, it will say "No references found for "test". If you search for "message", it will show where it is used.',
-    }
+        'You can right click a part of your code and navigate to the definition, find all references, rename symbol, etc.',
+    },
+    {
+      name: 'Auto format',
+      description:
+        'Enable the formatter and auto format in the Osmium settings. Every time you save your file, the formatter will be automatically used. If auto save interferes, disable it and use the "Format Document" feature manually.',
+    },
   ];
 
   function classNames(...classes: string[]) {
@@ -137,7 +136,9 @@ export const DocsPage = () => {
 
   return (
     <div className="flex">
-      <div className="h-screen overflow-y-scroll w-full"> {/* w-3/4 */}
+      <div className="h-screen overflow-y-scroll w-full">
+        {' '}
+        {/* w-3/4 */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-12 space-y-8">
           <h1 className="text-3xl font-extrabold">Osmium Extension Documentation</h1>
           {/* Settings explanation */}

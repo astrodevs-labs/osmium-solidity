@@ -23,9 +23,9 @@
 }
 
 .title {
-  font-size: 1.0rem;
-  font-weight: bold;
-  margin-top: 0.2rem;
+  font-size: 1.1rem;
+  margin: 0.2rem 0;
+  cursor: pointer;
 }
 
 .subtitle {
