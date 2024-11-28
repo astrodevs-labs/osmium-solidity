@@ -55,9 +55,7 @@ async function launchFeatures() {
 	const isLinterEnable = configuration.get('linter');
 	const isSlitherEnable = configuration.get('slither');
 	const isGasEstimationEnable = configuration.get('gas estimation');
-	const isSidebarEnable = configuration.get('sidebar');
 	const isDebuggerEnable = configuration.get('debugger');
-	const isTestsEnable = configuration.get('tests');
 	const isCompilerEnable = configuration.get('compiler');
 	const isreferencesEnable = configuration.get('references');
 	const isFormatterEnable = configuration.get('formatter');
@@ -72,7 +70,7 @@ async function launchFeatures() {
 		formatterHandlers = null;
 	}
 
-  if (isSidebarEnable && !interactDeployHandler) {
+  if (!interactDeployHandler) {
     commands.executeCommand('setContext', 'Osmium.showsidebar', true);
 
     const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath || '';
@@ -110,10 +108,6 @@ async function launchFeatures() {
     registerWalkthroughPanel(Extcontext);
     interactDeployHandler = window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider);
     Extcontext.subscriptions.push(interactDeployHandler);
-  } else if (!isSidebarEnable && interactDeployHandler) {
-    commands.executeCommand('setContext', 'Osmium.showsidebar', false);
-    interactDeployHandler.dispose();
-    interactDeployHandler = null;
   }
 
   if (isGasEstimationEnable && !gasEstimationHandler) {
@@ -163,13 +157,10 @@ async function launchFeatures() {
   if (isDebuggerEnable) {
   }
 
-  if (workspace.workspaceFolders?.length && isTestsEnable && !testsPositionsClient) {
+  if (workspace.workspaceFolders?.length && !testsPositionsClient) {
     testsPositionsClient = await createTestsPositionsClient(Extcontext);
     testManager = new TestManager(testsPositionsClient, workspace.workspaceFolders[0].uri.fsPath);
     Extcontext.subscriptions.push(testManager.testController, testsPositionsClient);
-  } else if (!isTestsEnable && testsPositionsClient) {
-    testsPositionsClient.stop();
-    testsPositionsClient = null;
   }
 
   const folders = workspace.workspaceFolders;

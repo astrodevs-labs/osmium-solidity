@@ -81,16 +81,6 @@
           "default": true,
           "description": "Slither is going to report you some security issues that are in your functions and contracts."
         },
-        "osmium-solidity.sidebar": {
-          "type": "boolean",
-          "default": true,
-          "description": "This feature will allow you to see the sidebar with the deploy and interact buttons. On this interface, you will be able to deploy your contract and interact with it."
-        },
-        "osmium-solidity.tests": {
-          "type": "boolean",
-          "default": true,
-          "description": "By clicking on the test button, you will be able to run your tests via foundry feature."
-        },
         "osmium-solidity.compiler": {
           "type": "boolean",
           "default": true,
