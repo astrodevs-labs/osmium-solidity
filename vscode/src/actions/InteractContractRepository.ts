@@ -58,8 +58,21 @@ export class InteractContractRepository {
     this._save();
   }
 
-  public deleteContract(name: string): void {
-    this._contracts = this._contracts.filter((c) => c.name !== name);
+  public updateContract(
+    id: InteractContract['id'],
+    key: 'name' | 'address' | 'abi' | 'chainId' | 'rpc',
+    value: string,
+  ): void {
+    const environment = this._contracts.find((e) => e.id === id);
+    if (environment) {
+      // @ts-ignore to change
+      environment[key] = value;
+      this._save();
+    }
+  }
+
+  public deleteContract(id: InteractContract['id']): void {
+    this._contracts = this._contracts.filter((c) => c.id !== id);
     this._save();
   }
 }

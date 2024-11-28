@@ -14,6 +14,17 @@ pub enum Severity {
     HINT = 4,
 }
 
+impl Severity {
+    pub fn to_color(&self) -> colored::Color {
+        match self {
+            Severity::ERROR => colored::Color::Red,
+            Severity::WARNING => colored::Color::Yellow,
+            Severity::INFO => colored::Color::Blue,
+            Severity::HINT => colored::Color::Green,
+        }
+    }
+}
+
 impl fmt::Display for Severity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let severity = match self {

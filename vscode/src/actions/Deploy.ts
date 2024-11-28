@@ -1,20 +1,19 @@
-import { InteractContractRepository } from './InteractContractRepository';
-import { WalletRepository } from './WalletRepository';
-import { ScriptRepository } from './ScriptRepository';
-import { Address } from 'viem';
-import { ContractParams, Script } from './types';
-import { EnvironmentRepository } from './EnvironmentRepository';
 import { exec } from 'child_process';
-import { DeployContractRepository } from './DeployContractRepository';
 import fs from 'fs';
-import { getTomlValue } from '../utils';
 import path from 'path';
-import { array } from 'vscode-languageclient/lib/common/utils/is';
+import * as vscode from 'vscode';
+import { getTomlValue } from '../utils';
+import { DeployContractRepository } from './DeployContractRepository';
+import { EnvironmentRepository } from './EnvironmentRepository';
+import { ScriptRepository } from './ScriptRepository';
+import { ContractParams } from './types';
+import { WalletRepository } from './WalletRepository';
 
 export interface DeployScriptOptions {
   environmentId: string;
   scriptId: string;
   verify: boolean;
+  outputChannel: vscode.OutputChannel;
 }
 
 export interface DeployContractOptions {
@@ -25,6 +24,7 @@ export interface DeployContractOptions {
   gasLimit: number;
   value: number;
   params: ContractParams[];
+  outputChannel: vscode.OutputChannel;
 }
 
 export class Deploy {
@@ -59,7 +59,7 @@ export class Deploy {
     }
   }
 
-  public async deployScript({ environmentId, scriptId, verify }: DeployScriptOptions): Promise<any> {
+  public async deployScript({ environmentId, scriptId, verify, outputChannel }: DeployScriptOptions): Promise<any> {
     const environmentInfos = this._environmentRepository.getEnvironment(environmentId);
     const scriptInfos = this._scriptRepository.getScript(scriptId);
 
@@ -74,18 +74,32 @@ export class Deploy {
     const command = `forge script --broadcast ${path.join(this._scriptFolderPath, scriptInfos.path)}:${scriptInfos.name} --rpc-url ${environmentInfos.rpc} ${verify ? '--verify' : ''}`;
 
     return new Promise((resolve, reject) => {
-      exec(command, { cwd: this._projectPath }, (error, stdout, _stderr) => {
+      const childProcess = exec(command, { cwd: this._projectPath }, (error, stdout, stderr) => {
         if (error) {
+          outputChannel.appendLine(`Error: ${error.message}`);
           resolve({
             exitCode: error.code,
             output: error.message,
           });
         } else {
+          const printableData = stdout.replace(/[^\x20-\x7E]|(\[2m|\[0m|\[32m)/g, '');
+          outputChannel.append(printableData + '\n');
           resolve({
             exitCode: 0,
             output: stdout,
           });
         }
+        outputChannel.show();
+      });
+
+      childProcess.stdout?.on('data', (data) => {
+        const printableData = data.replace(/[^\x20-\x7E]|(\[2m|\[0m|\[32m)/g, '');
+        outputChannel.append(printableData + '\n');
+      });
+
+      childProcess.stderr?.on('data', (data) => {
+        const printableData = data.replace(/[^\x20-\x7E]|(\[2m|\[0m|\[32m)/g, '');
+        outputChannel.append(printableData + '\n');
       });
     });
   }
@@ -98,6 +112,7 @@ export class Deploy {
     value,
     params,
     verify,
+    outputChannel,
   }: DeployContractOptions): Promise<any> {
     const environmentInfos = this._environmentRepository.getEnvironment(environmentId);
     const contractInfos = this._contractRepository.getContract(contractId);
@@ -138,18 +153,30 @@ export class Deploy {
     }
 
     return new Promise((resolve, reject) => {
-      exec(command.join(' '), { cwd: this._projectPath }, (error, stdout, _stderr) => {
+      const childProcess = exec(command.join(' '), { cwd: this._projectPath }, (error, stdout, stderr) => {
         if (error) {
+          outputChannel.appendLine(`Error: ${error.message} \n`);
           resolve({
             exitCode: error.code,
             output: error.message,
           });
         } else {
+          const printableData = stdout.replace(/[^\x20-\x7E]|(\[2m|\[0m|\[32m)/g, '');
+          outputChannel.appendLine(printableData + '\n');
           resolve({
             exitCode: 0,
             output: stdout,
           });
         }
+        outputChannel.show();
+      });
+      childProcess.stdout?.on('data', (data) => {
+        const printableData = data.replace(/[^\x20-\x7E]|(\[2m|\[0m|\[32m)/g, '');
+        outputChannel.append(printableData + '\n');
+      });
+      childProcess.stderr?.on('data', (data) => {
+        const printableData = data.replace(/[^\x20-\x7E]|(\[2m|\[0m|\[32m)/g, '');
+        outputChannel.append(printableData + '\n');
       });
     });
   }

@@ -1,8 +1,9 @@
 use clap::{arg, Parser};
+use solidhunter::aggregate::aggregate_diags;
 use solidhunter::errors::SolidHunterError;
 use solidhunter::linter::SolidLinter;
 use solidhunter::rules::rule_impl::create_rules_file;
-use solidhunter::types::LintResult;
+use solidhunter::types::{FileDiags, LintResult};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -54,11 +55,13 @@ struct Args {
     documentation: bool,
 }
 
-fn print_result(results: Vec<LintResult>) {
+fn print_result(results: &Vec<LintResult>) {
     for result in results {
         match result {
             Ok(diags) => {
-                println!("{}", &diags);
+                let aggregated = aggregate_diags(diags.diags.clone());
+                let new_file = FileDiags::new(diags.source_file_content.clone(), aggregated);
+                print!("{}", &new_file);
             }
             Err(e) => {
                 println!("{}", e);
@@ -141,9 +144,12 @@ fn main() -> Result<(), SolidHunterError> {
         let result = linter.parse_path(".");
         results.push(result);
     }
-    for path_result in results {
+    for (index, path_result) in results.iter().enumerate() {
         if !args.to_json {
             print_result(path_result);
+            if index == results.len() - 1 {
+                println!();
+            }
         } else {
             for res in path_result {
                 match res {

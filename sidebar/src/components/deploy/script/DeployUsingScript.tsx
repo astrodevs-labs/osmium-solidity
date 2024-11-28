@@ -1,3 +1,4 @@
+import Loader from '@/components/Loader.tsx';
 import { VSCode } from '@/types';
 import { Environments, Scripts } from '@backend/actions/types';
 import { VSCodeButton, VSCodeDivider, VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
@@ -8,17 +9,21 @@ export const DeployUsingScript = ({
   scripts,
   vscode,
   environments,
+  isPending,
+  setIsPending,
 }: {
   scripts: Scripts;
   vscode: VSCode;
   environments: Environments;
+  isPending: boolean;
+  setIsPending: (isPending: boolean) => void;
 }) => {
-  const logic = useDeployUsingScript(vscode, scripts, environments);
+  const logic = useDeployUsingScript(vscode, scripts, environments, setIsPending);
 
   return (
     <div>
       <div>
-        <div>DEPLOY USING SCRIPT</div>
+        <div className="title-script">Deploy using script</div>
         <div className="dropdown-container">
           <div className="dropdown-container">
             <label htmlFor="dropdown-environment" className="label">
@@ -36,7 +41,7 @@ export const DeployUsingScript = ({
                   </VSCodeOption>
                 ))}
               </VSCodeDropdown>
-              <VSCodeButton className="add-wallet-button" onClick={logic.editEnvironment}>
+              <VSCodeButton className="add-wallet-button" onClick={() => logic.openPanel('tab-environments')}>
                 Edit
               </VSCodeButton>
             </div>
@@ -61,9 +66,10 @@ export const DeployUsingScript = ({
         </div>
       </div>
       <VSCodeDivider className="divider" />
-      <VSCodeButton className="submit-button" type="submit">
+      <VSCodeButton className="submit-button" appearance="primary" type="submit">
         Deploy with script
       </VSCodeButton>
+      {isPending && !logic.response && <Loader />}
       <VSCodeDivider className="divider" />
       {logic.response && (
         <div className={logic.response.exitCode !== 0 ? 'error-message' : ''}>

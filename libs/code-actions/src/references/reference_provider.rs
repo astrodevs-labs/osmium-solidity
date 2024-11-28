@@ -28,13 +28,14 @@ impl ReferenceProvider {
             source_file = file;
             found_node = node_finder.find(&file.ast);
         } else {
-            warn!("No file found at uri: {}", uri);
+            warn!("[NODE FINDER] No file found at uri: {}", uri);
             return None;
         }
         if found_node.is_none() {
             info!("[NODE FINDER] No node found at position: {:?}", &position);
             return None;
         }
+        // info!("[NODE FINDER] Found node: {:?}", found_node);
         Some((source_file.clone(), found_node.unwrap()))
     }
 
@@ -61,6 +62,8 @@ impl ReferenceProvider {
                     });
                 }
                 _ => {
+                    // info!("Found Definition: {:?}", found_node);
+                    // info!("Location: {:?}", get_location(&found_node, &source_file));
                     return Some(get_location(&found_node, &source_file));
                 }
             },
@@ -68,6 +71,8 @@ impl ReferenceProvider {
         let mut def_finder = DefinitionVisitor::new(ref_id);
         for file in files {
             if let Some(node) = def_finder.find(&file.ast) {
+                // info!("Found Definition: {:?}", node);
+                // info!("Location: {:?}", get_location(&node, file));
                 return Some(get_location(&node, file));
             }
         }
@@ -94,6 +99,8 @@ impl ReferenceProvider {
             let nodes = usages_finder.find(&file.ast);
             for node in nodes {
                 references.push(get_location(&node, file));
+                // info!("Found reference: {:?}", node);
+                // info!("Location: {:?}", get_location(&node, file));
             }
         }
         references

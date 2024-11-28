@@ -45,6 +45,7 @@ impl AvoidTxOrigin {
                     character: location.1.column,
                 },
             },
+            same_line_ranges: None,
             message: DEFAULT_MESSAGE.to_string(),
             severity: self.data.severity,
             code: None,

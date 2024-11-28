@@ -1,6 +1,6 @@
 import { Abi, Address } from 'viem';
 
-export type RpcUrl = `ws://${string}` | `wss://${string}` | `http://${string}` | `https://${string}`;
+export type RpcUrl = `ws://${string}` | `wss://${string}` | `http://${string}` | `https://${string}` | string;
 
 export interface DeployContract {
   name: string;
@@ -26,7 +26,6 @@ export interface Wallet {
   name: string;
   address: Address;
   privateKey: Address;
-  rpc: RpcUrl;
   id: string;
 }
 

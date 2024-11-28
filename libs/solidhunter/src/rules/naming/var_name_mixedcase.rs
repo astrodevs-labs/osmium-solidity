@@ -22,7 +22,7 @@ impl VarNameMixedCase {
             range: Range {
                 start: Position {
                     line: location.0.line,
-                    character: location.0.column + 1,
+                    character: location.0.column,
                 },
                 end: Position {
                     line: location.1.line,
@@ -33,6 +33,7 @@ impl VarNameMixedCase {
             severity: self.data.severity,
             code: None,
             source: None,
+            same_line_ranges: None,
             uri: file.path.clone(),
         }
     }

@@ -247,6 +247,7 @@ impl SolidLinter {
         }
         result
     }
+
     pub fn parse_path(&mut self, path: &str) -> Vec<LintResult> {
         if Path::new(&path).is_file() {
             vec![self.parse_file(path.to_string())]

@@ -1,5 +1,7 @@
+import Loader from '@/components/Loader.tsx';
 import { VSCode } from '@/types';
 import { DeployContracts, Environments, Wallets } from '@backend/actions/types';
+import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
 import {
   VSCodeButton,
   VSCodeDivider,
@@ -9,25 +11,28 @@ import {
 } from '@vscode/webview-ui-toolkit/react';
 import './DeployUsingContract.css';
 import { DeployContractParams } from './params/DeployContractParams.tsx';
-import { useDeployUsingContract } from '@components/deploy/contract/DeployUsingContract.logic.ts';
 
 export const DeployUsingContract = ({
   wallets,
   deployContracts,
   vscode,
   environments,
+  isPending,
+  setIsPending,
 }: {
   wallets: Wallets;
   deployContracts: DeployContracts;
   vscode: VSCode;
   environments: Environments;
+  isPending: boolean;
+  setIsPending: (isPending: boolean) => void;
 }) => {
-  const logic = useDeployUsingContract(vscode, wallets, deployContracts, environments);
+  const logic = useDeployUsingContract(vscode, wallets, deployContracts, environments, setIsPending);
 
   return (
     <div>
       <div>
-        <div> DEPLOY USING CONTRACT</div>
+        <div className="title-contract">Deploy using contract</div>
         <div className="dropdown-container">
           <label htmlFor="dropdown-wallets" className="label">
             Select account:
@@ -46,7 +51,7 @@ export const DeployUsingContract = ({
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={logic.editWallet}>
+            <VSCodeButton className="add-wallet-button" onClick={() => logic.openPanel('tab-wallets')}>
               Edit
             </VSCodeButton>
           </div>
@@ -79,7 +84,7 @@ export const DeployUsingContract = ({
                 </VSCodeOption>
               ))}
             </VSCodeDropdown>
-            <VSCodeButton className="add-wallet-button" onClick={logic.editEnvironment}>
+            <VSCodeButton className="add-wallet-button" onClick={() => logic.openPanel('tab-environments')}>
               Edit
             </VSCodeButton>
           </div>
@@ -123,9 +128,10 @@ export const DeployUsingContract = ({
       </div>
       <DeployContractParams contracts={deployContracts} />
       <VSCodeDivider className="divider" />
-      <VSCodeButton className="submit-button" type="submit">
+      <VSCodeButton className="submit-button" appearance="primary" type="submit">
         Deploy with contract
       </VSCodeButton>
+      {isPending && !logic.response && <Loader />}
       {logic.response && (
         <div className={logic.response.exitCode !== 0 ? 'error-message' : ''}>
           <VSCodeDivider className="divider" />

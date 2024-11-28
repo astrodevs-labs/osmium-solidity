@@ -16,7 +16,7 @@
     "Other"
   ],
   "activationEvents": [
-    "workspaceContains:solidity"
+    "workspaceContains:**/*.sol"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -24,7 +24,12 @@
       "activitybar": [
         {
           "id": "sidebar",
-          "title": "Osmium Sidebar",
+          "title": "Osmium",
+          "icon": "assets/logo.png"
+        },
+        {
+          "id": "documentation",
+          "title": "Osmium Documentation",
           "icon": "assets/logo.png"
         }
       ]
@@ -34,7 +39,7 @@
         {
           "type": "webview",
           "id": "osmium.sidebar",
-          "name": "Osmium: Deploy/Interact",
+          "name": "Deploy/Interact",
           "when": "Osmium.showsidebar"
         }
       ]
@@ -54,57 +59,37 @@
       ]
     },
     "configuration": {
-      "title": "Osmium",
+      "title": "osmium-solidity",
       "properties": {
-        "Osmium.linter": {
+        "osmium-solidity.linter": {
           "type": "boolean",
           "default": true,
-          "description": "Enable LINTER feature"
+          "description": "The linter is a tool that will underline some issues for you. It will help you to write better code."
         },
-        "Osmium.formatter": {
+        "osmium-solidity.formatter": {
           "type": "boolean",
           "default": true,
-          "description": "Enable FORMATTER feature"
+          "description": "The formatter allows you to format your document with a right click and by choosing “Format Document” or by pressing Ctrl+Shift+I"
         },
-        "Osmium.gas estimation": {
+        "osmium-solidity.gas estimation": {
           "type": "boolean",
           "default": true,
-          "description": "Enable GAS ESTIMATION feature"
+          "description": "The gas estimation is shown on your contrat after you save the file. This will show you how much it will cost to execute this contrat. "
         },
-        "Osmium.slither": {
+        "osmium-solidity.slither": {
           "type": "boolean",
           "default": true,
-          "description": "Enable SLITHER feature"
+          "description": "Slither is going to report you some security issues that are in your functions and contracts."
         },
-        "Osmium.sidebar": {
+        "osmium-solidity.compiler": {
           "type": "boolean",
           "default": true,
-          "description": "Enable INTERACT & DEPLOY feature"
+          "description": "When you are saving your file, the compiler will try to compile your function. If there is an issue it will be shown in the problems section."
         },
-        "Osmium.debugger": {
+        "osmium-solidity.references": {
           "type": "boolean",
           "default": true,
-          "description": "Enable DEBUGGER feature"
-        },
-        "Osmium.tests": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable TESTS VIA FOUNDRY feature"
-        },
-        "Osmium.compiler": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable COMPILER feature"
-        },
-        "Osmium.references": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable REFERENCES feature"
-        },
-        "Osmium.auto format": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable AUTO FORMAT"
+          "description": "The reference is when you ctrl click on a variable and you want to see where it is declared. This feature will show you where it is declared and where it is used."
         }
       }
     },
@@ -120,6 +105,30 @@
       {
         "command": "osmium.gas-estimation",
         "title": "Osmium: Gas Estimation"
+      },
+      {
+        "command": "osmium.show-env-panel",
+        "title": "Osmium: Open environment panel"
+      },
+      {
+        "command": "osmium.documentation",
+        "title": "Osmium: Documentation"
+      },
+      {
+        "command": "osmium.walkthrough",
+        "title": "Osmium: Open Walkthrough"
+      },
+      {
+        "command": "osmium.checkIfForgeInstalled",
+        "title": "Osmium: Check if Foundry/Forge is installed"
+      },
+      {
+        "command": "osmium.checkIfSlitherInstalled",
+        "title": "Osmium: Check if Slither is installed"
+      },
+      {
+        "command": "osmium.checkIfSolcInstalled",
+        "title": "Osmium: Check if Solc is installed"
       }
     ],
     "languages": [
@@ -145,6 +154,48 @@
         ],
         "unbalancedBracketScopes": [
           "meta.scope.case-pattern.solidity"
+        ]
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "osmium.getStarted",
+        "title": "Get Started with Osmium Solidity",
+        "description": "Let's check if you have all the dependencies required for this extension.",
+        "steps": [
+          {
+            "id": "isForge",
+            "title": "Check if foundry/forge is installed",
+            "description": "Click on the button below to check if Foundry/Forge is installed.\n\n[Verify forge](command:osmium.checkIfForgeInstalled)",
+            "media": {
+              "markdown": "./src/walkthroughs/welcome/foundry.md"
+            },
+            "completionEvents": [
+              "onContext:osmium.forgeInstalled == true"
+            ]
+          },
+          {
+            "id": "isSlither",
+            "title": "Check if Slither is installed",
+            "description": "Click on the button below to check if Slither is installed.\n\n[Verify Slither](command:osmium.checkIfSlitherInstalled)",
+            "media": {
+              "markdown": "./src/walkthroughs/welcome/slither.md"
+            },
+            "completionEvents": [
+              "onContext:osmium.slitherInstalled == true"
+            ]
+          },
+          {
+            "id": "isSolc",
+            "title": "Check if the Solidity Compiler is installed",
+            "description": "Click on the button below to check if Solc is installed.\n\n[Verify Solidity Compiler](command:osmium.checkIfSolcInstalled)",
+            "media": {
+              "markdown": "./src/walkthroughs/welcome/solc.md"
+            },
+            "completionEvents": [
+              "onContext:osmium.solcInstalled == true"
+            ]
+          }
         ]
       }
     ]
@@ -183,12 +234,14 @@
     "typescript": "^5.3.3",
     "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.1",
-    "viem": "^2.8.18",
+    "viem": "^2.21.12",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "bufferutil": "^4.0.8",
+    "docs-panel": "workspace:*",
+    "env-panel": "workspace:*",
     "sidebar": "workspace:*",
     "vscode-languageclient": "^9.0.1"
   }

@@ -37,6 +37,7 @@ impl RuleType for FunctionMaxLines {
                         severity: self.data.severity,
                         code: None,
                         source: None,
+                        same_line_ranges: None,
                         message: format!(
                             "Function body contains {} lines but allowed no more than {} lines",
                             end - start,

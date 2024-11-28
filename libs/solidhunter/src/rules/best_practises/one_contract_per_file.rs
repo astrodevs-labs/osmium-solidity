@@ -33,6 +33,7 @@ impl OneContractPerFile {
             severity: self.data.severity,
             code: None,
             source: None,
+            same_line_ranges: None,
             uri: file.path.clone(),
         }
     }

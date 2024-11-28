@@ -1,12 +1,15 @@
-import { useFormContext } from 'react-hook-form';
 import { IDeployScriptForm, VSCode } from '@/types';
-import { useEdit } from '@hooks/useEdit.ts';
+import { Scripts, Environments } from '@backend/actions/types';
+import { MessageType } from '@backend/enums';
 import { useEffect, useState } from 'react';
-import { MessageType } from '@backend/enums.ts';
-import { Environments, Scripts } from '@backend/actions/types';
+import { useFormContext } from 'react-hook-form';
 
-export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environments: Environments) => {
-  const { editEnvironment } = useEdit(vscode);
+export const useDeployUsingScript = (
+  vscode: VSCode,
+  scripts: Scripts,
+  environments: Environments,
+  setIsPending: (isPending: boolean) => void,
+) => {
   const form = useFormContext<IDeployScriptForm>();
   const {
     formState: { errors },
@@ -16,18 +19,23 @@ export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environme
     output: string;
   } | null>(null);
 
+  const openPanel = (id: string) => {
+    vscode.postMessage({ type: MessageType.OPEN_PANEL, data: { id } });
+  };
+
   useEffect(() => {
     const listener = (event: WindowEventMap['message']) => {
       switch (event.data.type) {
         case MessageType.DEPLOY_SCRIPT_RESPONSE: {
           setResponse(event.data.response);
+          setIsPending(false);
           break;
         }
       }
     };
     window.addEventListener('message', listener);
     return () => window.removeEventListener('message', listener);
-  }, []);
+  }, [setIsPending]);
 
   useEffect(() => {
     form.setValue('script', scripts[0]?.id || '');
@@ -37,5 +45,5 @@ export const useDeployUsingScript = (vscode: VSCode, scripts: Scripts, environme
     form.setValue('environment', environments[0]?.id || '');
   }, [environments]);
 
-  return { form, errors, response, editEnvironment };
+  return { form, errors, response, openPanel };
 };

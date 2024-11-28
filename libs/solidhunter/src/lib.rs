@@ -1,3 +1,4 @@
+pub mod aggregate;
 pub mod errors;
 mod ignore;
 pub mod linter;

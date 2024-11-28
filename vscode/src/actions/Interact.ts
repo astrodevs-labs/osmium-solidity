@@ -1,5 +1,6 @@
 import { createPublicClient, createWalletClient, defineChain, getContract, http, webSocket } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import * as vscode from 'vscode';
 import { InteractContractRepository } from './InteractContractRepository';
 import { WalletRepository } from './WalletRepository';
 import { ContractParams } from './types';
@@ -8,6 +9,7 @@ export interface ReadContractOptions {
   contractId: string;
   method: string;
   params?: ContractParams;
+  outputChannel: vscode.OutputChannel;
 }
 
 export interface WriteContractOptions {
@@ -17,6 +19,7 @@ export interface WriteContractOptions {
   params?: ContractParams;
   gasLimit?: bigint;
   value?: bigint;
+  outputChannel: vscode.OutputChannel;
 }
 
 export class Interact {
@@ -28,22 +31,28 @@ export class Interact {
     this._walletRepository = walletRepository;
   }
 
-  public async readContract({ contractId, method, params }: ReadContractOptions): Promise<any> {
+  public async readContract({ contractId, method, params, outputChannel }: ReadContractOptions): Promise<any> {
     const contractInfos = this._contractRepository.getContract(contractId);
 
     if (!contractInfos) {
       throw new Error(`contract id ${contractId} not found`);
     }
 
-    const viemContract = getContract({
-      address: contractInfos.address,
-      abi: contractInfos.abi,
-      client: createPublicClient({
-        transport: contractInfos.rpc.startsWith('ws') ? webSocket(contractInfos.rpc) : http(contractInfos.rpc),
-      }),
-    });
-
-    return await viemContract.read[method](<any>params);
+    try {
+      const viemContract = getContract({
+        address: contractInfos.address,
+        abi: contractInfos.abi,
+        client: createPublicClient({
+          transport: contractInfos.rpc.startsWith('ws') ? webSocket(contractInfos.rpc) : http(contractInfos.rpc),
+        }),
+      });
+      const res = await viemContract.read[method](<any>params);
+      outputChannel.append('Output :' + res + '\n');
+      return res;
+    } catch (error: any) {
+      outputChannel.append('Error :' + error + '\n');
+      return error.cause.shortMessage;
+    }
   }
 
   public async writeContract({
@@ -53,6 +62,7 @@ export class Interact {
     params,
     gasLimit,
     value,
+    outputChannel,
   }: WriteContractOptions): Promise<any> {
     const walletInfos = this._walletRepository.getWallet(walletId);
     const contractInfos = this._contractRepository.getContract(contractId);
@@ -64,22 +74,31 @@ export class Interact {
       throw new Error(`contract id ${contractId} not found`);
     }
 
-    const rpc = contractInfos.rpc.startsWith('ws')
-      ? {
-          default: {
-            webSocket: [contractInfos.rpc],
-          },
-        }
-      : {
-          default: {
-            http: [contractInfos.rpc],
-          },
-        };
+    const rpc = {
+      default: {
+        http: [contractInfos.rpc],
+      },
+    };
+
+    const rpcResponse = await fetch(contractInfos.rpc, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'eth_chainId',
+        params: [],
+      }),
+    });
+    const chainIdEncoded = ((await rpcResponse.json()) as any).result;
+    const chainId = parseInt(chainIdEncoded, 16);
 
     const walletClient = createWalletClient({
       chain: defineChain({
         name: 'custom',
-        id: contractInfos.chainId,
+        id: chainId,
         nativeCurrency: {
           name: 'Ethereum',
           symbol: 'ETH',
@@ -97,6 +116,13 @@ export class Interact {
       client: walletClient,
     });
 
-    return await viemContract.write[functionName](<any>params);
+    try {
+      const res = await viemContract.write[functionName](<any>params);
+      outputChannel.append('Transaction hash :' + res + '\n');
+      return res;
+    } catch (error: any) {
+      outputChannel.append('Error :' + error + '\n');
+      return error.cause.shortMessage;
+    }
   }
 }

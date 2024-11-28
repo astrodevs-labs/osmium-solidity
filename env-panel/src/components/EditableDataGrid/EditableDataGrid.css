@@ -1,0 +1,20 @@
+.delete-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.delete-cell:focus, .delete-cell:active {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    border: 0;
+}
+
+.blur {
+    filter: blur(5px);
+}
+
+.editable-cell:focus {
+    filter: none;
+}

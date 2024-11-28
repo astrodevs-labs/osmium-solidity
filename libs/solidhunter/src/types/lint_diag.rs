@@ -1,4 +1,5 @@
 use super::{Range, Severity};
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -6,6 +7,8 @@ use std::fmt;
 pub struct LintDiag {
     /// The range at which the message applies.
     pub range: Range,
+
+    pub same_line_ranges: Option<Vec<Range>>,
 
     /// The diagnostic's severity.
     pub severity: Severity,
@@ -29,14 +32,22 @@ pub struct LintDiag {
 
 impl fmt::Display for LintDiag {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut locations = format!("{}:{}", self.range.start.line, self.range.start.character);
+
+        if let Some(ranges) = &self.same_line_ranges {
+            for range in ranges {
+                locations.push_str(&format!(",{}", range.start.character));
+            }
+        }
+
         write!(
             f,
-            "\n{}: {}\n  --> {}:{}:{}",
+            "\n{}: {}\n  {} {}:{}",
             self.severity,
-            self.message,
+            self.id,
+            "-->".to_string().cyan(),
             self.uri,
-            self.range.start.line,
-            self.range.start.character,
+            locations
         )
     }
 }

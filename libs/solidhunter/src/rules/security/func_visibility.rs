@@ -42,6 +42,7 @@ impl FuncVisibility {
             severity: self.data.severity,
             code: None,
             source: None,
+            same_line_ranges: None,
             uri: file.path.clone(),
         }
     }
@@ -63,12 +64,10 @@ impl RuleType for FuncVisibility {
                     continue;
                 }
                 if function.kind.is_function() {
-                    res.push(
-                        self.create_diag(
-                            (function.kind.span().start(), function.span().end()),
-                            file,
-                        ),
-                    );
+                    res.push(self.create_diag(
+                        (function.kind.span().start(), function.kind.span().end()),
+                        file,
+                    ));
                 } else {
                     let span = function.kind.span();
                     res.push(self.create_diag((span.start(), span.end()), file));

@@ -2,6 +2,7 @@ use crate::linter::SolidFile;
 use crate::rules::types::*;
 use crate::types::*;
 use osmium_libs_solidity_ast_extractor::*;
+use regex::Regex;
 
 // TODO test output
 
@@ -11,11 +12,6 @@ pub const RULE_ID: &str = "explicit-types";
 // specific
 const DEFAULT_RULE: &str = "explicit";
 const DEFAULT_SEVERITY: Severity = Severity::WARNING;
-const EXPLICIT_TYPES: &[&str] = &[
-    "uint256", "int256", "uint8", "int8", "uint16", "int16", "uint32", "int32", "uint64", "int64",
-    "uint128", "int128",
-];
-const IMPLICIT_TYPES: &[&str] = &["uint", "int"];
 
 pub struct ExplicitTypes {
     rule: String,
@@ -54,10 +50,11 @@ impl<'ast> Visit<'ast> for ExplicitTypesVisitor {
 
 impl ExplicitTypesVisitor {
     fn is_type_match(&self, ty: &Type) -> bool {
+        let re = Regex::new(r"\d$").unwrap();
         if self.explicit {
-            IMPLICIT_TYPES.iter().any(|typ| ty.to_string() == *typ)
+            !re.is_match(&ty.to_string())
         } else {
-            EXPLICIT_TYPES.iter().any(|typ| ty.to_string() == *typ)
+            re.is_match(&ty.to_string())
         }
     }
 }
@@ -84,6 +81,7 @@ impl ExplicitTypes {
             severity: self.data.severity,
             code: None,
             source: None,
+            same_line_ranges: None,
             uri: file.path.clone(),
         }
     }

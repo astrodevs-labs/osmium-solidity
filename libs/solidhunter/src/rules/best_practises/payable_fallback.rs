@@ -30,6 +30,7 @@ impl RuleType for PayableFallback {
                 range: report,
                 code: None,
                 source: None,
+                same_line_ranges: None,
                 message: DEFAULT_MESSAGE.to_string(),
                 uri: file.path.clone(),
             });
@@ -99,7 +100,7 @@ fn create_report(function: ItemFunction) -> Option<Range> {
     Some(Range {
         start: Position {
             line: function.attributes.span().start().line,
-            character: function.attributes.span().start().column + 1,
+            character: function.attributes.span().start().column,
         },
         end: Position {
             line: function.attributes.span().end().line,

@@ -1,17 +1,16 @@
 import { IDeployContractForm, VSCode } from '@/types';
-import { useFormContext } from 'react-hook-form';
-import { useEdit } from '@hooks/useEdit.ts';
-import { useEffect, useState } from 'react';
-import { MessageType } from '@backend/enums.ts';
 import { DeployContracts, Environments, Wallets } from '@backend/actions/types';
+import { MessageType } from '@backend/enums';
+import { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 export const useDeployUsingContract = (
   vscode: VSCode,
   wallets: Wallets,
   contracts: DeployContracts,
   environments: Environments,
+  setIsPending: (isPending: boolean) => void,
 ) => {
-  const { editEnvironment, editWallet } = useEdit(vscode);
   const form = useFormContext<IDeployContractForm>();
   const {
     formState: { errors },
@@ -26,13 +25,18 @@ export const useDeployUsingContract = (
       switch (event.data.type) {
         case MessageType.DEPLOY_CONTRACT_RESPONSE: {
           setResponse(event.data.response);
+          setIsPending(false);
           break;
         }
       }
     };
     window.addEventListener('message', listener);
     return () => window.removeEventListener('message', listener);
-  }, []);
+  }, [setIsPending]);
+
+  const openPanel = (id: string) => {
+    vscode.postMessage({ type: MessageType.OPEN_PANEL, data: { id } });
+  };
 
   useEffect(() => {
     form.setValue('wallet', wallets[0]?.id || '');
@@ -46,5 +50,5 @@ export const useDeployUsingContract = (
     form.setValue('environment', environments[0]?.id || '');
   }, [environments]);
 
-  return { form, errors, response, editEnvironment, editWallet };
+  return { form, errors, response, openPanel };
 };

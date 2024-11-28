@@ -1,37 +1,44 @@
-import { Address } from 'viem';
-import * as vscode from 'vscode';
-import { window } from 'vscode';
-import { InteractContractRepository } from './actions/InteractContractRepository';
-import { Interact } from './actions/Interact';
-import { WalletRepository } from './actions/WalletRepository';
-import { RpcUrl } from './actions/types';
-import { EnvironmentRepository } from './actions/EnvironmentRepository';
-import { getNonce, getTomlValue } from './utils';
-import { ScriptRepository } from './actions/ScriptRepository';
-import { DeployContractRepository } from './actions/DeployContractRepository';
-import { Deploy } from './actions/Deploy';
-import { InputAction, MessageType } from './enums';
-import { Message } from './types';
 import * as path from 'path';
+import * as vscode from 'vscode';
+import { Deploy } from './actions/Deploy';
+import { DeployContractRepository } from './actions/DeployContractRepository';
+import { EnvironmentRepository } from './actions/EnvironmentRepository';
+import { Interact } from './actions/Interact';
+import { InteractContractRepository } from './actions/InteractContractRepository';
+import { ScriptRepository } from './actions/ScriptRepository';
+import { WalletRepository } from './actions/WalletRepository';
+import { publicClient } from './config';
+import { MessageType } from './enums';
+import { Message } from './types';
+import { getNonce, getTomlValue } from './utils';
+import { EnvPanelProvider } from './env-panel-provider';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'osmium.sidebar';
   private _osmiumWatcher?: vscode.FileSystemWatcher;
   private _outWatcher?: vscode.FileSystemWatcher;
   private _view?: vscode.WebviewView;
+  private _outputChannel: vscode.OutputChannel;
 
-  private _interactContractRepository?: InteractContractRepository;
   private _deployContractRepository?: DeployContractRepository;
-  private _walletRepository?: WalletRepository;
-  private _environmentRepository?: EnvironmentRepository;
   private _scriptRepository?: ScriptRepository;
   private _interact?: Interact;
   private _deploy?: Deploy;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(
+    private readonly _extensionUri: vscode.Uri,
+    private readonly _interactContractRepository: InteractContractRepository,
+    private readonly _walletRepository: WalletRepository,
+    private readonly _environmentRepository: EnvironmentRepository,
+    private readonly _envPanelProvider: EnvPanelProvider,
+  ) {
+    this._outputChannel = vscode.window.createOutputChannel('Osmium Solidity Logs');
+  }
 
   async _osmiumWatcherCallback(uri: vscode.Uri) {
-    if (!this._view) return;
+    if (!this._view) {
+      return;
+    }
     const basename = path.basename(uri.fsPath, '.json');
     if (basename === 'contracts') {
       this._interactContractRepository?.load();
@@ -67,30 +74,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     });
   }
 
-  async _showInputsBox(inputsBox: any) {
-    const tmp = inputsBox;
-
-    for (const input of Object.keys(inputsBox)) {
-      const value = await window.showInputBox({
-        prompt: inputsBox[input],
-        ignoreFocusOut: true,
-      });
-      if (!value) {
-        return undefined;
-      }
-      tmp[input] = value;
-    }
-
-    return tmp;
-  }
-
   _init() {
     if (vscode.workspace.workspaceFolders?.length) {
       const fsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-      this._interactContractRepository = new InteractContractRepository(fsPath);
       this._deployContractRepository = new DeployContractRepository(fsPath);
-      this._walletRepository = new WalletRepository(fsPath);
-      this._environmentRepository = new EnvironmentRepository(fsPath);
       this._scriptRepository = new ScriptRepository(fsPath);
 
       this._interact = new Interact(this._interactContractRepository, this._walletRepository);
@@ -170,6 +157,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           params: message.data.inputs,
           gasLimit: message.data.gasLimit > 0 ? message.data.gasLimit : undefined,
           value: value > 0 ? value : undefined,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.WRITE_RESPONSE,
@@ -181,117 +169,19 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           contractId: message.data.contract,
           method: message.data.function,
           params: message.data.inputs,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.READ_RESPONSE,
           response: readResponse.toString(),
         });
         break;
-      case MessageType.EDIT_WALLETS:
-        const walletAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-          title: 'Edit Wallets',
-          ignoreFocusOut: true,
-        });
-
-        if (walletAction === InputAction.ADD) {
-          const inputs = await this._showInputsBox({
-            walletName: 'Enter name',
-            walletAddress: 'Enter address',
-            walletPk: 'Enter private key',
-            walletRpc: 'Enter rpc',
-          });
-          if (!inputs) return;
-          if (!inputs.walletAddress.startsWith('0x') || !inputs.walletPk.startsWith('0x')) return;
-          if (!inputs.walletRpc.startsWith('http') && !inputs.walletRpc.startsWith('ws')) return;
-
-          this._walletRepository.createWallet(
-            inputs.walletName,
-            <Address>inputs.walletAddress,
-            <Address>inputs.walletPk,
-            <RpcUrl>inputs.walletRpc,
-          );
-        }
-
-        if (walletAction === InputAction.REMOVE) {
-          const walletName = await window.showQuickPick(
-            this._walletRepository.getWallets().map((w) => w.name),
-            {
-              title: 'Remove wallet',
-              ignoreFocusOut: true,
-            },
-          );
-          if (!walletName) return;
-          this._walletRepository.deleteWallet(walletName);
-        }
-        break;
-      case MessageType.EDIT_CONTRACTS:
-        const contractAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-          title: 'Edit Wallets',
-          ignoreFocusOut: true,
-        });
-
-        if (contractAction === InputAction.ADD) {
-          const inputs = await this._showInputsBox({
-            contractName: 'Enter name',
-            contractAddress: 'Enter address',
-            contractAbi: 'Enter abi',
-            contractRpc: 'Enter rpc',
-            contractChainId: 'Enter chain id',
-          });
-          if (!inputs || !inputs.contractAddress.startsWith('0x')) return;
-          if (!inputs.contractRpc.startsWith('http') && !inputs.contractRpc.startsWith('ws')) return;
-          this._interactContractRepository.createContract(
-            <Address>inputs['contractAddress'],
-            JSON.parse(inputs['contractAbi']),
-            parseInt(inputs['contractChainId']),
-            inputs['contractName'],
-            <RpcUrl>inputs['contractRpc'],
-          );
-        }
-        if (contractAction === InputAction.REMOVE) {
-          const contractName = await window.showQuickPick(
-            this._interactContractRepository.getContracts().map((c) => c.name),
-            {
-              title: 'Remove contract',
-              ignoreFocusOut: true,
-            },
-          );
-          if (!contractName) return;
-          this._interactContractRepository.deleteContract(contractName);
-        }
-        break;
-      case MessageType.EDIT_ENVIRONMENT:
-        const environmentAction = await window.showQuickPick([InputAction.ADD, InputAction.REMOVE], {
-          title: 'Edit environment',
-          ignoreFocusOut: true,
-        });
-        if (environmentAction === InputAction.ADD) {
-          const inputs = await this._showInputsBox({
-            environmentName: 'Enter name',
-            environmentRpc: 'Enter rpc',
-          });
-          if (!inputs) return;
-          if (!inputs.environmentRpc.startsWith('http') && !inputs.environmentRpc.startsWith('ws')) return;
-
-          this._environmentRepository.createEnvironment(inputs.environmentName, <RpcUrl>inputs.environmentRpc);
-        }
-        if (environmentAction === InputAction.REMOVE) {
-          const environmentName = await window.showQuickPick(
-            this._environmentRepository.getEnvironments().map((e) => e.name),
-            {
-              title: 'Remove environment',
-              ignoreFocusOut: true,
-            },
-          );
-          if (!environmentName) return;
-          this._environmentRepository.deleteEnvironment(environmentName);
-        }
-        break;
       case MessageType.DEPLOY_SCRIPT:
         const deployScriptResponse = await this._deploy.deployScript({
           environmentId: message.data.environment,
           scriptId: message.data.script,
           verify: message.data.verify,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.DEPLOY_SCRIPT_RESPONSE,
@@ -307,10 +197,45 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           gasLimit: message.data.gasLimit,
           params: message.data.inputs,
           verify: message.data.verify,
+          outputChannel: this._outputChannel,
         });
         await this._view.webview.postMessage({
           type: MessageType.DEPLOY_CONTRACT_RESPONSE,
           response: deployContractResponse,
+        });
+        break;
+      case MessageType.OPEN_PANEL:
+        await vscode.commands.executeCommand('osmium.show-env-panel');
+
+        if (this._envPanelProvider.panel) {
+          await this._envPanelProvider.panel.webview.postMessage({
+            type: MessageType.OPEN_PANEL_RESPONSE,
+            id: message.data.id,
+          });
+        }
+        break;
+      case MessageType.OPEN_DOCUMENTATION:
+        vscode.commands.executeCommand('osmium.documentation');
+        break;
+      case MessageType.OPEN_WALKTHROUGH:
+        vscode.commands.executeCommand(
+          'workbench.action.openWalkthrough',
+          'OsmiumToolchains.osmium-solidity-extension#osmium.getStarted',
+        );
+        break;
+
+      case MessageType.ESTIMATE_GAS:
+        const gas = await publicClient.estimateContractGas({
+          address: message.data.address,
+          abi: message.data.abi,
+          functionName: message.data.function,
+          account: message.data.walletAddress,
+          args: message.data.params,
+        });
+        const gasWithBuffer = (gas * 12n) / 10n; // gas + 20%, as it's a bigint we can't use * 1.2
+        await this._view.webview.postMessage({
+          type: MessageType.ESTIMATE_GAS_RESPONSE,
+          response: { gas: gasWithBuffer.toString() },
         });
         break;
     }
@@ -335,8 +260,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'index.js'));
-    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'index.css'));
+    const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'index-sidebar.js'));
+    const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'index-sidebar.css'));
     const nonce = getNonce();
 
     return `<!doctype html>

@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { Address } from 'viem';
-import { RpcUrl, Wallet, Wallets } from './types';
+import { Wallet, Wallets } from './types';
 import { v4 as uuidv4 } from 'uuid';
+import { privateKeyToAddress } from 'viem/accounts';
 
 export class WalletRepository {
   private _wallets: Wallets = [];
@@ -32,6 +33,14 @@ export class WalletRepository {
       const json = JSON.parse(raw.toString());
       this._wallets = json.wallets;
     }
+    this._wallets = this._wallets.map((w: Wallet) => {
+      try {
+        return { ...w, address: privateKeyToAddress(w.privateKey) };
+      } catch (e) {
+        console.error('Impossible to parse private key: ', w.privateKey);
+        return { ...w, address: '0x' };
+      }
+    });
   }
 
   public getWallets(): Wallets {
@@ -42,8 +51,10 @@ export class WalletRepository {
     return this._wallets.find((w) => w.id === id);
   }
 
-  public createWallet(name: string, address: Address, privateKey: Address, rpc: RpcUrl): void {
-    const wallet: Wallet = { name, address, privateKey, rpc, id: uuidv4() };
+  public createWallet(name: string, privateKey: Address): void {
+    const address = privateKeyToAddress(privateKey);
+    const wallet: Wallet = { name, address, privateKey, id: uuidv4() };
+
     if (this._wallets.find((w) => w.address === address)) {
       // replace
       this._wallets = this._wallets.map((w) => {
@@ -58,8 +69,18 @@ export class WalletRepository {
     this._save();
   }
 
-  public deleteWallet(name: string): void {
-    this._wallets = this._wallets.filter((w) => w.name !== name);
+  public updateWallet(id: Wallet['id'], key: string, value: string): void {
+    const wallet = this._wallets.find((w) => w.id === id);
+
+    if (wallet) {
+      // @ts-ignore
+      wallet[key] = value;
+      this._save();
+    }
+  }
+
+  public deleteWallet(id: Wallet['id']): void {
+    this._wallets = this._wallets.filter((w) => w.id !== id);
     this._save();
   }
 }

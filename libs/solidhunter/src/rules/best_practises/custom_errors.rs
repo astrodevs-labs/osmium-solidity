@@ -36,6 +36,7 @@ impl CustomErrors {
             severity: self.data.severity,
             code: None,
             source: None,
+            same_line_ranges: None,
             uri: file.path.clone(),
         }
     }
@@ -49,7 +50,10 @@ impl RuleType for CustomErrors {
             for stmt in retriever::retrieve_stmts_nodes(&contract) {
                 if let Stmt::Revert(revert) = &stmt {
                     if let Expr::Tuple(_) = &revert.expr {
-                        let location = (revert.span().start(), revert.expr.span().end());
+                        let location = (
+                            revert.revert_token.span().start(),
+                            revert.revert_token.span().end(),
+                        );
                         res.push(self.create_diag(file, location, "revert".to_string()));
                     }
                 }
@@ -57,7 +61,7 @@ impl RuleType for CustomErrors {
                     if let Expr::Call(call) = &expr.expr {
                         if let Expr::Ident(ref ident) = *(call.expr) {
                             if *ident == "require" || *ident == "assert" {
-                                let location = (call.span().start(), call.span().end());
+                                let location = (call.expr.span().start(), call.expr.span().end());
                                 res.push(self.create_diag(file, location, ident.to_string()));
                             }
                         }
