@@ -230,7 +230,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         const params = message.data.params;
         const functionName = message.data.function;
         const contractAddress = message.data.address;
-        console.log('AA back : params', params);
         const gas = await publicClient.estimateContractGas({
           address: contractAddress,
           abi,
@@ -238,10 +237,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           account: walletAddress,
           args: params,
         });
-        console.log(`Gas estimate for ${functionName}:`, gas);
+        const gasWithBuffer = (gas * 12n) / 10n; // gas + 20%, as it's a bigint we can't use * 1.2
         await this._view.webview.postMessage({
           type: MessageType.ESTIMATE_GAS_RESPONSE,
-          response: { gas: gas.toString() },
+          response: { gas: gasWithBuffer.toString() },
         });
         break;
     }
