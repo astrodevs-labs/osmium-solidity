@@ -38,17 +38,21 @@ export class Interact {
       throw new Error(`contract id ${contractId} not found`);
     }
 
-    const viemContract = getContract({
-      address: contractInfos.address,
-      abi: contractInfos.abi,
-      client: createPublicClient({
-        transport: contractInfos.rpc.startsWith('ws') ? webSocket(contractInfos.rpc) : http(contractInfos.rpc),
-      }),
-    });
-
-    const res = await viemContract.read[method](<any>params);
-    outputChannel.append('Output :' + res + '\n');
-    return res;
+    try {
+      const viemContract = getContract({
+        address: contractInfos.address,
+        abi: contractInfos.abi,
+        client: createPublicClient({
+          transport: contractInfos.rpc.startsWith('ws') ? webSocket(contractInfos.rpc) : http(contractInfos.rpc),
+        }),
+      });
+      const res = await viemContract.read[method](<any>params);
+      outputChannel.append('Output :' + res + '\n');
+      return res;
+    } catch (error: any) {
+      outputChannel.append('Error :' + error + '\n');
+      return error.cause.shortMessage;
+    }
   }
 
   public async writeContract({
@@ -112,8 +116,13 @@ export class Interact {
       client: walletClient,
     });
 
-    const res = await viemContract.write[functionName](<any>params);
-    outputChannel.append('Transaction hash :' + res + '\n');
-    return res;
+    try {
+      const res = await viemContract.write[functionName](<any>params);
+      outputChannel.append('Transaction hash :' + res + '\n');
+      return res;
+    } catch (error: any) {
+      outputChannel.append('Error :' + error + '\n');
+      return error.cause.shortMessage;
+    }
   }
 }
