@@ -225,17 +225,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         break;
 
       case MessageType.ESTIMATE_GAS:
-        const abi = message.data.abi;
-        const walletAddress = message.data.walletAddress;
-        const params = message.data.params;
-        const functionName = message.data.function;
-        const contractAddress = message.data.address;
         const gas = await publicClient.estimateContractGas({
-          address: contractAddress,
-          abi,
-          functionName: functionName,
-          account: walletAddress,
-          args: params,
+          address: message.data.address,
+          abi: message.data.abi,
+          functionName: message.data.function,
+          account: message.data.walletAddress,
+          args: message.data.params,
         });
         const gasWithBuffer = (gas * 12n) / 10n; // gas + 20%, as it's a bigint we can't use * 1.2
         await this._view.webview.postMessage({
