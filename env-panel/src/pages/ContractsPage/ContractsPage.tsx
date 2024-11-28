@@ -70,7 +70,7 @@ export const ContractsPage = (props: { vscode: VSCode; resourceManager: Resource
           Add
         </VSCodeButton>
         <EditableDataGrid
-          headers={['Address', 'Abi', 'Chain ID', 'Name', 'Rpc']}
+          headers={['Address', 'Abi', 'Name', 'Rpc']}
           data={props.resourceManager.interactContracts}
           deleteCallback={logic.deleteContract}
           editCallback={logic.editContract}
