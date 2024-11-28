@@ -46,6 +46,7 @@ export const WalletsPage = (props: { vscode: VSCode; resourceManager: ResourceMa
         <div style={{ display: 'flex', flexDirection: 'column' }}></div>
         <EditableDataGrid
           headers={['Name', 'Address', 'Private Key']}
+          protectedIndices={[2]}
           data={props.resourceManager.wallets}
           deleteCallback={logic.deleteWallet}
           editCallback={logic.editWallet}

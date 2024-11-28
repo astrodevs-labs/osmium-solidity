@@ -10,3 +10,11 @@
     background: transparent;
     border: 0;
 }
+
+.blur {
+    filter: blur(5px);
+}
+
+.editable-cell:focus {
+    filter: none;
+}
