@@ -234,15 +234,15 @@
     "typescript": "^5.3.3",
     "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.1",
-    "viem": "^2.8.18",
+    "viem": "^2.21.12",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "bufferutil": "^4.0.8",
-    "sidebar": "workspace:*",
-    "env-panel": "workspace:*",
     "docs-panel": "workspace:*",
+    "env-panel": "workspace:*",
+    "sidebar": "workspace:*",
     "vscode-languageclient": "^9.0.1"
   }
 }

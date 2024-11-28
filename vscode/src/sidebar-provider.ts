@@ -1,6 +1,5 @@
-import * as vscode from 'vscode';
-
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { Deploy } from './actions/Deploy';
 import { DeployContractRepository } from './actions/DeployContractRepository';
 import { EnvironmentRepository } from './actions/EnvironmentRepository';
@@ -8,6 +7,7 @@ import { Interact } from './actions/Interact';
 import { InteractContractRepository } from './actions/InteractContractRepository';
 import { ScriptRepository } from './actions/ScriptRepository';
 import { WalletRepository } from './actions/WalletRepository';
+import { publicClient } from './config';
 import { MessageType } from './enums';
 import { Message } from './types';
 import { getNonce, getTomlValue } from './utils';
@@ -222,6 +222,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           'workbench.action.openWalkthrough',
           'OsmiumToolchains.osmium-solidity-extension#osmium.getStarted',
         );
+        break;
+
+      case MessageType.ESTIMATE_GAS:
+        const gas = await publicClient.estimateContractGas({
+          address: message.data.address,
+          abi: message.data.abi,
+          functionName: message.data.function,
+          account: message.data.walletAddress,
+          args: message.data.params,
+        });
+        const gasWithBuffer = (gas * 12n) / 10n; // gas + 20%, as it's a bigint we can't use * 1.2
+        await this._view.webview.postMessage({
+          type: MessageType.ESTIMATE_GAS_RESPONSE,
+          response: { gas: gasWithBuffer.toString() },
+        });
         break;
     }
   }

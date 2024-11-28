@@ -1,7 +1,7 @@
 import { InteractContract } from '@backend/actions/types';
-import { useInteractParams } from './InteractParams.logic.ts';
 import { VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
 import './InteractParams.css';
+import { useInteractParams } from './InteractParams.logic.ts';
 
 export const InteractParams = (props: { contracts: InteractContract[] }) => {
   const logic = useInteractParams(props.contracts);

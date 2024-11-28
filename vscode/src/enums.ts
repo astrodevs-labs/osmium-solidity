@@ -30,6 +30,8 @@ enum MessageType {
   OPEN_PANEL_RESPONSE = 'OPEN_PANEL_RESPONSE',
   OPEN_DOCUMENTATION = 'OPEN_DOCUMENTATION',
   OPEN_WALKTHROUGH = 'OPEN_WALKTHROUGH',
+  ESTIMATE_GAS = 'ESTIMATE_GAS',
+  ESTIMATE_GAS_RESPONSE = 'ESTIMATE_GAS_RESPONSE',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -38,4 +40,4 @@ enum InputAction {
   REMOVE = 'Remove',
 }
 
-export { MessageType, InputAction };
+export { InputAction, MessageType };
