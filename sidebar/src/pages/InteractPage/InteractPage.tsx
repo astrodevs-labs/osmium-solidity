@@ -64,39 +64,53 @@ export const InteractPage = (props: { vscode: VSCode; resourceManager: ResourceM
 
     if (!functionAbi) return;
 
-    const params = functionAbi.inputs.map((input: any, i: number) => {
-      console.log('AA input', input);
-      return logic.form.getValues(`inputs.${i}`);
-    });
-    console.log('AA params', params);
-    console.log('AA params.length', params.length);
-    console.log('AA functionAbi.inputs.length', functionAbi.inputs.length);
+    const updateParams = () => {
+      const params = functionAbi.inputs.map((input: any, i: number) => {
+        console.log('AA input', input);
+        return logic.form.getValues(`inputs.${i}`);
+      });
+      console.log('AA params', params);
+      console.log('AA params.length', params.length);
+      console.log('AA functionAbi.inputs.length', functionAbi.inputs.length);
 
-    if (params.length !== functionAbi.inputs.length) {
-      return;
-    }
-
-    for (const param of params) {
-      console.log('AA param =', param);
-      if (param === null || param === undefined) {
-        console.log('AA one param is null|undefined');
+      if (params.length !== functionAbi.inputs.length) {
         return;
       }
-    }
 
-    const data = {
-      abi: selectedContract[0].abi,
-      walletAddress: selectedWallet[0].address,
-      params,
-      function: selectedFunctionId,
-      address: selectedContract[0].address,
+      for (const param of params) {
+        console.log('AA param =', param);
+        if (param === null || param === undefined) {
+          console.log('AA one param is null|undefined');
+          return;
+        }
+      }
+
+      const data = {
+        abi: selectedContract[0].abi,
+        walletAddress: selectedWallet[0].address,
+        params,
+        function: selectedFunctionId,
+        address: selectedContract[0].address,
+      };
+      console.log('AA data = ', data);
+
+      props.vscode.postMessage({
+        type: MessageType.ESTIMATE_GAS,
+        data,
+      });
     };
-    console.log('AA data = ', data);
 
-    props.vscode.postMessage({
-      type: MessageType.ESTIMATE_GAS,
-      data,
+    updateParams();
+
+    const subscription = logic.form.watch((value, { name, type }) => {
+      console.log('value', value);
+      console.log('type', type);
+      if (name && name.startsWith('inputs')) {
+        updateParams();
+      }
     });
+
+    return () => subscription.unsubscribe();
   }, [props.vscode, selectedContractId, selectedWalletId, selectedFunctionId]);
 
   useEffect(() => {
