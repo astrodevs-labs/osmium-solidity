@@ -108,9 +108,9 @@ export const useInteractPage = (vscode: VSCode, resourceManager: ResourceManager
       !selectedContract ||
       !selectedWallet ||
       !selectedFunctionId ||
-      selectedContract.length ||
+      !selectedContract.length ||
       !selectedContract[0].abi ||
-      selectedWallet.length ||
+      !selectedWallet.length ||
       !selectedWallet[0].address ||
       !selectedContract[0].address
     ) {
