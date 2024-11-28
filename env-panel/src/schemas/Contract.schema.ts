@@ -13,7 +13,6 @@ export const ContractSchema: ZodType<ContractForm> = z.object({
     })
     .max(42, { message: 'Address should be 42 characters long' })
     .startsWith('0x', { message: 'Address should start with 0x' }),
-  chainId: z.number(),
   rpc: z.string().url({ message: 'RPC URL should be a valid URL' }),
   abi: z.string(),
 });
