@@ -65,22 +65,16 @@ export const InteractPage = (props: { vscode: VSCode; resourceManager: ResourceM
     if (!functionAbi) return;
 
     const updateParams = () => {
-      const params = functionAbi.inputs.map((input: any, i: number) => {
-        console.log('AA input', input);
+      const params = functionAbi.inputs.map((_input: any, i: number) => {
         return logic.form.getValues(`inputs.${i}`);
       });
-      console.log('AA params', params);
-      console.log('AA params.length', params.length);
-      console.log('AA functionAbi.inputs.length', functionAbi.inputs.length);
 
       if (params.length !== functionAbi.inputs.length) {
         return;
       }
 
       for (const param of params) {
-        console.log('AA param =', param);
         if (param === null || param === undefined) {
-          console.log('AA one param is null|undefined');
           return;
         }
       }
@@ -92,7 +86,6 @@ export const InteractPage = (props: { vscode: VSCode; resourceManager: ResourceM
         function: selectedFunctionId,
         address: selectedContract[0].address,
       };
-      console.log('AA data = ', data);
 
       props.vscode.postMessage({
         type: MessageType.ESTIMATE_GAS,
@@ -102,9 +95,7 @@ export const InteractPage = (props: { vscode: VSCode; resourceManager: ResourceM
 
     updateParams();
 
-    const subscription = logic.form.watch((value, { name, type }) => {
-      console.log('value', value);
-      console.log('type', type);
+    const subscription = logic.form.watch((_value, { name }) => {
       if (name && name.startsWith('inputs')) {
         updateParams();
       }
@@ -117,7 +108,6 @@ export const InteractPage = (props: { vscode: VSCode; resourceManager: ResourceM
     const listener = (event: WindowEventMap['message']) => {
       switch (event.data.type) {
         case MessageType.ESTIMATE_GAS_RESPONSE: {
-          console.log('AA response = ', event.data.response.gas);
           logic.form.setValue('gasLimit', event.data.response.gas);
           break;
         }
