@@ -47,15 +47,6 @@ impl FileDiags {
                 compute_format_line_padding(line_nb),
                 "|".to_string().cyan(),
                 trimmed_line,
-                "|".to_string().cyan(),
-                " ".repeat(if line_nb == diag.range.start.line {
-                    diag.range.start.character - offset
-                } else {
-                    0
-                }),
-                "^".repeat(higlight_length)
-                    .to_string()
-                    .color(diag.severity.to_color())
             );
 
             // Add highlights for all ranges on this line
