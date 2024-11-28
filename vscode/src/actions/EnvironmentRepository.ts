@@ -29,7 +29,7 @@ export class EnvironmentRepository {
           id: uuidv4(),
           name: 'Anvil',
           rpc: 'http://localhost:8545',
-        }
+        },
       ];
       fs.writeFileSync(this._environmentsPath, JSON.stringify({ environments: this._environments }));
     } else {
