@@ -1,6 +1,5 @@
-import * as vscode from 'vscode';
-
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { Deploy } from './actions/Deploy';
 import { DeployContractRepository } from './actions/DeployContractRepository';
 import { EnvironmentRepository } from './actions/EnvironmentRepository';
@@ -8,6 +7,7 @@ import { Interact } from './actions/Interact';
 import { InteractContractRepository } from './actions/InteractContractRepository';
 import { ScriptRepository } from './actions/ScriptRepository';
 import { WalletRepository } from './actions/WalletRepository';
+import { publicClient } from './config';
 import { MessageType } from './enums';
 import { Message } from './types';
 import { getNonce, getTomlValue } from './utils';
@@ -222,6 +222,27 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           'workbench.action.openWalkthrough',
           'OsmiumToolchains.osmium-solidity-extension#osmium.getStarted',
         );
+        break;
+
+      case MessageType.ESTIMATE_GAS:
+        const abi = message.data.abi;
+        const walletAddress = message.data.walletAddress;
+        const params = message.data.params;
+        const functionName = message.data.function;
+        const contractAddress = message.data.address;
+        console.log('AA back : params', params);
+        const gas = await publicClient.estimateContractGas({
+          address: contractAddress,
+          abi,
+          functionName: functionName,
+          account: walletAddress,
+          args: params,
+        });
+        console.log(`Gas estimate for ${functionName}:`, gas);
+        await this._view.webview.postMessage({
+          type: MessageType.ESTIMATE_GAS_RESPONSE,
+          response: { gas: gas.toString() },
+        });
         break;
     }
   }
