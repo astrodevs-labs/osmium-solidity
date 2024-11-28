@@ -23,7 +23,7 @@ export class EnvPanelProvider {
   }
 
   async _osmiumWatcherCallback(uri: vscode.Uri) {
-    if (!this.panel) return;
+    if (!this.panel) {return;}
     const basename = path.basename(uri.fsPath, '.json');
     if (basename === 'contracts') {
       this._interactContractRepository?.load();
