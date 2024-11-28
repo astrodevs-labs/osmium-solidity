@@ -217,6 +217,9 @@ export class TestManager {
         watcher.onDidDelete((uri) => this.testController.items.delete(uri.toString()));
 
         for (const file of await vscode.workspace.findFiles(pattern)) {
+          if (file.path.includes('forge-std')) {
+            continue;
+          }
           this.getOrCreateTestFileItem(file);
         }
 
