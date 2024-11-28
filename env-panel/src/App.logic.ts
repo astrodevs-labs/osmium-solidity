@@ -12,8 +12,17 @@ export const useApp = () => {
     setVscode(acquireVsCodeApi());
   }, []);
 
+  const onTabChange = (event: any) => {
+    const tabId = event.detail?.id;
+
+    if (!tabId || !tabId.startsWith('tab-')) return;
+
+    resourceManager.setOpeningPanelId(tabId);
+  };
+
   return {
     vscode,
     resourceManager,
+    onTabChange,
   };
 };
