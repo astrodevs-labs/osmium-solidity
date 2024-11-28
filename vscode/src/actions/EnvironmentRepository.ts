@@ -24,7 +24,13 @@ export class EnvironmentRepository {
       fs.mkdirSync(this._osmiumPath);
     }
     if (!fs.existsSync(this._environmentsPath)) {
-      this._environments = [];
+      this._environments = [
+        {
+          id: uuidv4(),
+          name: 'Anvil',
+          rpc: 'http://localhost:8545',
+        }
+      ];
       fs.writeFileSync(this._environmentsPath, JSON.stringify({ environments: this._environments }));
     } else {
       const raw = fs.readFileSync(this._environmentsPath);
