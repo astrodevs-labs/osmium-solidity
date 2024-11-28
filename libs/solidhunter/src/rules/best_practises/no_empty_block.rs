@@ -28,6 +28,7 @@ impl RuleType for NoEmptyBlock {
                 range: report.clone(),
                 code: None,
                 source: None,
+                same_line_ranges: None,
                 message: DEFAULT_MESSAGE.to_string(),
                 uri: _file.path.clone(),
             });

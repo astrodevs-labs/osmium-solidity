@@ -1,8 +1,9 @@
 use clap::{arg, Parser};
+use solidhunter::aggregate::aggregate_diags;
 use solidhunter::errors::SolidHunterError;
 use solidhunter::linter::SolidLinter;
 use solidhunter::rules::rule_impl::create_rules_file;
-use solidhunter::types::LintResult;
+use solidhunter::types::{FileDiags, LintResult};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -58,7 +59,9 @@ fn print_result(results: &Vec<LintResult>) {
     for result in results {
         match result {
             Ok(diags) => {
-                print!("{}", &diags);
+                let aggregated = aggregate_diags(diags.diags.clone());
+                let new_file = FileDiags::new(diags.source_file_content.clone(), aggregated);
+                print!("{}", &new_file);
             }
             Err(e) => {
                 println!("{}", e);

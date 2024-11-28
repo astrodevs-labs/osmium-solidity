@@ -30,6 +30,7 @@ impl RuleType for PayableFallback {
                 range: report,
                 code: None,
                 source: None,
+                same_line_ranges: None,
                 message: DEFAULT_MESSAGE.to_string(),
                 uri: file.path.clone(),
             });
