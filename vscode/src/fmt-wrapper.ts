@@ -17,7 +17,8 @@ type ForgeFmtOptions = {
 
 type ForgeFmtArgs = {
   options: ForgeFmtOptions;
-  files: string[];
+  files?: string[];
+  content?: string;
 };
 
 type ForgeFmtResult = {
@@ -39,7 +40,7 @@ function isFmtInstalled(): boolean {
 }
 
 function forgeFmt(args: ForgeFmtArgs, debug?: boolean): Promise<ForgeFmtResult> {
-  const { options, files } = args;
+  const { options, files, content } = args;
   const { root, check, raw } = options;
 
   const commandArgs = ['fmt'];
@@ -56,7 +57,11 @@ function forgeFmt(args: ForgeFmtArgs, debug?: boolean): Promise<ForgeFmtResult> 
     commandArgs.push('--raw');
   }
 
-  commandArgs.push(...files.map((file) => (file.includes(' ') ? `"${file}"` : file)));
+  if (files) {
+    commandArgs.push(...files.map((file) => (file.includes(' ') ? `"${file}"` : file)));
+  } else if (content) {
+    commandArgs.push('-');
+  }
 
   const command = `forge ${commandArgs.join(' ')}`;
 
@@ -65,7 +70,7 @@ function forgeFmt(args: ForgeFmtArgs, debug?: boolean): Promise<ForgeFmtResult> 
   }
 
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, _stderr) => {
+    const child = exec(command, (error, stdout, _stderr) => {
       if (error && !check) {
         reject(error);
       } else {
@@ -75,6 +80,11 @@ function forgeFmt(args: ForgeFmtArgs, debug?: boolean): Promise<ForgeFmtResult> 
         });
       }
     });
+
+    if (content && child.stdin) {
+      child.stdin.write(content);
+      child.stdin.end();
+    }
   });
 }
 
@@ -103,7 +113,7 @@ function format() {
 
     const args: ForgeFmtArgs = {
       options,
-      files: [document.fileName],
+      content: document.getText(),
     };
 
     forgeFmt(args)
@@ -179,7 +189,7 @@ function registerForgeFmtLinter(context: vscode.ExtensionContext): {
 
       const args: ForgeFmtArgs = {
         options,
-        files: [document.fileName],
+        content: document.getText(),
       };
 
       try {
