@@ -8,6 +8,7 @@ export type ResourceManager = {
   environments: Environments;
   interactContracts: InteractContracts;
   openingPanelId: string;
+  setOpeningPanelId: (id: string) => void;
 };
 
 export const useResourceManager = (vscode: VSCode): ResourceManager => {
@@ -55,5 +56,6 @@ export const useResourceManager = (vscode: VSCode): ResourceManager => {
     environments,
     interactContracts,
     openingPanelId,
+    setOpeningPanelId,
   };
 };

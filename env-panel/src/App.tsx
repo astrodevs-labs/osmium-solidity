@@ -10,7 +10,7 @@ export const App = () => {
 
   return (
     <div className="app-container">
-      <VSCodePanels activeid={logic.resourceManager.openingPanelId}>
+      <VSCodePanels activeid={logic.resourceManager.openingPanelId} onChange={logic.onTabChange}>
         <VSCodePanelTab id="tab-wallets">WALLETS</VSCodePanelTab>
         <VSCodePanelTab id="tab-environments">ENVIRONMENTS</VSCodePanelTab>
         <VSCodePanelTab id="tab-contracts">CONTRACTS</VSCodePanelTab>
