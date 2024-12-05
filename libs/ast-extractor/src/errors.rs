@@ -4,6 +4,8 @@ use thiserror::Error;
 pub enum ExtractError {
     #[error("Alloy extraction error: {0}")]
     Alloy(String),
+    #[error("Cannot read file version")]
+    ReadVersion,
     #[error("Compiler error: {0}")]
     Compiler(#[from] osmium_libs_solidity_foundry_wrapper::Error),
     #[error("Cannot read source file")]
